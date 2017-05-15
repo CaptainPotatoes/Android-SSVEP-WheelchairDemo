@@ -107,20 +107,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Handler mTimerHandler = new Handler();
     private boolean mTimerEnabled = false;
 
-    //Plot Variables:
-
-//    private XYPlot eegPlot;
-    private Redrawer redrawer;
-//    private SimpleXYSeries mGraphAdapterCh1.series;
-    private static final int HISTORY_SIZE = 1000;
-    private static final int HISTORY_SECONDS = 4;
+    public static Redrawer redrawer;
     private boolean plotImplicitXVals = false;
-    private int DATA_RATE_SAMPLES_PER_SECOND = 0;
     //for bounds:
     private BoundaryMode currentBM = BoundaryMode.AUTO;
     //Data Variables:
     private int batteryWarning = 20;//%
-    final private boolean initialize = false;
     private String fileTimeStamp = "";
     private double dataRate;
     private double mEOGClass = 0;
@@ -168,22 +160,27 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         ab.setSubtitle(mDeviceAddress);
         initializeBluetoothArray();
         // Initialize our XYPlot reference:
-        mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, false, Color.BLACK); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, false, Color.BLUE); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, false, Color.BLUE); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, false, Color.BLACK); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         mGraphAdapterCh3 = new GraphAdapter(1000, "EEG Data Ch 3", false, false, Color.RED); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         mGraphAdapterCh4 = new GraphAdapter(1000, "EEG Data Ch 4", false, false, Color.GREEN); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        //PLOT CH1 By default
+        mGraphAdapterCh1.plotData = true;
+//        mGraphAdapterCh2.plotData = true;
+//        mGraphAdapterCh3.plotData = true;
+//        mGraphAdapterCh4.plotData = true;
         mGraphAdapterCh1.setPointWidth((float)2);
         mGraphAdapterCh2.setPointWidth((float)3);
         mGraphAdapterCh3.setPointWidth((float)3);
         mGraphAdapterCh4.setPointWidth((float)3);
         if(plotImplicitXVals) mGraphAdapterCh1.series.useImplicitXVals();
         if(filterData) mPlotAdapter.filterData();
-//        mPlotAdapter.xyPlot =  findViewById(R.id.eegPlot);
         mPlotAdapter = new XYPlotAdapter(findViewById(R.id.eegPlot), plotImplicitXVals, 1000);
         mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1.series, mGraphAdapterCh1.lineAndPointFormatter);
         mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2.series, mGraphAdapterCh2.lineAndPointFormatter);
         mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh3.series, mGraphAdapterCh3.lineAndPointFormatter);
         mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh4.series, mGraphAdapterCh4.lineAndPointFormatter);
+
         redrawer = new Redrawer(
                 Arrays.asList(new Plot[]{mPlotAdapter.xyPlot}),
                 100, false);
@@ -329,6 +326,35 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 mWheelchairControl = b;
+            }
+        });
+
+        ToggleButton ch1 = (ToggleButton) findViewById(R.id.toggleButtonCh1);
+        ch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mGraphAdapterCh1.setPlotData(b);
+            }
+        });
+        ToggleButton ch2 = (ToggleButton) findViewById(R.id.toggleButtonCh2);
+        ch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mGraphAdapterCh2.setPlotData(b);
+            }
+        });
+        ToggleButton ch3 = (ToggleButton) findViewById(R.id.toggleButtonCh3);
+        ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mGraphAdapterCh3.setPlotData(b);
+            }
+        });
+        ToggleButton ch4 = (ToggleButton) findViewById(R.id.toggleButtonCh4);
+        ch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mGraphAdapterCh4.setPlotData(b);
             }
         });
     }
@@ -641,25 +667,14 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             Log.e(TAG, "onCharacteristic Read Error" + status);
         }
     }
-    private int dataCnt1000 = 0;
     private boolean eeg_ch1_data_on = false;
     private boolean eeg_ch2_data_on = false;
     private boolean eeg_ch3_data_on = false;
     private boolean eeg_ch4_data_on = false;
+    private int packetNumber = -1;
     //most recent eeg data packet:
-    private int[] eeg_ch1_data = new int[6];
-    private int[] eeg_ch2_data = new int[6];
-    private int[] eeg_ch3_data = new int[6];
-    private int[] eeg_ch4_data = new int[6];
     private double[] filteredEegSignal = new double[1000];
     //EOG:
-    private boolean eog_ch1_data_on = false;
-    private boolean eog_ch2_data_on = false;
-    private boolean eog_ch3_data_on = false;
-    private int[] eog_ch1_data = new int[6];
-    private int[] eog_ch2_data = new int[6];
-    private int[] eog_ch3_data = new int[6];
-    private int packetsReceived = 0;
     // Classification
     private double[] yfitarray = new double[5];
 
@@ -674,7 +689,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             }
             getDataRateBytes(dataEEGBytes.length);
             //TODO: Remember to check/uncheck plotImplicitXVals (boolean)
-            if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,false);
+            if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber);
 //            updateGraph(mGraphAdapterCh1);
 //            Log.e(TAG,"EEG-CH1");
         }
@@ -686,7 +701,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             byte[] dataEEGBytes = characteristic.getValue();
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
-            if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,true);
+            if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber);
 //            Log.e(TAG,"EEG-CH2");
         }
 
@@ -697,7 +712,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             byte[] dataEEGBytes = characteristic.getValue();
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
-            if(mEEGConnected) mGraphAdapterCh3.addDataPoints(dataEEGBytes,3,false);
+            if(mEEGConnected) mGraphAdapterCh3.addDataPoints(dataEEGBytes,3,packetNumber);
 //            Log.e(TAG,"EEG-CH3");
         }
 
@@ -708,7 +723,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             byte[] dataEEGBytes = characteristic.getValue();
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
-            if(mEEGConnected) mGraphAdapterCh4.addDataPoints(dataEEGBytes,3,false);
+            if(mEEGConnected) mGraphAdapterCh4.addDataPoints(dataEEGBytes,3,packetNumber);
 //            Log.e(TAG,"EEG-CH4");
         }
         // TODO: 5/15/2017 2-Channel EEG:
@@ -721,6 +736,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //        }
         
         if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
+            packetNumber++;
             mEEGConnected = true;
             eeg_ch1_data_on = false;
             eeg_ch2_data_on = false;

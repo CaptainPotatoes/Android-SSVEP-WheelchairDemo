@@ -12,6 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ToggleButton
+            android:id="@+id/toggleButtonCh1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:checked="true"
+            android:text="ToggleButton" />
+        <ToggleButton
+            android:id="@+id/toggleButtonCh2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="ToggleButton" />
+        <ToggleButton
+            android:id="@+id/toggleButtonCh3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="ToggleButton" />
+        <ToggleButton
+            android:id="@+id/toggleButtonCh4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="ToggleButton" />
+
         <TextView
             android:text="TextView"
             android:layout_width="wrap_content"
@@ -27,12 +53,6 @@
             android:layout_weight="0.42"
             android:textAlignment="textEnd"
             android:textSize="15sp"/>
-
-        <!--<Switch
-            android:text="Filter (On = BW, Off = FIR)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/filterType" />-->
 
     </LinearLayout>
 
