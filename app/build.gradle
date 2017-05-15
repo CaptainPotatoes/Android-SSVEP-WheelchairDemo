@@ -6,7 +6,7 @@ model {
         buildToolsVersion = '23.0.3'
 
         defaultConfig {
-            applicationId "com.mahmoodms.bluetooth.eegssvepdemo"
+            applicationId "com.mahmoodms.bluetooth.eegssvepwheelchairdemo"
             minSdkVersion.apiLevel = 21
             targetSdkVersion.apiLevel = 23
             versionCode 1

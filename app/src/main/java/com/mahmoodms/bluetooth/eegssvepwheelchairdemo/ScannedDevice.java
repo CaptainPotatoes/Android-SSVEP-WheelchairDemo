@@ -1,4 +1,4 @@
-package com.mahmoodms.bluetooth.eegssvepdemo;
+package com.mahmoodms.bluetooth.eegssvepwheelchairdemo;
 
 import android.bluetooth.BluetoothDevice;
 

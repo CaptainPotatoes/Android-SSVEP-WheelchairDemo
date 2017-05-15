@@ -199,14 +199,6 @@
             android:text="TextView" />
 
         <ToggleButton
-            android:id="@+id/toggleButtonClassifier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="ToggleButton" />
-
-        <ToggleButton
             android:id="@+id/toggleButtonWheelchairControl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

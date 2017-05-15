@@ -1,4 +1,4 @@
-package com.mahmoodms.bluetooth.eegssvepdemo;
+package com.mahmoodms.bluetooth.eegssvepwheelchairdemo;
 
 import android.Manifest;
 import android.app.ActionBar;
@@ -28,7 +28,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

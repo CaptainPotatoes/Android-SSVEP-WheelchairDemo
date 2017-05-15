@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.mahmoodms.bluetooth.eegssvepdemo">
+          package="com.mahmoodms.bluetooth.eegssvepwheelchairdemo">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -17,7 +17,7 @@
         android:hardwareAccelerated="false"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity"
+            android:name="com.mahmoodms.bluetooth.eegssvepwheelchairdemo.MainActivity"
             android:label="@string/main_activity_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,13 +25,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.mahmoodms.bluetooth.eegssvepdemo.DeviceControlActivity"
+        <activity android:name="com.mahmoodms.bluetooth.eegssvepwheelchairdemo.DeviceControlActivity"
                   android:hardwareAccelerated="false"
                   android:label="ECG Sensor Data"
-                  android:parentActivityName="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity">
+                  android:parentActivityName="com.mahmoodms.bluetooth.eegssvepwheelchairdemo.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity" />
+                android:value="com.mahmoodms.bluetooth.eegssvepwheelchairdemo.MainActivity" />
         </activity>
     </application>
 

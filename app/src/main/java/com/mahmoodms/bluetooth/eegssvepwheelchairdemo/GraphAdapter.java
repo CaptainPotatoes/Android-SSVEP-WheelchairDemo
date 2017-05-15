@@ -1,7 +1,6 @@
-package com.mahmoodms.bluetooth.eegssvepdemo;
+package com.mahmoodms.bluetooth.eegssvepwheelchairdemo;
 
 import android.content.Context;
-import android.graphics.Color;
 
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
@@ -20,23 +19,26 @@ public class GraphAdapter {
     private int numberDataPoints = 0;
     private double currentTimeStamp = 0;
     private boolean plotImplicitXvals;
+    private boolean filterData;
     public double[] lastTimeValues;
     public double[] lastDataValues;
     private double[] unfilteredSignal;
-    private double[] explicitXVals;
-
-    private Context context; //>? Dont need?
+    public double[] explicitXVals;
+    public int intArraySize;
+    public int newValuesPlotted;
 
     // Set/Get Methods (Don't need yet)
 
     // Constructor
-    public GraphAdapter(/*Context context, */int seriesHistoryDataPoints, String XYSeriesTitle, boolean useImplicitXVals, int lineAndPointFormatterColor) {
+    public GraphAdapter(int seriesHistoryDataPoints, String XYSeriesTitle, boolean useImplicitXVals, boolean filterData, int lineAndPointFormatterColor) {
 //        this.context = context;
         //default values
+        this.filterData = filterData;
         this.seriesHistoryDataPoints = seriesHistoryDataPoints;
         this.seriesHistorySeconds = seriesHistoryDataPoints/250;
         this.numberDataPoints = 0;
         this.currentTimeStamp = 0.0;
+        this.intArraySize = 6; //24-bit default
         this.plotImplicitXvals = false;
         this.lineAndPointFormatter = new LineAndPointFormatter(lineAndPointFormatterColor, null, null, null);
         setPointWidth(5); //Def value:
@@ -45,6 +47,7 @@ public class GraphAdapter {
         this.explicitXVals = new double[seriesHistoryDataPoints];
         // Initialize series
         this.series = new SimpleXYSeries(XYSeriesTitle);
+        this.newValuesPlotted=0;
         if(useImplicitXVals) this.series.useImplicitXVals();
 
     }
@@ -55,9 +58,9 @@ public class GraphAdapter {
 
     // Manipulation Methods
         //Call - addDataPoints(rawData[], 24);
-    public void addDataPoints(byte[] newDataPoints, int bytesPerInt) {
+    public void addDataPoints(byte[] newDataPoints, int bytesPerInt, boolean plotData) {
         int byteLength = newDataPoints.length;
-        int intArraySize = byteLength/bytesPerInt;
+        intArraySize = byteLength/bytesPerInt;
         int[] dataArrInts = new int[byteLength/bytesPerInt];
         lastTimeValues = new double[byteLength/bytesPerInt];
         lastDataValues = new double[byteLength/bytesPerInt];
@@ -72,6 +75,7 @@ public class GraphAdapter {
                     dataArrInts[i] = unsignedToSigned(unsignedBytesToInt(newDataPoints[2*i],newDataPoints[2*i+1]),16);
                     numberDataPoints++;
                 }
+                //Call Plot
                 break;
             case 3: //24-bit
                 for (int i = 0; i < byteLength/bytesPerInt; i++) {
@@ -83,11 +87,37 @@ public class GraphAdapter {
                     lastTimeValues[i] = numberDataPoints*0.004;
                     lastDataValues[i] = convert24bitInt(dataArrInts[i]);
                 }
+                //Call Plot:
+                if(plotData)updateGraph();
                 break;
             default:
                 break;
         }
         //Should be 6 data points:
+    }
+
+    //Graph Stuff:
+    private void updateGraph() {
+        if(!filterData) {
+            for (int i = 0; i < intArraySize; i++) {
+                plot(lastTimeValues[i], lastDataValues[i]);
+            }
+        } else {
+            //FILTER AND CALL PLOT (SOMEHOW)
+        }
+    }
+
+    private void plot(double x, double y) {
+        if(series.size()>seriesHistoryDataPoints-1) {
+            series.removeFirst();
+        }
+        series.addLast(x,y);
+        newValuesPlotted++;
+        if(newValuesPlotted>=seriesHistoryDataPoints-1 && newValuesPlotted%60==0){
+            //Adjust Graph
+            newValuesPlotted = 0;
+            DeviceControlActivity.mPlotAdapter.adjustPlot(this);
+        }
     }
 
     //Blah:
