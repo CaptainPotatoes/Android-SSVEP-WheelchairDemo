@@ -57,14 +57,16 @@ import java.util.Date;
  */
 
 public class DeviceControlActivity extends Activity implements BluetoothLe.BluetoothLeListener {
-    // TODO: 5/15/2017 NEW GRAPH OBJ (EEG):
+    // Graphing Variables:
     private GraphAdapter mGraphAdapterCh1;
     private GraphAdapter mGraphAdapterCh2;
     private GraphAdapter mGraphAdapterCh3;
     private GraphAdapter mGraphAdapterCh4;
     public static XYPlotAdapter mPlotAdapter;
-
+    public static Redrawer redrawer;
+    private boolean plotImplicitXVals = false;
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
+
     //LocalVars
     private String mDeviceName;
     private String mDeviceAddress;
@@ -79,7 +81,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private BluetoothGattService mLedService = null;
     private int mWheelchairGattIndex;
 
-    private boolean mEOGConnected = false;
+//    private boolean mEOGConnected = false;
     private boolean mEEGConnected = false;
 
     //Layout - TextViews and Buttons
@@ -93,10 +95,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Switch mFilterSwitch;
     private long mLastTime;
     private long mCurrentTime;
-    private long mClassTime;
-    private long mCurrentTime2;
-
-    private String mLastRssi;
+    private long mClassTime; //DON'T DELETE!!!
 
     private boolean filterData = false;
     private int points = 0;
@@ -107,10 +106,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Handler mTimerHandler = new Handler();
     private boolean mTimerEnabled = false;
 
-    public static Redrawer redrawer;
-    private boolean plotImplicitXVals = false;
-    //for bounds:
-    private BoundaryMode currentBM = BoundaryMode.AUTO;
     //Data Variables:
     private int batteryWarning = 20;//%
     private String fileTimeStamp = "";
@@ -166,9 +161,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         mGraphAdapterCh4 = new GraphAdapter(1000, "EEG Data Ch 4", false, false, Color.GREEN); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         //PLOT CH1 By default
         mGraphAdapterCh1.plotData = true;
-//        mGraphAdapterCh2.plotData = true;
-//        mGraphAdapterCh3.plotData = true;
-//        mGraphAdapterCh4.plotData = true;
         mGraphAdapterCh1.setPointWidth((float)2);
         mGraphAdapterCh2.setPointWidth((float)3);
         mGraphAdapterCh3.setPointWidth((float)3);
@@ -207,7 +199,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 filterData = isChecked;
-                clearPlot();
             }
         });
         mLastTime = System.currentTimeMillis();
@@ -612,7 +603,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 }
 
                 if(AppConstant.SERVICE_EOG_SIGNAL.equals(service.getUuid())) {
-                    mEOGConnected = true;
                     makeFilterSwitchVisible(true);
                     mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EOG_CH1_SIGNAL), true);
                     mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EOG_CH2_SIGNAL), true);
@@ -623,8 +613,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     }
                 }
 
-                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) {
-                    //Read the device battery percentage
+                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) { //Read the device battery percentage
 //                    mBluetoothLe.readCharacteristic(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL));
 //                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL), true);
                 }
@@ -673,7 +662,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private boolean eeg_ch4_data_on = false;
     private int packetNumber = -1;
     //most recent eeg data packet:
-    private double[] filteredEegSignal = new double[1000];
     //EOG:
     // Classification
     private double[] yfitarray = new double[5];
@@ -681,17 +669,13 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         //TODO: ADD BATTERY MEASURE CAPABILITY IN FIRMWARE: (ble_ADC)
-
         if (AppConstant.CHAR_EEG_CH1_SIGNAL.equals(characteristic.getUuid())) {
             byte[] dataEEGBytes = characteristic.getValue();
             if(!eeg_ch1_data_on) {
                 eeg_ch1_data_on = true;
             }
             getDataRateBytes(dataEEGBytes.length);
-            //TODO: Remember to check/uncheck plotImplicitXVals (boolean)
             if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber);
-//            updateGraph(mGraphAdapterCh1);
-//            Log.e(TAG,"EEG-CH1");
         }
 
         if (AppConstant.CHAR_EEG_CH2_SIGNAL.equals(characteristic.getUuid())) {
@@ -702,7 +686,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
             if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber);
-//            Log.e(TAG,"EEG-CH2");
         }
 
         if (AppConstant.CHAR_EEG_CH3_SIGNAL.equals(characteristic.getUuid())) {
@@ -713,7 +696,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
             if(mEEGConnected) mGraphAdapterCh3.addDataPoints(dataEEGBytes,3,packetNumber);
-//            Log.e(TAG,"EEG-CH3");
         }
 
         if (AppConstant.CHAR_EEG_CH4_SIGNAL.equals(characteristic.getUuid())) {
@@ -724,7 +706,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
             if(mEEGConnected) mGraphAdapterCh4.addDataPoints(dataEEGBytes,3,packetNumber);
-//            Log.e(TAG,"EEG-CH4");
         }
         // TODO: 5/15/2017 2-Channel EEG:
 //        if(eeg_ch1_data_on && eeg_ch2_data_on) {
@@ -747,6 +728,14 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                         mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
 //                resetClass();
             }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
+//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
+                    mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
+                }
+            });
         }
         // EOG Stuff: TODO: IF USING GET FROM PREVIOUS VERSION.
     }
@@ -824,16 +813,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
-    private void writeToDisk24(final int ch1, final int ch2) {
-        try {
-            double ch1d = convert24bitInt(ch1);
-            double ch2d = convert24bitInt(ch2);
-            exportFileWithClass(ch1d,ch2d);
-        } catch (IOException e) {
-            Log.e("IOException", e.toString());
-        }
-    }
-
     private boolean lastThreeMatches(double[] yfitarray) {
         boolean b0 = false;
         boolean b1 = false;
@@ -842,203 +821,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             b1 = (yfitarray[3] == yfitarray[2]);
         }
         return b0 && b1;
-    }
-
-    private void writeToDisk24(final int ch1, final int ch2, final int ch3) {
-        //Add to Back: TODO: Exporting unfiltered data to drive..
-        try {
-            double ch1d = convert24bitInt(ch1);
-            double ch2d = convert24bitInt(ch2);
-            double ch3d = convert24bitInt(ch3);
-            exportFileWithClass(ch1d,ch2d,ch3d);
-        } catch (IOException e) {
-            Log.e("IOException", e.toString());
-        }
-    }
-
-    private void writeToDisk24(final int ch1, final int ch2, final int ch3, final int ch4) {
-        //Add to Back: TODO: Exporting unfiltered data to drive..
-        try {
-            double ch1d = convert24bitInt(ch1);
-            double ch2d = convert24bitInt(ch2);
-            double ch3d = convert24bitInt(ch3);
-            double ch4d = convert24bitInt(ch4);
-            exportFileWithClass(ch1d,ch2d,ch3d,ch4d);
-        } catch (IOException e) {
-            Log.e("IOException", e.toString());
-        }
-    }
-
-    public double convert24bitInt(final int int24bit) {
-        double dividedInt = (double) int24bit/8388607.0;
-        return dividedInt*2.42;
-    }
-
-    private void clearPlot() {
-        if(mGraphAdapterCh1.series!=null) {
-            redrawer.pause();
-            while(mGraphAdapterCh1.series.size()>0) {
-                mGraphAdapterCh1.series.removeFirst();
-            }
-            adjustGraph(true);
-            redrawer.start();
-        }
-    }
-
-    private double[] explicitXValsLong = new double[1000];
-    private int newValsPlotted = 0;
-
-    private void adjustGraph(boolean forceAdjust){
-        double max = findGraphMax(mGraphAdapterCh1.series);
-        double min = findGraphMin(mGraphAdapterCh1.series);
-        if(newValsPlotted%60==0 || forceAdjust) {
-            newValsPlotted = 0;
-            if(filterData) {
-                if (max-min<0.008) {
-                    mPlotAdapter.xyPlot.setRangeBoundaries(-0.004, 0.004, BoundaryMode.FIXED);
-                    mPlotAdapter.xyPlot.setRangeStepValue(0.008 / 5.0);
-                } else {
-                    mPlotAdapter.xyPlot.setRangeBoundaries(min-0.004, max+0.004,BoundaryMode.AUTO);
-                    mPlotAdapter.xyPlot.setRangeStepValue((0.008+max-min)/5);
-                }
-            } else {
-                if((max-min)!=0) {
-                    if(currentBM!=BoundaryMode.AUTO) {
-                        mPlotAdapter.xyPlot.setRangeBoundaries(-2.5, 2.5, BoundaryMode.AUTO);
-                        currentBM = BoundaryMode.AUTO;
-                    }
-                    mPlotAdapter.xyPlot.setRangeStepValue((max-min)/5);
-                } else {
-                    if(currentBM!=BoundaryMode.FIXED) {
-                        mPlotAdapter.xyPlot.setRangeBoundaries(min-1, max+1, BoundaryMode.FIXED);
-                        currentBM = BoundaryMode.FIXED;
-                    }
-                    mPlotAdapter.xyPlot.setRangeStepValue(2.0/5.0);
-                }
-            }
-        }
-        newMinX = Math.floor(explicitXValsLong[0]);
-        newMaxX = Math.floor(explicitXValsLong[999]);
-        mPlotAdapter.xyPlot.setDomainBoundaries(newMinX, newMaxX, BoundaryMode.AUTO);
-    }
-
-    private void plot(double[] xarray, double[] yarray) {
-        if (yarray.length>999) {
-            for (int i = 0; i < yarray.length; i++) {
-                plotReverse(xarray[i],yarray[i]);
-            }
-        } else {
-            for (int i = 0; i < yarray.length; i++) {
-                plot(xarray[i],yarray[i],yarray.length);
-            }
-        }
-    }
-
-    private void plot(double x, double y) {
-        if(mGraphAdapterCh1.series.size()>999) {
-            mGraphAdapterCh1.series.removeFirst();
-        }
-        mGraphAdapterCh1.series.addLast(x,y);
-        newValsPlotted++;
-        if(newValsPlotted>=999) {
-            adjustGraph(true);
-        }
-    }
-
-    private void plotReverse(double x, double y) {
-        if(mGraphAdapterCh1.series.size()>999) {
-            mGraphAdapterCh1.series.removeLast();
-        }
-        mGraphAdapterCh1.series.addFirst(x,y);
-        newValsPlotted++;
-        if(newValsPlotted>=999) {
-            adjustGraph(true);
-        }
-    }
-
-    private void plot(double x, double y, int len) {
-        if(mGraphAdapterCh1.series.size()>len-1) {
-            mGraphAdapterCh1.series.removeLast();
-        }
-        mGraphAdapterCh1.series.addFirst(x,y);
-        newValsPlotted++;
-        if(newValsPlotted>=len-1) {
-            adjustGraph(true);
-        }
-    }
-    
-    public void updateGraph(final GraphAdapter graphAdapter) {
-        for (int i = 0; i < graphAdapter.intArraySize; i++) {
-            plot(graphAdapter.lastTimeValues[i], graphAdapter.lastDataValues[i]);
-        }
-    }
-    
-    public void updateGraph(final double[] timeData, final double[] data) {
-        for (int i = 0; i < data.length; i++) {
-            if(!filterData) {
-                plot(timeData[i],data[i]);
-            }
-        }
-    }
-    
-    private int numberDataPointsCh1 = 0;
-    private double timeData = 0;
-    public void updateEEG(final double timeData, final int value) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mEegValsTextView.setText(" " + " IntVal="+String.valueOf(value));
-                double dataVoltage = convert24bitInt(value);
-                if(filterData) {
-                    if(numberDataPointsCh1%36==0 && numberDataPointsCh1!=0) {
-                        plot(explicitXValsLong,filteredEegSignal);
-                    }
-                } else {
-                    plot(timeData,dataVoltage);
-                }
-            }
-        });
-    }
-
-    private double findGraphMax(SimpleXYSeries s) {
-        if (s.size() > 0) {
-            double max = (double)s.getY(0);
-            for (int i = 1; i < s.size(); i++) {
-                double a = (double)s.getY(i);
-                if(a>max) {
-                    max = a;
-                }
-            }
-            return max;
-        } else
-            return 0.0;
-    }
-
-
-    private double findGraphMin(SimpleXYSeries s) {
-        if (s.size()>0) {
-            double min = (double)s.getY(0);
-            for (int i = 1; i < s.size(); i++) {
-                double a = (double)s.getY(i);
-                if(a<min) {
-                    min = a;
-                }
-            }
-            return min;
-        } else {
-            return 0.0;
-        }
-    }
-
-    private Number newMinX;
-    private Number newMaxX;
-
-    private void resetClass() {
-        mCurrentTime2 = System.currentTimeMillis();
-        if(mCurrentTime2>(mClassTime+1001)) {
-            mEOGClass = 0;
-            mClassTime = mCurrentTime2;
-        }
     }
 
     private void getDataRateBytes(int bytes) {
@@ -1058,50 +840,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
-    /**
-     * This function receives a signed 16-bit integer (2-bytes).
-     *
-     * @param rawValue (byte array)
-     * @return -> Signed *int* value
-     */
-    private int getIntfromByte(byte[] rawValue) {//Assumes 2 bytes
-        return (int) rawValue[0] + ((int) rawValue[1] << 8);
-    }
-
-    /**
-     * Convert an unsigned integer value to a two's-complement encoded
-     * signed value.
-     */
-    private int unsignedToSigned(int unsigned, int size) {
-        if ((unsigned & (1 << size - 1)) != 0) {
-            unsigned = -1 * ((1 << size - 1) - (unsigned & ((1 << size - 1) - 1)));
-        }
-        return unsigned;
-    }
-
-    /**
-     * Convert a signed byte to an unsigned int.
-     */
-    private int unsignedByteToInt(byte b) {
-        return b & 0xFF;
-    }
-
-    /**
-     * Convert signed bytes to a 16-bit unsigned int.
-     */
-    private int unsignedBytesToInt(byte b0, byte b1) {
-        return (unsignedByteToInt(b0) + (unsignedByteToInt(b1) << 8));
-    }
-
-    private int unsignedBytesToInt(byte b0, byte b1, byte b2) {
-        return (unsignedByteToInt(b0) + (unsignedByteToInt(b1) << 8) + (unsignedByteToInt(b2) << 16));
-    }
-
-
     @Override
     public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
         uiRssiUpdate(rssi);
-        mLastRssi = String.valueOf(rssi)+"db";
+        String lastRssi = String.valueOf(rssi)+"db";
     }
 
     @Override

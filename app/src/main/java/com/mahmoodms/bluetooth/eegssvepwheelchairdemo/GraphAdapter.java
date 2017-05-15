@@ -29,8 +29,6 @@ public class GraphAdapter {
     public boolean plotData;
 
     // Set/Get Methods (Don't need yet)
-
-
     public void setPlotData(boolean plotData) {
         this.plotData = plotData;
         if (!plotData) {
@@ -66,6 +64,8 @@ public class GraphAdapter {
         this.lineAndPointFormatter.getLinePaint().setStrokeWidth(width);
     }
 
+    // Manipulation Methods
+    //Call - addDataPoints(rawData[], 24);
     public void addDataPoints(byte[] newDataPoints, int bytesPerInt, int packetNumber) {
         int byteLength = newDataPoints.length;
         intArraySize = byteLength/bytesPerInt;
@@ -97,46 +97,6 @@ public class GraphAdapter {
             default:
                 break;
         }
-    }
-
-    // Manipulation Methods
-        //Call - addDataPoints(rawData[], 24);
-    public void addDataPoints(byte[] newDataPoints, int bytesPerInt) {
-        int byteLength = newDataPoints.length;
-        intArraySize = byteLength/bytesPerInt;
-        int[] dataArrInts = new int[byteLength/bytesPerInt];
-        lastTimeValues = new double[byteLength/bytesPerInt];
-        lastDataValues = new double[byteLength/bytesPerInt];
-        int startIndex = seriesHistoryDataPoints-intArraySize;
-        //shift old data backwards:
-        System.arraycopy(unfilteredSignal, intArraySize, unfilteredSignal, 0, startIndex);
-        System.arraycopy(explicitXVals, intArraySize, explicitXVals, 0, startIndex);
-        // Parse new data to ints:
-        switch (bytesPerInt) {
-            case 2: //16-bit
-                for (int i = 0; i < byteLength/bytesPerInt; i++) {
-                    dataArrInts[i] = unsignedToSigned(unsignedBytesToInt(newDataPoints[2*i],newDataPoints[2*i+1]),16);
-                    numberDataPoints++;
-                }
-                //Call Plot
-                break;
-            case 3: //24-bit
-                for (int i = 0; i < byteLength/bytesPerInt; i++) {
-                    dataArrInts[i] = unsignedToSigned(unsignedBytesToInt(newDataPoints[3*i],newDataPoints[3*i+1],newDataPoints[3*i+2]),24);
-                    numberDataPoints++;
-                    explicitXVals[startIndex+i] = numberDataPoints*0.004;
-                    unfilteredSignal[startIndex+i] = convert24bitInt(dataArrInts[i]);
-                    //Last Values (for plotting):
-                    lastTimeValues[i] = numberDataPoints*0.004;
-                    lastDataValues[i] = convert24bitInt(dataArrInts[i]);
-                }
-                //Call Plot:
-                if(this.plotData) updateGraph();
-                break;
-            default:
-                break;
-        }
-        //Should be 6 data points:
     }
 
     //Graph Stuff:
