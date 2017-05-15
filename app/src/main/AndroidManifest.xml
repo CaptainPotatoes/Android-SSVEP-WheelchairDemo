@@ -1,0 +1,38 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.mahmoodms.bluetooth.eegssvepdemo">
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:hardwareAccelerated="false"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity"
+            android:label="@string/main_activity_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.mahmoodms.bluetooth.eegssvepdemo.DeviceControlActivity"
+                  android:hardwareAccelerated="false"
+                  android:label="ECG Sensor Data"
+                  android:parentActivityName="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mahmoodms.bluetooth.eegssvepdemo.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>
