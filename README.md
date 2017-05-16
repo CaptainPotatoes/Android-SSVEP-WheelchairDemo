@@ -1,5 +1,5 @@
-# EEG_Android_Demo
-Probably will not update : Ignore
+# Android SSVEP Wheelchair Demo
 
-Potato. Just using to test to receive data from devices.
-Cheers. 
+Receives and Processes Data from Bluetooth LE EEG Device. 
+
+Controls Bluetooth LE Wheelchair.
