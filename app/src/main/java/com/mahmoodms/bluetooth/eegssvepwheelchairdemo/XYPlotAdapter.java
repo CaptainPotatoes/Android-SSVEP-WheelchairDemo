@@ -67,6 +67,26 @@ public class XYPlotAdapter {
         this.currentYBoundaryMode = BoundaryMode.AUTO;
     }
 
+    public void adjustPlot(GraphAdapter graphAdapter, double max, double min) {
+        if((max-min)!=0) {
+            if(this.currentYBoundaryMode!=BoundaryMode.AUTO) {
+                this.xyPlot.setRangeBoundaries(-2.5, 2.5, BoundaryMode.AUTO);
+                this.currentYBoundaryMode = BoundaryMode.AUTO;
+            }
+            this.xyPlot.setRangeStepValue((max-min)/5);
+        } else {
+            if(this.currentYBoundaryMode!=BoundaryMode.FIXED) {
+                this.xyPlot.setRangeBoundaries(min-1, max+1, BoundaryMode.FIXED);
+                this.currentYBoundaryMode = BoundaryMode.FIXED;
+            }
+            this.xyPlot.setRangeStepValue(2.0/5.0);
+        }
+        Number newMinX = Math.floor(graphAdapter.explicitXVals[0]);
+        Number newMaxX = Math.floor(graphAdapter.explicitXVals[graphAdapter.explicitXVals.length-1]);
+        this.xyPlot.setDomainBoundaries(newMinX,newMaxX,BoundaryMode.AUTO);
+        this.currentXBoundaryMode = BoundaryMode.AUTO;
+    }
+
     public void adjustPlot(GraphAdapter graphAdapter) {
         double max = findGraphMax(graphAdapter.series);
         double min = findGraphMin(graphAdapter.series);

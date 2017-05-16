@@ -83,6 +83,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
 //    private boolean mEOGConnected = false;
     private boolean mEEGConnected = false;
+    private boolean mEEGConnected_2ch = false;
 
     //Layout - TextViews and Buttons
     private TextView mEegValsTextView;
@@ -661,6 +662,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private boolean eeg_ch3_data_on = false;
     private boolean eeg_ch4_data_on = false;
     private int packetNumber = -1;
+    private int packetNumber_2ch = -1;
     //most recent eeg data packet:
     //EOG:
     // Classification
@@ -675,7 +677,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 eeg_ch1_data_on = true;
             }
             getDataRateBytes(dataEEGBytes.length);
-            if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber);
+//            if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber);
+            if(mEEGConnected_2ch) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber_2ch);
         }
 
         if (AppConstant.CHAR_EEG_CH2_SIGNAL.equals(characteristic.getUuid())) {
@@ -685,7 +688,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             byte[] dataEEGBytes = characteristic.getValue();
             int byteLength = dataEEGBytes.length;
             getDataRateBytes(byteLength);
-            if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber);
+//            if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber);
+            if(mEEGConnected_2ch) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber_2ch);
         }
 
         if (AppConstant.CHAR_EEG_CH3_SIGNAL.equals(characteristic.getUuid())) {
@@ -708,36 +712,78 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             if(mEEGConnected) mGraphAdapterCh4.addDataPoints(dataEEGBytes,3,packetNumber);
         }
         // TODO: 5/15/2017 2-Channel EEG:
-//        if(eeg_ch1_data_on && eeg_ch2_data_on) {
-//            eeg_ch1_data_on = false;
-//            eeg_ch2_data_on = false;
-//            for (int i = 0; i < 6; i++) {
-//                writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
-//            }
-//        }
-        
-        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
-            packetNumber++;
-            mEEGConnected = true;
+        if(eeg_ch1_data_on && eeg_ch2_data_on) {
+            packetNumber_2ch++;
+            mEEGConnected_2ch = true;
             eeg_ch1_data_on = false;
             eeg_ch2_data_on = false;
-            eeg_ch3_data_on = false;
-            eeg_ch4_data_on = false;
             for (int i = 0; i < 6; i++) {
-                writeToDisk24(mGraphAdapterCh1.lastDataValues[i],mGraphAdapterCh2.lastDataValues[i],
-                        mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
-//                resetClass();
+                writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
-//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
-                    mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
-                }
-            });
+            //Adjust graph?
+            if(packetNumber_2ch%10==0) {
+                double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
+                double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
+                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
+                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
+                double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
+                double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
+                mPlotAdapter.adjustPlot(mGraphAdapterCh2,max,min);
+            }
+
         }
+//        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
+//            packetNumber++;
+//            mEEGConnected = true;
+//            eeg_ch1_data_on = false;
+//            eeg_ch2_data_on = false;
+//            eeg_ch3_data_on = false;
+//            eeg_ch4_data_on = false;
+//            for (int i = 0; i < 6; i++) {
+//                writeToDisk24(mGraphAdapterCh1.lastDataValues[i],mGraphAdapterCh2.lastDataValues[i],
+//                        mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
+////                resetClass();
+//            }
+//        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
+//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
+                mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
+            }
+        });
         // EOG Stuff: TODO: IF USING GET FROM PREVIOUS VERSION.
+    }
+
+    private double findGraphMax(SimpleXYSeries s) {
+        if (s.size() > 0) {
+            double max = (double)s.getY(0);
+            for (int i = 1; i < s.size(); i++) {
+                double a = (double)s.getY(i);
+                if(a>max) {
+                    max = a;
+                }
+            }
+            return max;
+        } else
+            return 0.0;
+    }
+
+
+    private double findGraphMin(SimpleXYSeries s) {
+        if (s.size()>0) {
+            double min = (double)s.getY(0);
+            for (int i = 1; i < s.size(); i++) {
+                double a = (double)s.getY(i);
+                if(a<min) {
+                    min = a;
+                }
+            }
+            return min;
+        } else {
+            return 0.0;
+        }
     }
 
     private void processClassifiedData(final double Y, final int classifier) {

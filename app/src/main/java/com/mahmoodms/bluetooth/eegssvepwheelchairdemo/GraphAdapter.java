@@ -25,7 +25,7 @@ public class GraphAdapter {
     private double[] unfilteredSignal;
     public double[] explicitXVals;
     public int intArraySize;
-    public int newValuesPlotted;
+//    public int newValuesPlotted;
     public boolean plotData;
 
     // Set/Get Methods (Don't need yet)
@@ -54,7 +54,7 @@ public class GraphAdapter {
         this.explicitXVals = new double[seriesHistoryDataPoints];
         // Initialize series
         this.series = new SimpleXYSeries(XYSeriesTitle);
-        this.newValuesPlotted=0;
+//        this.newValuesPlotted=0;
         if(useImplicitXVals) this.series.useImplicitXVals();
         //Don't plot data until explicitly told to do so:
         this.plotData = false;
@@ -126,12 +126,12 @@ public class GraphAdapter {
             series.removeFirst();
         }
         series.addLast(x,y);
-        newValuesPlotted++;
+        /*newValuesPlotted++;
         if(newValuesPlotted>=seriesHistoryDataPoints-1 && newValuesPlotted%60==0){
             //Adjust Graph
             newValuesPlotted = 0;
             DeviceControlActivity.mPlotAdapter.adjustPlot(this);
-        }
+        }*/
     }
 
     //Blah:
