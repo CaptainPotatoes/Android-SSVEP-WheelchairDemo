@@ -141,7 +141,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         //Flag to keep screen on (stay-awake):
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Set up TextViews
-        mEegValsTextView = (TextView) findViewById(R.id.ecgValue);
+        mEegValsTextView = (TextView) findViewById(R.id.eegValue);
         mExportButton = (Button) findViewById(R.id.button_export);
         mFilterSwitch = (Switch) findViewById(R.id.filterSwitch);
         mBatteryLevel = (TextView) findViewById(R.id.batteryText);

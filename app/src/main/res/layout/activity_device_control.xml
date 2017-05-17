@@ -81,7 +81,7 @@
             androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
             androidPlot.rangeLabel="Range"
             androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
-            androidPlot.title="ECG Data Plot"
+            androidPlot.title="EEG Data Plot"
             androidPlot.titleWidget.labelPaint.textSize="@dimen/title_font_size"
             androidplot.renderMode="use_background_thread"
             android:layout_width="fill_parent"
@@ -204,7 +204,7 @@
             android:text="Filter:" />
 
         <TextView
-            android:id="@+id/ecgValue"
+            android:id="@+id/eegValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Current Value"
