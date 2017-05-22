@@ -46,13 +46,13 @@
             android:layout_weight="1" />
 
         <TextView
-            android:text="Battery"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:id="@+id/batteryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="0.42"
+            android:text="Battery"
             android:textAlignment="textEnd"
-            android:textSize="15sp"/>
+            android:textSize="15sp" />
 
     </LinearLayout>
 
@@ -118,7 +118,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
             <TextView
-                android:id="@+id/eogClass"
+                android:id="@+id/eegClassTextView"
                 android:layout_width="72dp"
                 android:layout_height="wrap_content"
                 android:layout_column="0"

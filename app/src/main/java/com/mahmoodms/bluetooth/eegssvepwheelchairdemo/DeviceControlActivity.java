@@ -9,21 +9,19 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,17 +36,13 @@ import android.widget.ToggleButton;
 
 import com.androidplot.Plot;
 import com.androidplot.util.Redrawer;
-import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
 import com.beele.BluetoothLe;
 import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -91,7 +85,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private TextView mBatteryLevel;
     private TextView mDataRate;
     private TextView mAllChannelsReadyTextView;
-    private TextView mEOGClassTextView;
+    private TextView mSSVEPClassTextView;
     private TextView mYfitTextView;
     private Button mExportButton;
     private Switch mFilterSwitch;
@@ -113,6 +107,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private String fileTimeStamp = "";
     private double dataRate;
     private double mEOGClass = 0;
+    private double mClassifiedSSVEPClass = 0;
     private int mLastButtonPress = 0;
 
     //Classification
@@ -212,7 +207,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         Button centerButton = (Button) findViewById(R.id.buttonMiddle);
         Button blinkButton = (Button) findViewById(R.id.buttonSB);
         Button doubleBlinkButton = (Button) findViewById(R.id.buttonDB);
-        mEOGClassTextView = (TextView) findViewById(R.id.eogClass);
+        mSSVEPClassTextView = (TextView) findViewById(R.id.eegClassTextView);
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -601,8 +596,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     makeFilterSwitchVisible(true);
                     mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH1_SIGNAL), true);
                     mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH2_SIGNAL), true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH3_SIGNAL), true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH4_SIGNAL), true);
+                    if(service.getCharacteristic(AppConstant.CHAR_EEG_CH3_SIGNAL)!=null) {
+                        mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH3_SIGNAL), true);
+                    }
+                    if(service.getCharacteristic(AppConstant.CHAR_EEG_CH4_SIGNAL)!=null) {
+                        mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH4_SIGNAL), true);
+                    }
                 }
 
                 if(AppConstant.SERVICE_EOG_SIGNAL.equals(service.getUuid())) {
@@ -779,14 +778,15 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         @Override
         protected Double doInBackground(Void... voids) {
             double[] getInstance = mGraphAdapterCh1.unfilteredSignal;
-            mEOGClass = jssvepclassifier1(getInstance);
-            return mEOGClass;
+            return jssvepclassifier1(getInstance);
         }
 
         @Override
         protected void onPostExecute(Double aDouble) {
+            mClassifiedSSVEPClass = aDouble;
             Log.e(TAG,"CLASS: ["+String.valueOf(aDouble)+"]");
-            mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(aDouble));
+            String s = "SSVEP\n: ["+String.valueOf(aDouble)+"]";
+            mSSVEPClassTextView.setText(s);
             super.onPostExecute(aDouble);
         }
     }
