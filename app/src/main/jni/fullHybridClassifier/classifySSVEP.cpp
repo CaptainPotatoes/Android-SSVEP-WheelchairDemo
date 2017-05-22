@@ -2770,8 +2770,8 @@ double classifySSVEP(const double X[1000])
         ixstart++;
       }
     }
-
-    b->data[i] = (M[r0->data[r0->size[0] * i] - 1] > mtmp / 3.0);
+    //TODO: ADJUST THRESHOLD AS NECESSARY.
+    b->data[i] = (M[r0->data[r0->size[0] * i] - 1] > mtmp / 3.0); //ONE THIRD MAGNITUDE
     i++;
   }
 

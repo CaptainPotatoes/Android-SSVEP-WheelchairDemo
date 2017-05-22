@@ -379,9 +379,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
      */
     public void saveDataFile() throws IOException {
         root = Environment.getExternalStorageDirectory();
-        fileTimeStamp = "EEGTrainingData_"+getTimeStamp();
+        fileTimeStamp = "EEG_SSVEPData_"+getTimeStamp();
         if(root.canWrite()) {
-            File dir = new File(root.getAbsolutePath()+"/EEGTrainingData");
+            File dir = new File(root.getAbsolutePath()+"/EEGData");
             dir.mkdirs();
             file = new File(dir, fileTimeStamp+".csv");
             if(file.exists() && !file.isDirectory()) {
@@ -737,7 +737,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(packetNumber_2ch%42==0) {
+                if(packetNumber_2ch%41==0) {
                     ClassifyTask mCLASS = new ClassifyTask();
                     mCLASS.execute();
                 }
