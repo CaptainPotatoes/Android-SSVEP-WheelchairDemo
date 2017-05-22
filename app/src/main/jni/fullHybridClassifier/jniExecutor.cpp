@@ -18,7 +18,7 @@
 #define  RETURN_LEN     7
 //TODO: Will need to pass all data (4 arrays), and length of array.
 // How do I get array length in C++?
-
+/*
 static emxArray_real_T2 *argInit_zeros_nx1_real_T(int n) {
     //n is the size of the array to be initialized
     emxArray_real_T2 *Y;
@@ -39,7 +39,7 @@ static emxArray_real_T2 *argInit_Array_real_T(int size, jdouble *array) {
     return result;
 }
 
-/*extern "C" {
+extern "C" {
 JNIEXPORT jdoubleArray JNICALL
 //Call this function with (data, data, data, data, datalen, Fs);
 //Don't need array size; can check size array in C.
@@ -153,40 +153,6 @@ static void main_EOGClassifier()
     LOGE("EOGCLASSIFIER Y: %f",Y);
 }
 
-static emxArray_real_T2 *argInit_d2500x1_real_T()
-{
-    emxArray_real_T2 *result;
-    static int iv5[1] = { 2 };
-
-    int idx0;
-
-    // Set the size of the array.
-    // Change this size to the value that the application requires.
-    result = emxCreateND_real_T(1, *(int (*)[1])&iv5[0]);
-
-    // Loop over the array to initialize each element.
-    for (idx0 = 0; idx0 < result->size[0U]; idx0++) {
-        // Set the value of the array element.
-        // Change this value to the value that the application requires.
-        result->data[idx0] = argInit_real_T();
-    }
-    return result;
-}
-
-static void main_classifySSVEP()
-{
-    emxArray_real_T2 *X;
-    double FS[520];
-    double CLASS;
-
-    // Initialize function 'classifySSVEP' input arguments.
-    // Initialize function input argument 'X'.
-    X = argInit_d2500x1_real_T();
-
-    // Call the entry-point 'classifySSVEP'.
-    classifySSVEP(X, argInit_real_T(), argInit_real_T(), FS, &CLASS);
-    emxDestroyArray_real_T(X);
-}
 
 
 extern "C" {
@@ -205,18 +171,11 @@ extern "C" {
     JNIEXPORT jdouble JNICALL
     Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jssvepclassifier1(
             JNIEnv *env, jobject jobject1, jdoubleArray array1) {
-        jdouble  *c_array_ch1 = env->GetDoubleArrayElements(array1, NULL);
-        if (c_array_ch1==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+        jdouble  *X = env->GetDoubleArrayElements(array1, NULL);
+        if (X==NULL) LOGE("ERROR - C_ARRAY IS NULL");
         int len = env->GetArrayLength(array1);
-        double CLASS = 0;
-        double start = 0;
-        double Fs = 250;
-        double F[520];//Features
-        emxArray_real_T2 *X = argInit_Array_real_T(len, c_array_ch1);
-    //    emxInitArray_real_T(&Y, 2);
-    //    Y = argInit_zeros_nx1_real_T(520);
-        classifySSVEP(X, start, Fs, F, &CLASS);
-        return CLASS;
+        double start = len-1000;
+        return classifySSVEP(X,start);
     }
 }
 
@@ -262,8 +221,8 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jmainI
         JNIEnv *env, jobject obj, jboolean terminate) {
     if(!(bool)terminate) {
         classifySSVEP_initialize();
-        main_classifySSVEP();
-        main_EOGClassifier();
+//        main_classifySSVEP();
+//        main_EOGClassifier();
 //        eogcfilt_a_initialize();
 //        EOGClassifier_initialize();
 //        EOGClassifier2_initialize();

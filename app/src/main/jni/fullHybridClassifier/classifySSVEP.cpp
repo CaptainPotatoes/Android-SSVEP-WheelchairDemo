@@ -5,7 +5,7 @@
 // File: classifySSVEP.cpp
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 21-May-2017 20:05:43
+// C/C++ source code generated on  : 21-May-2017 21:51:40
 //
 
 // Include Files
@@ -27,34 +27,6 @@ struct emxArray__common
 
 #endif                                 //struct_emxArray__common
 
-#ifndef struct_emxArray_boolean_T
-#define struct_emxArray_boolean_T
-
-struct emxArray_boolean_T
-{
-  boolean_T *data;
-  int *size;
-  int allocatedSize;
-  int numDimensions;
-  boolean_T canFreeData;
-};
-
-#endif                                 //struct_emxArray_boolean_T
-
-#ifndef struct_emxArray_creal_T
-#define struct_emxArray_creal_T
-
-struct emxArray_creal_T
-{
-  creal_T *data;
-  int *size;
-  int allocatedSize;
-  int numDimensions;
-  boolean_T canFreeData;
-};
-
-#endif                                 //struct_emxArray_creal_T
-
 #ifndef struct_emxArray_int32_T
 #define struct_emxArray_int32_T
 
@@ -69,332 +41,573 @@ struct emxArray_int32_T
 
 #endif                                 //struct_emxArray_int32_T
 
+#ifndef struct_emxArray_real_T
+#define struct_emxArray_real_T
+
+struct emxArray_real_T2
+{
+  double *data;
+  int *size;
+  int allocatedSize;
+  int numDimensions;
+  boolean_T canFreeData;
+};
+
+#endif                                 //struct_emxArray_real_T
+
 // Function Declarations
-static void assignOutputs(const emxArray_real_T2 *y, const emxArray_real_T2 *x,
-  const emxArray_real_T2 *iPk, boolean_T yIsRow, boolean_T xIsRow,
-  emxArray_real_T2 *YpkOut, emxArray_real_T2 *XpkOut);
-static void b_cos(emxArray_real_T2 *x);
-static void b_fix(double *x);
-static void b_log10(emxArray_real_T2 *x);
-static void b_sin(const double x[5000], double b_x[5000]);
-static void b_sort(emxArray_real_T2 *x, int dim, emxArray_int32_T *idx);
-static double b_sum(const emxArray_boolean_T *x);
-static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
-  [1024], double frequencies[1024]);
-static void bluestein_setup(int nRows, emxArray_creal_T *wwc);
-static void c_findPeaksSeparatedByMoreThanM(const emxArray_real_T2 *iPk,
-  emxArray_real_T2 *idx);
-static void c_sin(double x[5000]);
-static void combinePeaks(const emxArray_real_T2 *iPk, const emxArray_real_T2 *iInf,
-  emxArray_real_T2 *iPkOut);
-static void diff(const emxArray_real_T2 *x, emxArray_real_T2 *y);
-static int div_s32_floor(int numerator, int denominator);
-static void do_vectors(const emxArray_real_T2 *a, const emxArray_real_T2 *b,
-  emxArray_real_T2 *c, emxArray_int32_T *ia, emxArray_int32_T *ib);
-static void dobluesteinfft(const emxArray_real_T2 *x, int N2, int n1, const
-  emxArray_real_T2 *costab, const emxArray_real_T2 *sintab, const emxArray_real_T2 *
-  sintabinv, emxArray_creal_T *y);
+static void b_sin(const double x[2000], double b_x[2000]);
+static void c_sin(double x[2000]);
 static void emxEnsureCapacity(emxArray__common *emxArray, int oldNumel, int
   elementSize);
-static void emxFree_boolean_T(emxArray_boolean_T **pEmxArray);
-static void emxFree_creal_T(emxArray_creal_T **pEmxArray);
 static void emxFree_int32_T(emxArray_int32_T **pEmxArray);
 static void emxFree_real_T(emxArray_real_T2 **pEmxArray);
-static void emxInit_boolean_T(emxArray_boolean_T **pEmxArray, int numDimensions);
-static void emxInit_boolean_T1(emxArray_boolean_T **pEmxArray, int numDimensions);
-static void emxInit_creal_T(emxArray_creal_T **pEmxArray, int numDimensions);
-static void emxInit_creal_T1(emxArray_creal_T **pEmxArray, int numDimensions);
 static void emxInit_int32_T(emxArray_int32_T **pEmxArray, int numDimensions);
 static void emxInit_int32_T1(emxArray_int32_T **pEmxArray, int numDimensions);
 static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions);
 static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions);
-static void fESSVEP(const emxArray_real_T2 *X0, double Fs, double SSVEP_FEATURES
-                    [40], double P[56]);
+static void fESSVEP2(const emxArray_real_T2 *X0, double P[56]);
 static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_T2
                    *y);
-static void findLocalMaxima(emxArray_real_T2 *yTemp, emxArray_real_T2 *iPk,
-  emxArray_real_T2 *iInflect);
-static void findpeaks(const emxArray_real_T2 *Yin, emxArray_real_T2 *Ypk,
-                      emxArray_real_T2 *Xpk);
-static void generate_twiddle_tables(int nRows, boolean_T useRadix2,
-  emxArray_real_T2 *costab, emxArray_real_T2 *sintab, emxArray_real_T2 *sintabinv);
-static void getAllPeaks(const emxArray_real_T2 *y, emxArray_real_T2 *iPk,
-  emxArray_real_T2 *iInf, emxArray_real_T2 *iInflect);
-static void get_algo_sizes(int n1, boolean_T useRadix2, int *N2blue, int *nRows);
-static void get_fft_features(const emxArray_real_T2 *f, const emxArray_real_T2
-  *FFT, const double threshold[2], emxArray_real_T2 *fselect, emxArray_real_T2
-  *fftselect, double *L, double *P);
-static void get_nfft_data(const emxArray_real_T2 *X, double Fs, double L,
-  emxArray_real_T2 *f, emxArray_real_T2 *C);
-static void get_psd_features(const emxArray_real_T2 *f, const emxArray_real_T2
-  *PSD, const double tH[2], emxArray_real_T2 *fselect, emxArray_real_T2 *PSDselect,
-  double *L, double *P);
-static void get_stft_features(const emxArray_real_T2 *F, const emxArray_real_T2 *S,
-  const double tH[2], emxArray_real_T2 *fselect, emxArray_real_T2 *stftselect,
-  double *L, double *P, double *M, double *I);
-static void hammPeriodic(double x, emxArray_real_T2 *w);
-static void hannWin(double x, emxArray_real_T2 *w);
-static void keepAtMostNpPeaks(emxArray_real_T2 *idx, double Np);
-static void merge(emxArray_int32_T *idx, emxArray_real_T2 *x, int offset, int np,
-                  int nq, emxArray_int32_T *iwork, emxArray_real_T2 *xwork);
-static void merge_block(emxArray_int32_T *idx, emxArray_real_T2 *x, int offset,
-  int n, int preSortLevel, emxArray_int32_T *iwork, emxArray_real_T2 *xwork);
-static double nextpow2(double n);
-static void orderPeaks(const emxArray_real_T2 *Y, const emxArray_real_T2 *iPk,
-  emxArray_real_T2 *idx);
-static void r2br_r2dit_trig(const emxArray_real_T2 *x, int n1_unsigned, const
-  emxArray_real_T2 *costab, const emxArray_real_T2 *sintab, emxArray_creal_T *y);
-static void r2br_r2dit_trig_impl(const emxArray_creal_T *x, int xoffInit, int
-  unsigned_nRows, const emxArray_real_T2 *costab, const emxArray_real_T2 *sintab,
-  emxArray_creal_T *y);
-static void removePeaksBelowMinPeakHeight(const emxArray_real_T2 *Y,
-  emxArray_real_T2 *iPk, double Ph);
-static void removePeaksBelowThreshold(const emxArray_real_T2 *Y, emxArray_real_T2 *
-  iPk, double Th);
-static double rt_hypotd_snf(double u0, double u1);
-static double rt_powd_snf(double u0, double u1);
-static double rt_remd_snf(double u0, double u1);
-static double rt_roundd_snf(double u);
-static double skip_to_last_equal_value(int *k, const emxArray_real_T2 *x);
-static void sort(emxArray_real_T2 *x, emxArray_int32_T *idx);
-static void sortIdx(emxArray_real_T2 *x, emxArray_int32_T *idx);
 static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y);
-static void stft2(const emxArray_real_T2 *x, double wlen, double nfft, double fs,
-                  emxArray_creal_T *S, emxArray_real_T2 *F, emxArray_real_T2 *T);
-static double sum(const emxArray_real_T2 *x);
-static void welch_psd(const emxArray_real_T2 *signals, double fs, emxArray_real_T2
-                      *window, emxArray_real_T2 *CSM, emxArray_real_T2
-                      *frequencies);
+static void welch_psd(const emxArray_real_T2 *signals, double fs, const double
+                      window[2048], double CSM[1024], double frequencies[1024]);
 
 // Function Definitions
 
 //
-// Arguments    : const emxArray_real_T2 *y
-//                const emxArray_real_T2 *x
-//                const emxArray_real_T2 *iPk
-//                boolean_T yIsRow
-//                boolean_T xIsRow
-//                emxArray_real_T2 *YpkOut
-//                emxArray_real_T2 *XpkOut
+// Arguments    : const double x[2000]
+//                double b_x[2000]
 // Return Type  : void
 //
-static void assignOutputs(const emxArray_real_T2 *y, const emxArray_real_T2 *x,
-  const emxArray_real_T2 *iPk, boolean_T yIsRow, boolean_T xIsRow,
-  emxArray_real_T2 *YpkOut, emxArray_real_T2 *XpkOut)
+static void b_sin(const double x[2000], double b_x[2000])
 {
-  emxArray_real_T2 *Ypk;
-  int i5;
-  int loop_ub;
-  emxArray_real_T2 *Xpk;
-  emxInit_real_T1(&Ypk, 1);
-  i5 = Ypk->size[0];
-  Ypk->size[0] = iPk->size[0];
-  emxEnsureCapacity((emxArray__common *)Ypk, i5, (int)sizeof(double));
-  loop_ub = iPk->size[0];
-  for (i5 = 0; i5 < loop_ub; i5++) {
-    Ypk->data[i5] = y->data[(int)iPk->data[i5] - 1];
-  }
-
-  emxInit_real_T1(&Xpk, 1);
-  i5 = Xpk->size[0];
-  Xpk->size[0] = iPk->size[0];
-  emxEnsureCapacity((emxArray__common *)Xpk, i5, (int)sizeof(double));
-  loop_ub = iPk->size[0];
-  for (i5 = 0; i5 < loop_ub; i5++) {
-    Xpk->data[i5] = x->data[(int)iPk->data[i5] - 1];
-  }
-
-  if (yIsRow) {
-    i5 = YpkOut->size[0] * YpkOut->size[1];
-    YpkOut->size[0] = 1;
-    YpkOut->size[1] = Ypk->size[0];
-    emxEnsureCapacity((emxArray__common *)YpkOut, i5, (int)sizeof(double));
-    loop_ub = Ypk->size[0];
-    for (i5 = 0; i5 < loop_ub; i5++) {
-      YpkOut->data[YpkOut->size[0] * i5] = Ypk->data[i5];
-    }
-  } else {
-    i5 = YpkOut->size[0] * YpkOut->size[1];
-    YpkOut->size[0] = iPk->size[0];
-    YpkOut->size[1] = 1;
-    emxEnsureCapacity((emxArray__common *)YpkOut, i5, (int)sizeof(double));
-    loop_ub = iPk->size[0];
-    for (i5 = 0; i5 < loop_ub; i5++) {
-      YpkOut->data[i5] = Ypk->data[i5];
-    }
-  }
-
-  emxFree_real_T(&Ypk);
-  if (xIsRow) {
-    i5 = XpkOut->size[0] * XpkOut->size[1];
-    XpkOut->size[0] = 1;
-    XpkOut->size[1] = Xpk->size[0];
-    emxEnsureCapacity((emxArray__common *)XpkOut, i5, (int)sizeof(double));
-    loop_ub = Xpk->size[0];
-    for (i5 = 0; i5 < loop_ub; i5++) {
-      XpkOut->data[XpkOut->size[0] * i5] = Xpk->data[i5];
-    }
-  } else {
-    i5 = XpkOut->size[0] * XpkOut->size[1];
-    XpkOut->size[0] = iPk->size[0];
-    XpkOut->size[1] = 1;
-    emxEnsureCapacity((emxArray__common *)XpkOut, i5, (int)sizeof(double));
-    loop_ub = iPk->size[0];
-    for (i5 = 0; i5 < loop_ub; i5++) {
-      XpkOut->data[i5] = Xpk->data[i5];
-    }
-  }
-
-  emxFree_real_T(&Xpk);
-}
-
-//
-// Arguments    : emxArray_real_T2 *x
-// Return Type  : void
-//
-static void b_cos(emxArray_real_T2 *x)
-{
-  int nx;
-  int k;
-  nx = x->size[0];
-  for (k = 0; k + 1 <= nx; k++) {
-    x->data[k] = std::cos(x->data[k]);
-  }
-}
-
-//
-// Arguments    : double *x
-// Return Type  : void
-//
-static void b_fix(double *x)
-{
-  if (*x < 0.0) {
-    *x = std::ceil(*x);
-  } else {
-    *x = std::floor(*x);
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 *x
-// Return Type  : void
-//
-static void b_log10(emxArray_real_T2 *x)
-{
-  int nx;
-  int k;
-  nx = x->size[0] * x->size[1];
-  for (k = 0; k + 1 <= nx; k++) {
-    x->data[k] = std::log10(x->data[k]);
-  }
-}
-
-//
-// Arguments    : const double x[5000]
-//                double b_x[5000]
-// Return Type  : void
-//
-static void b_sin(const double x[5000], double b_x[5000])
-{
-  memcpy(&b_x[0], &x[0], 5000U * sizeof(double));
+  memcpy(&b_x[0], &x[0], 2000U * sizeof(double));
   c_sin(b_x);
 }
 
 //
-// Arguments    : emxArray_real_T2 *x
-//                int dim
-//                emxArray_int32_T *idx
+// Arguments    : double x[2000]
 // Return Type  : void
 //
-static void b_sort(emxArray_real_T2 *x, int dim, emxArray_int32_T *idx)
+static void c_sin(double x[2000])
 {
-  int i10;
-  emxArray_real_T2 *vwork;
   int k;
-  unsigned int unnamed_idx_0;
-  int vstride;
-  emxArray_int32_T *iidx;
-  int j;
-  if (dim <= 1) {
-    i10 = x->size[0];
-  } else {
-    i10 = 1;
+  for (k = 0; k < 2000; k++) {
+    x[k] = std::sin(x[k]);
   }
-
-  emxInit_real_T1(&vwork, 1);
-  k = vwork->size[0];
-  vwork->size[0] = i10;
-  emxEnsureCapacity((emxArray__common *)vwork, k, (int)sizeof(double));
-  unnamed_idx_0 = (unsigned int)x->size[0];
-  k = idx->size[0];
-  idx->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)idx, k, (int)sizeof(int));
-  if (dim > 2) {
-    vstride = x->size[0];
-  } else {
-    vstride = 1;
-    k = 1;
-    while (k <= dim - 1) {
-      k = x->size[0];
-      vstride *= k;
-      k = 2;
-    }
-  }
-
-  emxInit_int32_T1(&iidx, 1);
-  for (j = 0; j + 1 <= vstride; j++) {
-    for (k = 0; k + 1 <= i10; k++) {
-      vwork->data[k] = x->data[j + k * vstride];
-    }
-
-    sortIdx(vwork, iidx);
-    for (k = 0; k + 1 <= i10; k++) {
-      x->data[j + k * vstride] = vwork->data[k];
-      idx->data[j + k * vstride] = iidx->data[k];
-    }
-  }
-
-  emxFree_int32_T(&iidx);
-  emxFree_real_T(&vwork);
 }
 
 //
-// Arguments    : const emxArray_boolean_T *x
-// Return Type  : double
+// Arguments    : emxArray__common *emxArray
+//                int oldNumel
+//                int elementSize
+// Return Type  : void
 //
-static double b_sum(const emxArray_boolean_T *x)
+static void emxEnsureCapacity(emxArray__common *emxArray, int oldNumel, int
+  elementSize)
 {
-  double y;
-  int k;
-  if (x->size[1] == 0) {
-    y = 0.0;
-  } else {
-    y = x->data[0];
-    for (k = 2; k <= x->size[1]; k++) {
-      y += (double)x->data[k - 1];
-    }
+  int newNumel;
+  int i;
+  void *newData;
+  newNumel = 1;
+  for (i = 0; i < emxArray->numDimensions; i++) {
+    newNumel *= emxArray->size[i];
   }
 
-  return y;
+  if (newNumel > emxArray->allocatedSize) {
+    i = emxArray->allocatedSize;
+    if (i < 16) {
+      i = 16;
+    }
+
+    while (i < newNumel) {
+      if (i > 1073741823) {
+        i = MAX_int32_T;
+      } else {
+        i <<= 1;
+      }
+    }
+
+    newData = calloc((unsigned int)i, (unsigned int)elementSize);
+    if (emxArray->data != NULL) {
+      memcpy(newData, emxArray->data, (unsigned int)(elementSize * oldNumel));
+      if (emxArray->canFreeData) {
+        free(emxArray->data);
+      }
+    }
+
+    emxArray->data = newData;
+    emxArray->allocatedSize = i;
+    emxArray->canFreeData = true;
+  }
 }
 
 //
-// if size(signals,2) > size(signals,1)
-//      signals = signals.';
-//  end
-// Arguments    : const emxArray_real_T2 *signals
-//                double fs
-//                double CSM[1024]
-//                double frequencies[1024]
+// Arguments    : emxArray_int32_T **pEmxArray
 // Return Type  : void
 //
-static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
-  [1024], double frequencies[1024])
+static void emxFree_int32_T(emxArray_int32_T **pEmxArray)
 {
-  int iy;
-  int number_of_blocks;
-  double data_taper[2048];
-  static const double a[2048] = { 0.0, 2.3553948388377322E-6,
+  if (*pEmxArray != (emxArray_int32_T *)NULL) {
+    if (((*pEmxArray)->data != (int *)NULL) && (*pEmxArray)->canFreeData) {
+      free((void *)(*pEmxArray)->data);
+    }
+
+    free((void *)(*pEmxArray)->size);
+    free((void *)*pEmxArray);
+    *pEmxArray = (emxArray_int32_T *)NULL;
+  }
+}
+
+//
+// Arguments    : emxArray_real_T2 **pEmxArray
+// Return Type  : void
+//
+static void emxFree_real_T(emxArray_real_T2 **pEmxArray)
+{
+  if (*pEmxArray != (emxArray_real_T2 *)NULL) {
+    if (((*pEmxArray)->data != (double *)NULL) && (*pEmxArray)->canFreeData) {
+      free((void *)(*pEmxArray)->data);
+    }
+
+    free((void *)(*pEmxArray)->size);
+    free((void *)*pEmxArray);
+    *pEmxArray = (emxArray_real_T2 *)NULL;
+  }
+}
+
+//
+// Arguments    : emxArray_int32_T **pEmxArray
+//                int numDimensions
+// Return Type  : void
+//
+static void emxInit_int32_T(emxArray_int32_T **pEmxArray, int numDimensions)
+{
+  emxArray_int32_T *emxArray;
+  int i;
+  *pEmxArray = (emxArray_int32_T *)malloc(sizeof(emxArray_int32_T));
+  emxArray = *pEmxArray;
+  emxArray->data = (int *)NULL;
+  emxArray->numDimensions = numDimensions;
+  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
+  emxArray->allocatedSize = 0;
+  emxArray->canFreeData = true;
+  for (i = 0; i < numDimensions; i++) {
+    emxArray->size[i] = 0;
+  }
+}
+
+//
+// Arguments    : emxArray_int32_T **pEmxArray
+//                int numDimensions
+// Return Type  : void
+//
+static void emxInit_int32_T1(emxArray_int32_T **pEmxArray, int numDimensions)
+{
+  emxArray_int32_T *emxArray;
+  int i;
+  *pEmxArray = (emxArray_int32_T *)malloc(sizeof(emxArray_int32_T));
+  emxArray = *pEmxArray;
+  emxArray->data = (int *)NULL;
+  emxArray->numDimensions = numDimensions;
+  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
+  emxArray->allocatedSize = 0;
+  emxArray->canFreeData = true;
+  for (i = 0; i < numDimensions; i++) {
+    emxArray->size[i] = 0;
+  }
+}
+
+//
+// Arguments    : emxArray_real_T2 **pEmxArray
+//                int numDimensions
+// Return Type  : void
+//
+static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions)
+{
+  emxArray_real_T2 *emxArray;
+  int i;
+  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
+  emxArray = *pEmxArray;
+  emxArray->data = (double *)NULL;
+  emxArray->numDimensions = numDimensions;
+  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
+  emxArray->allocatedSize = 0;
+  emxArray->canFreeData = true;
+  for (i = 0; i < numDimensions; i++) {
+    emxArray->size[i] = 0;
+  }
+}
+
+//
+// Arguments    : emxArray_real_T2 **pEmxArray
+//                int numDimensions
+// Return Type  : void
+//
+static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions)
+{
+  emxArray_real_T2 *emxArray;
+  int i;
+  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
+  emxArray = *pEmxArray;
+  emxArray->data = (double *)NULL;
+  emxArray->numDimensions = numDimensions;
+  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
+  emxArray->allocatedSize = 0;
+  emxArray->canFreeData = true;
+  for (i = 0; i < numDimensions; i++) {
+    emxArray->size[i] = 0;
+  }
+}
+
+//
+// FESSVEP Feature Extraction for single (m x 1) SSVEP EEG Data Vector
+//    X (m x 1) vectorize input:
+//  Fix X size:
+// Arguments    : const emxArray_real_T2 *X0
+//                double P[56]
+// Return Type  : void
+//
+static void fESSVEP2(const emxArray_real_T2 *X0, double P[56])
+{
+  emxArray_real_T2 *X;
+  int ixstart;
+  int jA2;
+  emxArray_real_T2 *convconv;
+  static double sigs[56000];
+  int i;
+  double wfreqs[1024];
+  double Mconv[28];
+  short Lconv[28];
+  emxArray_real_T2 *r2;
+  emxArray_real_T2 *b_convconv;
+  int nA;
+  int nC;
+  double s;
+  static const double dv3[28] = { 9.7, 9.7999999999999989, 9.8999999999999986,
+    10.0, 10.100000000000001, 10.200000000000001, 10.3, 12.1, 12.2,
+    12.299999999999999, 12.399999999999999, 12.5, 12.6, 12.7, 14.8, 14.9, 15.0,
+    15.100000000000001, 15.200000000000001, 15.3, 15.4, 16.2, 16.3, 16.4, 16.5,
+    16.6, 16.7, 16.8 };
+
+  double b[2000];
+  static const double b_b[2000] = { 0.0, 0.004, 0.008, 0.012, 0.016, 0.02, 0.024,
+    0.028, 0.032, 0.036000000000000004, 0.04, 0.044, 0.048, 0.052000000000000005,
+    0.056, 0.06, 0.064, 0.068, 0.072000000000000008, 0.076, 0.08, 0.084, 0.088,
+    0.092, 0.096, 0.1, 0.10400000000000001, 0.108, 0.112, 0.116, 0.12, 0.124,
+    0.128, 0.132, 0.136, 0.14, 0.14400000000000002, 0.148, 0.152, 0.156, 0.16,
+    0.164, 0.168, 0.17200000000000001, 0.176, 0.18, 0.184, 0.188, 0.192, 0.196,
+    0.2, 0.20400000000000001, 0.20800000000000002, 0.212, 0.216, 0.22, 0.224,
+    0.228, 0.232, 0.23600000000000002, 0.24, 0.244, 0.248, 0.252, 0.256, 0.26,
+    0.264, 0.268, 0.272, 0.276, 0.28, 0.28400000000000003, 0.28800000000000003,
+    0.292, 0.296, 0.3, 0.304, 0.308, 0.312, 0.316, 0.32, 0.324, 0.328, 0.332,
+    0.336, 0.34, 0.34400000000000003, 0.34800000000000003, 0.352, 0.356, 0.36,
+    0.364, 0.368, 0.372, 0.376, 0.38, 0.384, 0.388, 0.392, 0.396, 0.4, 0.404,
+    0.40800000000000003, 0.41200000000000003, 0.41600000000000004, 0.42, 0.424,
+    0.428, 0.432, 0.436, 0.44, 0.444, 0.448, 0.452, 0.456, 0.46, 0.464, 0.468,
+    0.47200000000000003, 0.47600000000000003, 0.48, 0.484, 0.488, 0.492, 0.496,
+    0.5, 0.504, 0.508, 0.512, 0.516, 0.52, 0.524, 0.528, 0.532, 0.536, 0.54,
+    0.544, 0.548, 0.552, 0.556, 0.56, 0.56400000000000006, 0.56800000000000006,
+    0.57200000000000006, 0.57600000000000007, 0.58, 0.584, 0.588, 0.592, 0.596,
+    0.6, 0.604, 0.608, 0.612, 0.616, 0.62, 0.624, 0.628, 0.632, 0.636, 0.64,
+    0.644, 0.648, 0.652, 0.656, 0.66, 0.664, 0.668, 0.672, 0.676, 0.68, 0.684,
+    0.68800000000000006, 0.69200000000000006, 0.69600000000000006,
+    0.70000000000000007, 0.704, 0.708, 0.712, 0.716, 0.72, 0.724, 0.728, 0.732,
+    0.736, 0.74, 0.744, 0.748, 0.752, 0.756, 0.76, 0.764, 0.768, 0.772, 0.776,
+    0.78, 0.784, 0.788, 0.792, 0.796, 0.8, 0.804, 0.808, 0.812,
+    0.81600000000000006, 0.82000000000000006, 0.82400000000000007,
+    0.82800000000000007, 0.83200000000000007, 0.836, 0.84, 0.844, 0.848, 0.852,
+    0.856, 0.86, 0.864, 0.868, 0.872, 0.876, 0.88, 0.884, 0.888, 0.892, 0.896,
+    0.9, 0.904, 0.908, 0.912, 0.916, 0.92, 0.924, 0.928, 0.932, 0.936,
+    0.94000000000000006, 0.94400000000000006, 0.94800000000000006,
+    0.95200000000000007, 0.95600000000000007, 0.96, 0.964, 0.968, 0.972, 0.976,
+    0.98, 0.984, 0.988, 0.992, 0.996, 1.0, 1.004, 1.008, 1.012, 1.016, 1.02,
+    1.024, 1.028, 1.032, 1.036, 1.04, 1.044, 1.048, 1.052, 1.056, 1.06, 1.064,
+    1.068, 1.072, 1.076, 1.08, 1.084, 1.088, 1.092, 1.096, 1.1, 1.104, 1.108,
+    1.112, 1.116, 1.12, 1.124, 1.1280000000000001, 1.1320000000000001,
+    1.1360000000000001, 1.1400000000000001, 1.1440000000000001,
+    1.1480000000000001, 1.1520000000000001, 1.156, 1.16, 1.164, 1.168, 1.172,
+    1.176, 1.18, 1.184, 1.188, 1.192, 1.196, 1.2, 1.204, 1.208, 1.212, 1.216,
+    1.22, 1.224, 1.228, 1.232, 1.236, 1.24, 1.244, 1.248, 1.252, 1.256, 1.26,
+    1.264, 1.268, 1.272, 1.276, 1.28, 1.284, 1.288, 1.292, 1.296, 1.3, 1.304,
+    1.308, 1.312, 1.316, 1.32, 1.324, 1.328, 1.332, 1.336, 1.34, 1.344, 1.348,
+    1.352, 1.356, 1.36, 1.364, 1.368, 1.372, 1.3760000000000001,
+    1.3800000000000001, 1.3840000000000001, 1.3880000000000001,
+    1.3920000000000001, 1.3960000000000001, 1.4000000000000001,
+    1.4040000000000001, 1.408, 1.412, 1.416, 1.42, 1.424, 1.428, 1.432, 1.436,
+    1.44, 1.444, 1.448, 1.452, 1.456, 1.46, 1.464, 1.468, 1.472, 1.476, 1.48,
+    1.484, 1.488, 1.492, 1.496, 1.5, 1.504, 1.508, 1.512, 1.516, 1.52, 1.524,
+    1.528, 1.532, 1.536, 1.54, 1.544, 1.548, 1.552, 1.556, 1.56, 1.564, 1.568,
+    1.572, 1.576, 1.58, 1.584, 1.588, 1.592, 1.596, 1.6, 1.604, 1.608, 1.612,
+    1.616, 1.62, 1.624, 1.6280000000000001, 1.6320000000000001,
+    1.6360000000000001, 1.6400000000000001, 1.6440000000000001,
+    1.6480000000000001, 1.6520000000000001, 1.6560000000000001,
+    1.6600000000000001, 1.6640000000000001, 1.668, 1.672, 1.676, 1.68, 1.684,
+    1.688, 1.692, 1.696, 1.7, 1.704, 1.708, 1.712, 1.716, 1.72, 1.724, 1.728,
+    1.732, 1.736, 1.74, 1.744, 1.748, 1.752, 1.756, 1.76, 1.764, 1.768, 1.772,
+    1.776, 1.78, 1.784, 1.788, 1.792, 1.796, 1.8, 1.804, 1.808, 1.812, 1.816,
+    1.82, 1.824, 1.828, 1.832, 1.836, 1.84, 1.844, 1.848, 1.852, 1.856, 1.86,
+    1.864, 1.868, 1.872, 1.8760000000000001, 1.8800000000000001,
+    1.8840000000000001, 1.8880000000000001, 1.8920000000000001,
+    1.8960000000000001, 1.9000000000000001, 1.9040000000000001,
+    1.9080000000000001, 1.9120000000000001, 1.9160000000000001, 1.92, 1.924,
+    1.928, 1.932, 1.936, 1.94, 1.944, 1.948, 1.952, 1.956, 1.96, 1.964, 1.968,
+    1.972, 1.976, 1.98, 1.984, 1.988, 1.992, 1.996, 2.0, 2.004, 2.008, 2.012,
+    2.016, 2.02, 2.024, 2.028, 2.032, 2.036, 2.04, 2.044, 2.048, 2.052, 2.056,
+    2.06, 2.064, 2.068, 2.072, 2.076, 2.08, 2.084, 2.088, 2.092, 2.096, 2.1,
+    2.104, 2.108, 2.112, 2.116, 2.12, 2.124, 2.128, 2.132, 2.136, 2.14, 2.144,
+    2.148, 2.152, 2.156, 2.16, 2.164, 2.168, 2.172, 2.176, 2.18, 2.184, 2.188,
+    2.192, 2.196, 2.2, 2.204, 2.208, 2.212, 2.216, 2.22, 2.224, 2.228, 2.232,
+    2.236, 2.24, 2.244, 2.248, 2.2520000000000002, 2.2560000000000002,
+    2.2600000000000002, 2.2640000000000002, 2.2680000000000002,
+    2.2720000000000002, 2.2760000000000002, 2.2800000000000002,
+    2.2840000000000003, 2.2880000000000003, 2.2920000000000003,
+    2.2960000000000003, 2.3000000000000003, 2.3040000000000003, 2.308, 2.312,
+    2.316, 2.32, 2.324, 2.328, 2.332, 2.336, 2.34, 2.344, 2.348, 2.352, 2.356,
+    2.36, 2.364, 2.368, 2.372, 2.376, 2.38, 2.384, 2.388, 2.392, 2.396, 2.4,
+    2.404, 2.408, 2.412, 2.416, 2.42, 2.424, 2.428, 2.432, 2.436, 2.44, 2.444,
+    2.448, 2.452, 2.456, 2.46, 2.464, 2.468, 2.472, 2.476, 2.48, 2.484, 2.488,
+    2.492, 2.496, 2.5, 2.504, 2.508, 2.512, 2.516, 2.52, 2.524, 2.528, 2.532,
+    2.536, 2.54, 2.544, 2.548, 2.552, 2.556, 2.56, 2.564, 2.568, 2.572, 2.576,
+    2.58, 2.584, 2.588, 2.592, 2.596, 2.6, 2.604, 2.608, 2.612, 2.616, 2.62,
+    2.624, 2.628, 2.632, 2.636, 2.64, 2.644, 2.648, 2.652, 2.656, 2.66, 2.664,
+    2.668, 2.672, 2.676, 2.68, 2.684, 2.688, 2.692, 2.696, 2.7, 2.704, 2.708,
+    2.712, 2.716, 2.72, 2.724, 2.728, 2.732, 2.736, 2.74, 2.744, 2.748,
+    2.7520000000000002, 2.7560000000000002, 2.7600000000000002,
+    2.7640000000000002, 2.7680000000000002, 2.7720000000000002,
+    2.7760000000000002, 2.7800000000000002, 2.7840000000000003,
+    2.7880000000000003, 2.7920000000000003, 2.7960000000000003,
+    2.8000000000000003, 2.8040000000000003, 2.8080000000000003,
+    2.8120000000000003, 2.816, 2.82, 2.824, 2.828, 2.832, 2.836, 2.84, 2.844,
+    2.848, 2.852, 2.856, 2.86, 2.864, 2.868, 2.872, 2.876, 2.88, 2.884, 2.888,
+    2.892, 2.896, 2.9, 2.904, 2.908, 2.912, 2.916, 2.92, 2.924, 2.928, 2.932,
+    2.936, 2.94, 2.944, 2.948, 2.952, 2.956, 2.96, 2.964, 2.968, 2.972, 2.976,
+    2.98, 2.984, 2.988, 2.992, 2.996, 3.0, 3.004, 3.008, 3.012, 3.016, 3.02,
+    3.024, 3.028, 3.032, 3.036, 3.04, 3.044, 3.048, 3.052, 3.056, 3.06, 3.064,
+    3.068, 3.072, 3.076, 3.08, 3.084, 3.088, 3.092, 3.096, 3.1, 3.104, 3.108,
+    3.112, 3.116, 3.12, 3.124, 3.128, 3.132, 3.136, 3.14, 3.144, 3.148, 3.152,
+    3.156, 3.16, 3.164, 3.168, 3.172, 3.176, 3.18, 3.184, 3.188, 3.192, 3.196,
+    3.2, 3.204, 3.208, 3.212, 3.216, 3.22, 3.224, 3.228, 3.232, 3.236, 3.24,
+    3.244, 3.248, 3.2520000000000002, 3.2560000000000002, 3.2600000000000002,
+    3.2640000000000002, 3.2680000000000002, 3.2720000000000002,
+    3.2760000000000002, 3.2800000000000002, 3.2840000000000003,
+    3.2880000000000003, 3.2920000000000003, 3.2960000000000003,
+    3.3000000000000003, 3.3040000000000003, 3.3080000000000003,
+    3.3120000000000003, 3.3160000000000003, 3.3200000000000003,
+    3.3240000000000003, 3.3280000000000003, 3.332, 3.336, 3.34, 3.344, 3.348,
+    3.352, 3.356, 3.36, 3.364, 3.368, 3.372, 3.376, 3.38, 3.384, 3.388, 3.392,
+    3.396, 3.4, 3.404, 3.408, 3.412, 3.416, 3.42, 3.424, 3.428, 3.432, 3.436,
+    3.44, 3.444, 3.448, 3.452, 3.456, 3.46, 3.464, 3.468, 3.472, 3.476, 3.48,
+    3.484, 3.488, 3.492, 3.496, 3.5, 3.504, 3.508, 3.512, 3.516, 3.52, 3.524,
+    3.528, 3.532, 3.536, 3.54, 3.544, 3.548, 3.552, 3.556, 3.56, 3.564, 3.568,
+    3.572, 3.576, 3.58, 3.584, 3.588, 3.592, 3.596, 3.6, 3.604, 3.608, 3.612,
+    3.616, 3.62, 3.624, 3.628, 3.632, 3.636, 3.64, 3.644, 3.648, 3.652, 3.656,
+    3.66, 3.664, 3.668, 3.672, 3.676, 3.68, 3.684, 3.688, 3.692, 3.696, 3.7,
+    3.704, 3.708, 3.712, 3.716, 3.72, 3.724, 3.728, 3.732, 3.736, 3.74, 3.744,
+    3.748, 3.7520000000000002, 3.7560000000000002, 3.7600000000000002,
+    3.7640000000000002, 3.7680000000000002, 3.7720000000000002,
+    3.7760000000000002, 3.7800000000000002, 3.7840000000000003,
+    3.7880000000000003, 3.7920000000000003, 3.7960000000000003,
+    3.8000000000000003, 3.8040000000000003, 3.8080000000000003,
+    3.8120000000000003, 3.8160000000000003, 3.8200000000000003,
+    3.8240000000000003, 3.8280000000000003, 3.8320000000000003,
+    3.8360000000000003, 3.84, 3.844, 3.848, 3.852, 3.856, 3.86, 3.864, 3.868,
+    3.872, 3.876, 3.88, 3.884, 3.888, 3.892, 3.896, 3.9, 3.904, 3.908, 3.912,
+    3.916, 3.92, 3.924, 3.928, 3.932, 3.936, 3.94, 3.944, 3.948, 3.952, 3.956,
+    3.96, 3.964, 3.968, 3.972, 3.976, 3.98, 3.984, 3.988, 3.992, 3.996, 4.0,
+    4.0040000000000004, 4.0080000000000009, 4.0120000000000005, 4.016,
+    4.0200000000000005, 4.0240000000000009, 4.0280000000000005, 4.032,
+    4.0360000000000005, 4.0400000000000009, 4.0440000000000005, 4.048,
+    4.0520000000000005, 4.0560000000000009, 4.0600000000000005, 4.064,
+    4.0680000000000005, 4.072000000000001, 4.0760000000000005, 4.08,
+    4.0840000000000005, 4.088000000000001, 4.0920000000000005, 4.096,
+    4.1000000000000005, 4.104000000000001, 4.1080000000000005, 4.112,
+    4.1160000000000005, 4.120000000000001, 4.1240000000000006, 4.128,
+    4.1320000000000006, 4.136000000000001, 4.1400000000000006, 4.144,
+    4.1480000000000006, 4.152000000000001, 4.1560000000000006, 4.16, 4.164,
+    4.168, 4.1720000000000006, 4.176, 4.18, 4.184, 4.1880000000000006, 4.192,
+    4.196, 4.2, 4.2040000000000006, 4.208, 4.212, 4.216, 4.2200000000000006,
+    4.224, 4.228, 4.232, 4.2360000000000007, 4.24, 4.244, 4.248,
+    4.2520000000000007, 4.256, 4.26, 4.264, 4.2680000000000007, 4.272, 4.276,
+    4.28, 4.2840000000000007, 4.288, 4.292, 4.296, 4.3000000000000007, 4.304,
+    4.308, 4.312, 4.3160000000000007, 4.32, 4.324, 4.328, 4.3320000000000007,
+    4.336, 4.34, 4.344, 4.3480000000000008, 4.352, 4.356, 4.36,
+    4.3640000000000008, 4.368, 4.372, 4.376, 4.3800000000000008, 4.384, 4.388,
+    4.392, 4.3960000000000008, 4.4, 4.404, 4.408, 4.4120000000000008, 4.416,
+    4.42, 4.424, 4.4280000000000008, 4.432, 4.436, 4.44, 4.4440000000000008,
+    4.448, 4.452, 4.456, 4.4600000000000009, 4.464, 4.468, 4.472,
+    4.4760000000000009, 4.48, 4.484, 4.488, 4.4920000000000009, 4.496, 4.5,
+    4.5040000000000004, 4.5080000000000009, 4.5120000000000005, 4.516,
+    4.5200000000000005, 4.5240000000000009, 4.5280000000000005, 4.532,
+    4.5360000000000005, 4.5400000000000009, 4.5440000000000005, 4.548,
+    4.5520000000000005, 4.5560000000000009, 4.5600000000000005, 4.564,
+    4.5680000000000005, 4.572000000000001, 4.5760000000000005, 4.58,
+    4.5840000000000005, 4.588000000000001, 4.5920000000000005, 4.596,
+    4.6000000000000005, 4.604000000000001, 4.6080000000000005, 4.612,
+    4.6160000000000005, 4.620000000000001, 4.6240000000000006, 4.628,
+    4.6320000000000006, 4.636000000000001, 4.6400000000000006, 4.644,
+    4.6480000000000006, 4.652000000000001, 4.6560000000000006, 4.66,
+    4.6640000000000006, 4.668, 4.6720000000000006, 4.676, 4.68, 4.684,
+    4.6880000000000006, 4.692, 4.696, 4.7, 4.7040000000000006, 4.708, 4.712,
+    4.716, 4.7200000000000006, 4.724, 4.728, 4.732, 4.7360000000000007, 4.74,
+    4.744, 4.748, 4.7520000000000007, 4.756, 4.76, 4.764, 4.7680000000000007,
+    4.772, 4.776, 4.78, 4.7840000000000007, 4.788, 4.792, 4.796,
+    4.8000000000000007, 4.804, 4.808, 4.812, 4.8160000000000007, 4.82, 4.824,
+    4.828, 4.8320000000000007, 4.836, 4.84, 4.844, 4.8480000000000008, 4.852,
+    4.856, 4.86, 4.8640000000000008, 4.868, 4.872, 4.876, 4.8800000000000008,
+    4.884, 4.888, 4.892, 4.8960000000000008, 4.9, 4.904, 4.908,
+    4.9120000000000008, 4.916, 4.92, 4.924, 4.9280000000000008, 4.932, 4.936,
+    4.94, 4.9440000000000008, 4.948, 4.952, 4.956, 4.9600000000000009, 4.964,
+    4.968, 4.972, 4.9760000000000009, 4.98, 4.984, 4.988, 4.9920000000000009,
+    4.996, 5.0, 5.0040000000000004, 5.0080000000000009, 5.0120000000000005,
+    5.016, 5.0200000000000005, 5.0240000000000009, 5.0280000000000005, 5.032,
+    5.0360000000000005, 5.0400000000000009, 5.0440000000000005, 5.048,
+    5.0520000000000005, 5.0560000000000009, 5.0600000000000005, 5.064,
+    5.0680000000000005, 5.072000000000001, 5.0760000000000005, 5.08,
+    5.0840000000000005, 5.088000000000001, 5.0920000000000005, 5.096,
+    5.1000000000000005, 5.104000000000001, 5.1080000000000005, 5.112,
+    5.1160000000000005, 5.120000000000001, 5.1240000000000006, 5.128,
+    5.1320000000000006, 5.136000000000001, 5.1400000000000006, 5.144,
+    5.1480000000000006, 5.152000000000001, 5.1560000000000006, 5.16,
+    5.1640000000000006, 5.168000000000001, 5.1720000000000006, 5.176,
+    5.1800000000000006, 5.184, 5.1880000000000006, 5.192, 5.196, 5.2,
+    5.2040000000000006, 5.208, 5.212, 5.216, 5.2200000000000006, 5.224, 5.228,
+    5.232, 5.2360000000000007, 5.24, 5.244, 5.248, 5.2520000000000007, 5.256,
+    5.26, 5.264, 5.2680000000000007, 5.272, 5.276, 5.28, 5.2840000000000007,
+    5.288, 5.292, 5.296, 5.3000000000000007, 5.304, 5.308, 5.312,
+    5.3160000000000007, 5.32, 5.324, 5.328, 5.3320000000000007, 5.336, 5.34,
+    5.344, 5.3480000000000008, 5.352, 5.356, 5.36, 5.3640000000000008, 5.368,
+    5.372, 5.376, 5.3800000000000008, 5.384, 5.388, 5.392, 5.3960000000000008,
+    5.4, 5.404, 5.408, 5.4120000000000008, 5.416, 5.42, 5.424,
+    5.4280000000000008, 5.432, 5.436, 5.44, 5.4440000000000008, 5.448, 5.452,
+    5.456, 5.4600000000000009, 5.464, 5.468, 5.472, 5.4760000000000009, 5.48,
+    5.484, 5.488, 5.4920000000000009, 5.496, 5.5, 5.5040000000000004,
+    5.5080000000000009, 5.5120000000000005, 5.516, 5.5200000000000005,
+    5.5240000000000009, 5.5280000000000005, 5.532, 5.5360000000000005,
+    5.5400000000000009, 5.5440000000000005, 5.548, 5.5520000000000005,
+    5.5560000000000009, 5.5600000000000005, 5.564, 5.5680000000000005,
+    5.572000000000001, 5.5760000000000005, 5.58, 5.5840000000000005,
+    5.588000000000001, 5.5920000000000005, 5.596, 5.6000000000000005,
+    5.604000000000001, 5.6080000000000005, 5.612, 5.6160000000000005,
+    5.620000000000001, 5.6240000000000006, 5.628, 5.6320000000000006,
+    5.636000000000001, 5.6400000000000006, 5.644, 5.6480000000000006,
+    5.652000000000001, 5.6560000000000006, 5.66, 5.6640000000000006,
+    5.668000000000001, 5.6720000000000006, 5.676, 5.6800000000000006,
+    5.6840000000000011, 5.6880000000000006, 5.692, 5.696, 5.7,
+    5.7040000000000006, 5.708, 5.712, 5.716, 5.7200000000000006, 5.724, 5.728,
+    5.732, 5.7360000000000007, 5.74, 5.744, 5.748, 5.7520000000000007, 5.756,
+    5.76, 5.764, 5.7680000000000007, 5.772, 5.776, 5.78, 5.7840000000000007,
+    5.788, 5.792, 5.796, 5.8000000000000007, 5.804, 5.808, 5.812,
+    5.8160000000000007, 5.82, 5.824, 5.828, 5.8320000000000007, 5.836, 5.84,
+    5.844, 5.8480000000000008, 5.852, 5.856, 5.86, 5.8640000000000008, 5.868,
+    5.872, 5.876, 5.8800000000000008, 5.884, 5.888, 5.892, 5.8960000000000008,
+    5.9, 5.904, 5.908, 5.9120000000000008, 5.916, 5.92, 5.924,
+    5.9280000000000008, 5.932, 5.936, 5.94, 5.9440000000000008, 5.948, 5.952,
+    5.956, 5.9600000000000009, 5.964, 5.968, 5.972, 5.9760000000000009, 5.98,
+    5.984, 5.988, 5.9920000000000009, 5.996, 6.0, 6.0040000000000004,
+    6.0080000000000009, 6.0120000000000005, 6.016, 6.0200000000000005,
+    6.0240000000000009, 6.0280000000000005, 6.032, 6.0360000000000005,
+    6.0400000000000009, 6.0440000000000005, 6.048, 6.0520000000000005,
+    6.0560000000000009, 6.0600000000000005, 6.064, 6.0680000000000005,
+    6.072000000000001, 6.0760000000000005, 6.08, 6.0840000000000005, 6.088,
+    6.0920000000000005, 6.096, 6.1000000000000005, 6.104, 6.1080000000000005,
+    6.112, 6.1160000000000005, 6.12, 6.1240000000000006, 6.128,
+    6.1320000000000006, 6.136, 6.1400000000000006, 6.144, 6.1480000000000006,
+    6.152, 6.1560000000000006, 6.16, 6.1640000000000006, 6.168,
+    6.1720000000000006, 6.176, 6.1800000000000006, 6.184, 6.1880000000000006,
+    6.192, 6.1960000000000006, 6.2, 6.2040000000000006, 6.208,
+    6.2120000000000006, 6.216, 6.2200000000000006, 6.224, 6.2280000000000006,
+    6.232, 6.2360000000000007, 6.24, 6.2440000000000007, 6.248,
+    6.2520000000000007, 6.256, 6.2600000000000007, 6.264, 6.2680000000000007,
+    6.272, 6.2760000000000007, 6.28, 6.2840000000000007, 6.288,
+    6.2920000000000007, 6.296, 6.3000000000000007, 6.304, 6.3080000000000007,
+    6.312, 6.3160000000000007, 6.32, 6.3240000000000007, 6.328,
+    6.3320000000000007, 6.336, 6.34, 6.344, 6.3480000000000008, 6.352, 6.356,
+    6.36, 6.3640000000000008, 6.368, 6.372, 6.376, 6.3800000000000008, 6.384,
+    6.388, 6.392, 6.3960000000000008, 6.4, 6.404, 6.408, 6.4120000000000008,
+    6.416, 6.42, 6.424, 6.4280000000000008, 6.432, 6.436, 6.44,
+    6.4440000000000008, 6.448, 6.452, 6.456, 6.4600000000000009, 6.464, 6.468,
+    6.472, 6.4760000000000009, 6.48, 6.484, 6.488, 6.4920000000000009, 6.496,
+    6.5, 6.5040000000000004, 6.5080000000000009, 6.5120000000000005, 6.516,
+    6.5200000000000005, 6.5240000000000009, 6.5280000000000005, 6.532,
+    6.5360000000000005, 6.5400000000000009, 6.5440000000000005, 6.548,
+    6.5520000000000005, 6.5560000000000009, 6.5600000000000005, 6.564,
+    6.5680000000000005, 6.572000000000001, 6.5760000000000005, 6.58,
+    6.5840000000000005, 6.588000000000001, 6.5920000000000005, 6.596,
+    6.6000000000000005, 6.604, 6.6080000000000005, 6.612, 6.6160000000000005,
+    6.62, 6.6240000000000006, 6.628, 6.6320000000000006, 6.636,
+    6.6400000000000006, 6.644, 6.6480000000000006, 6.652, 6.6560000000000006,
+    6.66, 6.6640000000000006, 6.668, 6.6720000000000006, 6.676,
+    6.6800000000000006, 6.684, 6.6880000000000006, 6.692, 6.6960000000000006,
+    6.7, 6.7040000000000006, 6.708, 6.7120000000000006, 6.716,
+    6.7200000000000006, 6.724, 6.7280000000000006, 6.732, 6.7360000000000007,
+    6.74, 6.7440000000000007, 6.748, 6.7520000000000007, 6.756,
+    6.7600000000000007, 6.764, 6.7680000000000007, 6.772, 6.7760000000000007,
+    6.78, 6.7840000000000007, 6.788, 6.7920000000000007, 6.796,
+    6.8000000000000007, 6.804, 6.8080000000000007, 6.812, 6.8160000000000007,
+    6.82, 6.8240000000000007, 6.828, 6.8320000000000007, 6.836,
+    6.8400000000000007, 6.844, 6.8480000000000008, 6.852, 6.856, 6.86,
+    6.8640000000000008, 6.868, 6.872, 6.876, 6.8800000000000008, 6.884, 6.888,
+    6.892, 6.8960000000000008, 6.9, 6.904, 6.908, 6.9120000000000008, 6.916,
+    6.92, 6.924, 6.9280000000000008, 6.932, 6.936, 6.94, 6.9440000000000008,
+    6.948, 6.952, 6.956, 6.9600000000000009, 6.964, 6.968, 6.972,
+    6.9760000000000009, 6.98, 6.984, 6.988, 6.9920000000000009, 6.996, 7.0,
+    7.0040000000000004, 7.0080000000000009, 7.0120000000000005, 7.016,
+    7.0200000000000005, 7.0240000000000009, 7.0280000000000005, 7.032,
+    7.0360000000000005, 7.04, 7.0440000000000005, 7.048, 7.0520000000000005,
+    7.056, 7.0600000000000005, 7.064, 7.0680000000000005, 7.072,
+    7.0760000000000005, 7.08, 7.0840000000000005, 7.088, 7.0920000000000005,
+    7.096, 7.1000000000000005, 7.104, 7.1080000000000005, 7.112,
+    7.1160000000000005, 7.12, 7.1240000000000006, 7.128, 7.1320000000000006,
+    7.136, 7.1400000000000006, 7.144, 7.1480000000000006, 7.152,
+    7.1560000000000006, 7.16, 7.1640000000000006, 7.168, 7.1720000000000006,
+    7.176, 7.1800000000000006, 7.184, 7.1880000000000006, 7.192,
+    7.1960000000000006, 7.2, 7.2040000000000006, 7.208, 7.2120000000000006,
+    7.216, 7.2200000000000006, 7.224, 7.2280000000000006, 7.232,
+    7.2360000000000007, 7.24, 7.2440000000000007, 7.248, 7.2520000000000007,
+    7.256, 7.2600000000000007, 7.264, 7.2680000000000007, 7.272,
+    7.2760000000000007, 7.28, 7.2840000000000007, 7.288, 7.2920000000000007,
+    7.296, 7.3000000000000007, 7.304, 7.3080000000000007, 7.312,
+    7.3160000000000007, 7.32, 7.3240000000000007, 7.328, 7.3320000000000007,
+    7.336, 7.3400000000000007, 7.344, 7.3480000000000008, 7.352,
+    7.3560000000000008, 7.36, 7.3640000000000008, 7.368, 7.3720000000000008,
+    7.376, 7.3800000000000008, 7.384, 7.3880000000000008, 7.392,
+    7.3960000000000008, 7.4, 7.4040000000000008, 7.408, 7.4120000000000008,
+    7.416, 7.42, 7.424, 7.4280000000000008, 7.432, 7.436, 7.44,
+    7.4440000000000008, 7.448, 7.452, 7.456, 7.4600000000000009, 7.464, 7.468,
+    7.472, 7.4760000000000009, 7.48, 7.484, 7.488, 7.4920000000000009, 7.496,
+    7.5, 7.5040000000000004, 7.5080000000000009, 7.5120000000000005, 7.516,
+    7.5200000000000005, 7.524, 7.5280000000000005, 7.532, 7.5360000000000005,
+    7.54, 7.5440000000000005, 7.548, 7.5520000000000005, 7.556,
+    7.5600000000000005, 7.564, 7.5680000000000005, 7.572, 7.5760000000000005,
+    7.58, 7.5840000000000005, 7.588, 7.5920000000000005, 7.596,
+    7.6000000000000005, 7.604, 7.6080000000000005, 7.612, 7.6160000000000005,
+    7.62, 7.6240000000000006, 7.628, 7.6320000000000006, 7.636,
+    7.6400000000000006, 7.644, 7.6480000000000006, 7.652, 7.6560000000000006,
+    7.66, 7.6640000000000006, 7.668, 7.6720000000000006, 7.676,
+    7.6800000000000006, 7.684, 7.6880000000000006, 7.692, 7.6960000000000006,
+    7.7, 7.7040000000000006, 7.708, 7.7120000000000006, 7.716,
+    7.7200000000000006, 7.724, 7.7280000000000006, 7.732, 7.7360000000000007,
+    7.74, 7.7440000000000007, 7.748, 7.7520000000000007, 7.756,
+    7.7600000000000007, 7.764, 7.7680000000000007, 7.772, 7.7760000000000007,
+    7.78, 7.7840000000000007, 7.788, 7.7920000000000007, 7.796,
+    7.8000000000000007, 7.804, 7.8080000000000007, 7.812, 7.8160000000000007,
+    7.82, 7.8240000000000007, 7.828, 7.8320000000000007, 7.836,
+    7.8400000000000007, 7.844, 7.8480000000000008, 7.852, 7.8560000000000008,
+    7.86, 7.8640000000000008, 7.868, 7.8720000000000008, 7.876,
+    7.8800000000000008, 7.884, 7.8880000000000008, 7.892, 7.8960000000000008,
+    7.9, 7.9040000000000008, 7.908, 7.9120000000000008, 7.916,
+    7.9200000000000008, 7.924, 7.9280000000000008, 7.932, 7.9360000000000008,
+    7.94, 7.9440000000000008, 7.948, 7.9520000000000008, 7.956,
+    7.9600000000000009, 7.964, 7.9680000000000009, 7.972, 7.9760000000000009,
+    7.98, 7.9840000000000009, 7.988, 7.9920000000000009, 7.996 };
+
+  double a[2000];
+  double unusedExpr[2000];
+  int k;
+  double b_unusedExpr[2000];
+  static const double dv4[2048] = { 0.0, 2.3553948388377322E-6,
     9.421557163713512E-6, 2.11984204002702E-5, 3.768587359187503E-5,
     5.8883761400674306E-5, 8.4791884109036708E-5, 0.0001154099976216072,
     0.00015073781346730541, 0.0001907749988023788, 0.00023552117641323367,
@@ -1077,12 +1290,405 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
     3.768587359187503E-5, 2.11984204002702E-5, 9.421557163713512E-6,
     2.3553948388377322E-6, 0.0 };
 
-  double S[1024];
-  int b_a;
+  double varargin_1[1024];
+  boolean_T exitg1;
+  emxInit_real_T(&X, 2);
+  ixstart = X0->size[0] * X0->size[1];
+  jA2 = X->size[0] * X->size[1];
+  X->size[0] = 1;
+  X->size[1] = ixstart;
+  emxEnsureCapacity((emxArray__common *)X, jA2, (int)sizeof(double));
+  for (jA2 = 0; jA2 < ixstart; jA2++) {
+    X->data[X->size[0] * jA2] = X0->data[jA2];
+  }
+
+  emxInit_real_T(&convconv, 2);
+
+  // %Convolution Amplification:
+  //  f_new=9:0.1:17;
+  //  Clusters:
+  // 5000, 2500, great, but slow. 2000 is quite fast
+  jA2 = convconv->size[0] * convconv->size[1];
+  convconv->size[0] = 28;
+  convconv->size[1] = (int)(((double)X->size[1] + 2000.0) - 1.0);
+  emxEnsureCapacity((emxArray__common *)convconv, jA2, (int)sizeof(double));
+  ixstart = 28 * (int)(((double)X->size[1] + 2000.0) - 1.0);
+  for (jA2 = 0; jA2 < ixstart; jA2++) {
+    convconv->data[jA2] = 0.0;
+  }
+
+  for (i = 0; i < 28; i++) {
+    // testSignal For generating idealized SSVEP Signals (Fourier Series)
+    //    freq = frequency of signal waveform
+    //    Fs = Sampling Frequency
+    // %% Outputs:
+    //  Y = Fundamental Frequency
+    //  T = time singal
+    //  Y1 = first harmonic
+    //  Y2 = second harmonic
+    //  SQW = square wave
+    // standard sampling freq
+    // Time Signal With Specified Frequency
+    s = 6.2831853071795862 * dv3[i];
+    for (jA2 = 0; jA2 < 2000; jA2++) {
+      b[jA2] = s * b_b[jA2];
+    }
+
+    c_sin(b);
+    s = 12.566370614359172 * dv3[i];
+    for (jA2 = 0; jA2 < 2000; jA2++) {
+      a[jA2] = s * b_b[jA2];
+    }
+
+    b_sin(a, unusedExpr);
+    s = 18.849555921538759 * dv3[i];
+    for (jA2 = 0; jA2 < 2000; jA2++) {
+      a[jA2] = s * b_b[jA2];
+    }
+
+    b_sin(a, b_unusedExpr);
+
+    //  SQW = amplitude*square(2*pi*freq*T);
+    //  SQW = SQW(:);
+    for (jA2 = 0; jA2 < 2000; jA2++) {
+      sigs[i + 28 * jA2] = 0.0001 * b[jA2];
+    }
+  }
+
+  emxInit_real_T(&r2, 2);
+  emxInit_real_T(&b_convconv, 2);
+  for (i = 0; i < 28; i++) {
+    nA = X->size[1];
+    if (X->size[1] == 0) {
+      nC = 2000;
+    } else {
+      nC = X->size[1] + 1999;
+    }
+
+    jA2 = r2->size[0] * r2->size[1];
+    r2->size[0] = 1;
+    r2->size[1] = nC;
+    emxEnsureCapacity((emxArray__common *)r2, jA2, (int)sizeof(double));
+    if ((X->size[1] == 0) || (nC == 0)) {
+      jA2 = r2->size[0] * r2->size[1];
+      r2->size[0] = 1;
+      emxEnsureCapacity((emxArray__common *)r2, jA2, (int)sizeof(double));
+      ixstart = r2->size[1];
+      for (jA2 = 0; jA2 < ixstart; jA2++) {
+        r2->data[r2->size[0] * jA2] = 0.0;
+      }
+    } else {
+      for (ixstart = 1; ixstart <= nC; ixstart++) {
+        if (nA <= ixstart) {
+          jA2 = nA;
+        } else {
+          jA2 = ixstart;
+        }
+
+        s = 0.0;
+        if (2000 < ixstart + 1) {
+          k = ixstart - 1999;
+        } else {
+          k = 1;
+        }
+
+        while (k <= jA2) {
+          s += X->data[k - 1] * sigs[i + 28 * (ixstart - k)];
+          k++;
+        }
+
+        r2->data[ixstart - 1] = s;
+      }
+    }
+
+    ixstart = r2->size[1];
+    for (jA2 = 0; jA2 < ixstart; jA2++) {
+      convconv->data[i + convconv->size[0] * jA2] = r2->data[r2->size[0] * jA2];
+    }
+
+    ixstart = convconv->size[1];
+    jA2 = b_convconv->size[0] * b_convconv->size[1];
+    b_convconv->size[0] = 1;
+    b_convconv->size[1] = ixstart;
+    emxEnsureCapacity((emxArray__common *)b_convconv, jA2, (int)sizeof(double));
+    for (jA2 = 0; jA2 < ixstart; jA2++) {
+      b_convconv->data[b_convconv->size[0] * jA2] = convconv->data[i +
+        convconv->size[0] * jA2];
+    }
+
+    welch_psd(b_convconv, 250.0, dv4, varargin_1, wfreqs);
+    ixstart = 1;
+    s = varargin_1[0];
+    jA2 = 1;
+    if (rtIsNaN(varargin_1[0])) {
+      k = 2;
+      exitg1 = false;
+      while ((!exitg1) && (k < 1025)) {
+        ixstart = k;
+        if (!rtIsNaN(varargin_1[k - 1])) {
+          s = varargin_1[k - 1];
+          jA2 = k;
+          exitg1 = true;
+        } else {
+          k++;
+        }
+      }
+    }
+
+    if (ixstart < 1024) {
+      while (ixstart + 1 < 1025) {
+        if (varargin_1[ixstart] > s) {
+          s = varargin_1[ixstart];
+          jA2 = ixstart + 1;
+        }
+
+        ixstart++;
+      }
+    }
+
+    Mconv[i] = s;
+    Lconv[i] = (short)jA2;
+  }
+
+  emxFree_real_T(&b_convconv);
+  emxFree_real_T(&r2);
+  emxFree_real_T(&convconv);
+  emxFree_real_T(&X);
+
+  //  Fts:
+  for (jA2 = 0; jA2 < 28; jA2++) {
+    P[jA2] = wfreqs[Lconv[jA2] - 1];
+    P[jA2 + 28] = Mconv[jA2];
+  }
+}
+
+//
+// Arguments    : const emxArray_real_T2 *x
+//                const double zi[6]
+//                emxArray_real_T2 *y
+// Return Type  : void
+//
+static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_T2
+                   *y)
+{
+  unsigned int unnamed_idx_0;
   int k;
-  int b_k;
-  double twid_re;
+  double dbuffer[7];
+  int j;
+  double b_dbuffer;
+  static const double dv1[7] = { 0.00259188624245653, 0.0, -0.00777565872736959,
+    0.0, 0.00777565872736959, 0.0, -0.00259188624245653 };
+
+  static const double dv2[7] = { 1.0, -5.12636114248572, 11.2013241099204,
+    -13.3475825890437, 9.14852464832994, -3.42093110978683, 0.54578683446378 };
+
+  unnamed_idx_0 = (unsigned int)x->size[0];
+  k = y->size[0];
+  y->size[0] = (int)unnamed_idx_0;
+  emxEnsureCapacity((emxArray__common *)y, k, (int)sizeof(double));
+  for (k = 0; k < 6; k++) {
+    dbuffer[k + 1] = zi[k];
+  }
+
+  for (j = 0; j + 1 <= x->size[0]; j++) {
+    for (k = 0; k < 6; k++) {
+      dbuffer[k] = dbuffer[k + 1];
+    }
+
+    dbuffer[6] = 0.0;
+    for (k = 0; k < 7; k++) {
+      b_dbuffer = dbuffer[k] + x->data[j] * dv1[k];
+      dbuffer[k] = b_dbuffer;
+    }
+
+    for (k = 0; k < 6; k++) {
+      dbuffer[k + 1] -= dbuffer[0] * dv2[k + 1];
+    }
+
+    y->data[j] = dbuffer[0];
+  }
+}
+
+//
+// [8 20] bandpass butterworth N=3
+// Arguments    : emxArray_real_T2 *X
+//                emxArray_real_T2 *Y
+// Return Type  : void
+//
+static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y)
+{
+  int m;
+  int i;
+  emxArray_real_T2 *x;
+  emxArray_real_T2 *y;
+  double xtmp;
+  double d0;
+  int md2;
+  double a[6];
+  emxArray_real_T2 *b_y;
+  static const double b_a[6] = { -0.0025918862424588094, -0.0025918862424471247,
+    0.0051837724848969383, 0.0051837724849273592, -0.0025918862424630829,
+    -0.0025918862424552862 };
+
+  emxArray_real_T2 *c_y;
+  emxArray_int32_T *r1;
+  m = X->size[0];
+  i = X->size[0];
+  X->size[0] = m;
+  emxEnsureCapacity((emxArray__common *)X, i, (int)sizeof(double));
+  emxInit_real_T1(&x, 1);
+  if (X->size[0] == 1) {
+    i = x->size[0];
+    x->size[0] = 1;
+    emxEnsureCapacity((emxArray__common *)x, i, (int)sizeof(double));
+    x->data[0] = X->data[0];
+  } else {
+    i = x->size[0];
+    x->size[0] = X->size[0];
+    emxEnsureCapacity((emxArray__common *)x, i, (int)sizeof(double));
+    m = X->size[0];
+    for (i = 0; i < m; i++) {
+      x->data[i] = X->data[i];
+    }
+  }
+
+  if (x->size[0] == 0) {
+    i = Y->size[0] * Y->size[1];
+    Y->size[0] = 0;
+    Y->size[1] = 0;
+    emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
+  } else {
+    emxInit_real_T1(&y, 1);
+    xtmp = 2.0 * x->data[0];
+    d0 = 2.0 * x->data[x->size[0] - 1];
+    md2 = x->size[0] - 2;
+    i = y->size[0];
+    y->size[0] = 36 + x->size[0];
+    emxEnsureCapacity((emxArray__common *)y, i, (int)sizeof(double));
+    for (i = 0; i < 18; i++) {
+      y->data[i] = xtmp - x->data[18 - i];
+    }
+
+    m = x->size[0];
+    for (i = 0; i < m; i++) {
+      y->data[i + 18] = x->data[i];
+    }
+
+    for (i = 0; i < 18; i++) {
+      y->data[(i + x->size[0]) + 18] = d0 - x->data[md2 - i];
+    }
+
+    xtmp = y->data[0];
+    for (i = 0; i < 6; i++) {
+      a[i] = b_a[i] * xtmp;
+    }
+
+    emxInit_real_T1(&b_y, 1);
+    i = b_y->size[0];
+    b_y->size[0] = y->size[0];
+    emxEnsureCapacity((emxArray__common *)b_y, i, (int)sizeof(double));
+    m = y->size[0];
+    for (i = 0; i < m; i++) {
+      b_y->data[i] = y->data[i];
+    }
+
+    filter(b_y, a, y);
+    m = y->size[0];
+    md2 = y->size[0] >> 1;
+    i = 1;
+    emxFree_real_T(&b_y);
+    while (i <= md2) {
+      xtmp = y->data[i - 1];
+      y->data[i - 1] = y->data[m - i];
+      y->data[m - i] = xtmp;
+      i++;
+    }
+
+    xtmp = y->data[0];
+    for (i = 0; i < 6; i++) {
+      a[i] = b_a[i] * xtmp;
+    }
+
+    emxInit_real_T1(&c_y, 1);
+    i = c_y->size[0];
+    c_y->size[0] = y->size[0];
+    emxEnsureCapacity((emxArray__common *)c_y, i, (int)sizeof(double));
+    m = y->size[0];
+    for (i = 0; i < m; i++) {
+      c_y->data[i] = y->data[i];
+    }
+
+    filter(c_y, a, y);
+    m = y->size[0];
+    md2 = y->size[0] >> 1;
+    i = 1;
+    emxFree_real_T(&c_y);
+    while (i <= md2) {
+      xtmp = y->data[i - 1];
+      y->data[i - 1] = y->data[m - i];
+      y->data[m - i] = xtmp;
+      i++;
+    }
+
+    if (X->size[0] == 1) {
+      m = x->size[0] - 1;
+      i = Y->size[0] * Y->size[1];
+      Y->size[0] = 1;
+      Y->size[1] = m + 1;
+      emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
+      for (i = 0; i <= m; i++) {
+        Y->data[Y->size[0] * i] = y->data[18 + i];
+      }
+    } else {
+      emxInit_int32_T1(&r1, 1);
+      m = x->size[0];
+      i = Y->size[0] * Y->size[1];
+      Y->size[0] = m;
+      Y->size[1] = 1;
+      emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
+      i = r1->size[0];
+      r1->size[0] = m;
+      emxEnsureCapacity((emxArray__common *)r1, i, (int)sizeof(int));
+      for (i = 0; i < m; i++) {
+        r1->data[i] = 19 + i;
+      }
+
+      for (i = 0; i < m; i++) {
+        Y->data[i] = y->data[r1->data[i] - 1];
+      }
+
+      emxFree_int32_T(&r1);
+    }
+
+    emxFree_real_T(&y);
+  }
+
+  emxFree_real_T(&x);
+}
+
+//
+// if size(signals,2) > size(signals,1)
+//      signals = signals.';
+//  end
+// Arguments    : const emxArray_real_T2 *signals
+//                double fs
+//                const double window[2048]
+//                double CSM[1024]
+//                double frequencies[1024]
+// Return Type  : void
+//
+static void welch_psd(const emxArray_real_T2 *signals, double fs, const double
+                      window[2048], double CSM[1024], double frequencies[1024])
+{
+  int iy;
+  int number_of_blocks;
+  double data_taper[2048];
+  double S[1024];
+  int a;
+  int k;
   double Data_Block[2048];
+  double twid_re;
+  int b_k;
   int c_k;
   creal_T b_Data_Block[2048];
   int ix;
@@ -1093,7 +1699,7 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
   double temp_im;
   int istart;
   int j;
-  static const double dv4[1025] = { 1.0, 0.99999529380957619,
+  static const double dv5[1025] = { 1.0, 0.99999529380957619,
     0.99998117528260111, 0.9999576445519639, 0.9999247018391445,
     0.99988234745421256, 0.9998305817958234, 0.99976940535121528,
     0.99969881869620425, 0.99961882249517864, 0.99952941750109314,
@@ -1436,7 +2042,7 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
     -0.9999576445519639, -0.99998117528260111, -0.99999529380957619, -1.0 };
 
   double twid_im;
-  static const double dv5[1025] = { 0.0, -0.0030679567629659761,
+  static const double dv6[1025] = { 0.0, -0.0030679567629659761,
     -0.0061358846491544753, -0.00920375478205982, -0.012271538285719925,
     -0.0153392062849881, -0.01840672990580482, -0.021474080275469508,
     -0.024541228522912288, -0.02760814577896574, -0.030674803176636626,
@@ -1822,23 +2428,23 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
   // ORIGINAL;
   iy = signals->size[1];
   number_of_blocks = (int)std::floor(2.0 * (double)iy / 2048.0) - 1;
-  memcpy(&data_taper[0], &a[0], sizeof(double) << 11);
+  memcpy(&data_taper[0], &window[0], sizeof(double) << 11);
 
   //  Data segmentation into blocks of size block_samples:
   memset(&S[0], 0, sizeof(double) << 10);
 
   // ORIGINAL
   //  S = zeros(ceil(block_samples/2),number_of_signals.^2);
-  for (b_a = 0; b_a < number_of_blocks; b_a++) {
+  for (a = 0; a < number_of_blocks; a++) {
     //  Retrieve current data block
-    k = b_a << 10;
+    k = a << 10;
     for (iy = 0; iy < 2048; iy++) {
       Data_Block[iy] = signals->data[iy + k];
     }
 
-    twid_re = signals->data[b_a << 10];
+    twid_re = signals->data[a << 10];
     for (k = 0; k < 2047; k++) {
-      twid_re += signals->data[(k + (b_a << 10)) + 1];
+      twid_re += signals->data[(k + (a << 10)) + 1];
     }
 
     twid_re /= 2048.0;
@@ -1892,8 +2498,8 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
 
       istart = 1;
       for (j = k; j < 1024; j += k) {
-        twid_re = dv4[j];
-        twid_im = dv5[j];
+        twid_re = dv5[j];
+        twid_im = dv6[j];
         i = istart;
         ihi = istart + ju;
         while (i < ihi) {
@@ -1941,14 +2547,20 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
     S[iy] *= 2.0;
   }
 
+  memcpy(&data_taper[0], &window[0], sizeof(double) << 11);
+
+#pragma omp parallel for \
+ num_threads(omp_get_max_threads()) \
+ private(c_k)
+
   for (b_k = 1; b_k < 2049; b_k++) {
     c_k = b_k;
-    data_taper[c_k - 1] = rt_powd_snf(a[c_k - 1], 2.0);
+    Data_Block[c_k - 1] = data_taper[c_k - 1] * data_taper[c_k - 1];
   }
 
-  twid_re = data_taper[0];
+  twid_re = Data_Block[0];
   for (k = 0; k < 2047; k++) {
-    twid_re += data_taper[k + 1];
+    twid_re += Data_Block[k + 1];
   }
 
   twid_re = twid_re * fs * (double)number_of_blocks;
@@ -1965,6789 +2577,45 @@ static void b_welch_psd(const emxArray_real_T2 *signals, double fs, double CSM
 }
 
 //
-// Arguments    : int nRows
-//                emxArray_creal_T *wwc
-// Return Type  : void
-//
-static void bluestein_setup(int nRows, emxArray_creal_T *wwc)
-{
-  int nInt2m1;
-  int idx;
-  int rt;
-  int nInt2;
-  int k;
-  int y;
-  double nt_im;
-  nInt2m1 = (nRows + nRows) - 1;
-  idx = wwc->size[0];
-  wwc->size[0] = nInt2m1;
-  emxEnsureCapacity((emxArray__common *)wwc, idx, (int)sizeof(creal_T));
-  idx = nRows;
-  rt = 0;
-  wwc->data[nRows - 1].re = 1.0;
-  wwc->data[nRows - 1].im = 0.0;
-  nInt2 = nRows << 1;
-  for (k = 1; k < nRows; k++) {
-    y = (k << 1) - 1;
-    if (nInt2 - rt <= y) {
-      rt += y - nInt2;
-    } else {
-      rt += y;
-    }
-
-    nt_im = -3.1415926535897931 * (double)rt / (double)nRows;
-    wwc->data[idx - 2].re = std::cos(nt_im);
-    wwc->data[idx - 2].im = -std::sin(nt_im);
-    idx--;
-  }
-
-  idx = 0;
-  for (k = nInt2m1 - 1; k >= nRows; k--) {
-    wwc->data[k] = wwc->data[idx];
-    idx++;
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *iPk
-//                emxArray_real_T2 *idx
-// Return Type  : void
-//
-static void c_findPeaksSeparatedByMoreThanM(const emxArray_real_T2 *iPk,
-  emxArray_real_T2 *idx)
-{
-  int ndbl;
-  int apnd;
-  int cdiff;
-  int absb;
-  emxArray_real_T2 *y;
-  if (iPk->size[0] < 1) {
-    ndbl = 0;
-    apnd = 0;
-  } else {
-    ndbl = (int)std::floor(((double)iPk->size[0] - 1.0) + 0.5);
-    apnd = ndbl + 1;
-    cdiff = (ndbl - iPk->size[0]) + 1;
-    absb = iPk->size[0];
-    if (std::fabs((double)cdiff) < 4.4408920985006262E-16 * (double)absb) {
-      ndbl++;
-      apnd = iPk->size[0];
-    } else if (cdiff > 0) {
-      apnd = ndbl;
-    } else {
-      ndbl++;
-    }
-  }
-
-  emxInit_real_T(&y, 2);
-  absb = y->size[0] * y->size[1];
-  y->size[0] = 1;
-  y->size[1] = ndbl;
-  emxEnsureCapacity((emxArray__common *)y, absb, (int)sizeof(double));
-  if (ndbl > 0) {
-    y->data[0] = 1.0;
-    if (ndbl > 1) {
-      y->data[ndbl - 1] = apnd;
-      cdiff = (ndbl - 1) / 2;
-      for (absb = 1; absb < cdiff; absb++) {
-        y->data[absb] = 1.0 + (double)absb;
-        y->data[(ndbl - absb) - 1] = apnd - absb;
-      }
-
-      if (cdiff << 1 == ndbl - 1) {
-        y->data[cdiff] = (1.0 + (double)apnd) / 2.0;
-      } else {
-        y->data[cdiff] = 1.0 + (double)cdiff;
-        y->data[cdiff + 1] = apnd - cdiff;
-      }
-    }
-  }
-
-  absb = idx->size[0];
-  idx->size[0] = y->size[1];
-  emxEnsureCapacity((emxArray__common *)idx, absb, (int)sizeof(double));
-  cdiff = y->size[1];
-  for (absb = 0; absb < cdiff; absb++) {
-    idx->data[absb] = y->data[y->size[0] * absb];
-  }
-
-  emxFree_real_T(&y);
-}
-
-//
-// Arguments    : double x[5000]
-// Return Type  : void
-//
-static void c_sin(double x[5000])
-{
-  int k;
-  for (k = 0; k < 5000; k++) {
-    x[k] = std::sin(x[k]);
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *iPk
-//                const emxArray_real_T2 *iInf
-//                emxArray_real_T2 *iPkOut
-// Return Type  : void
-//
-static void combinePeaks(const emxArray_real_T2 *iPk, const emxArray_real_T2 *iInf,
-  emxArray_real_T2 *iPkOut)
-{
-  emxArray_int32_T *ia;
-  emxArray_int32_T *ib;
-  emxInit_int32_T1(&ia, 1);
-  emxInit_int32_T1(&ib, 1);
-  do_vectors(iPk, iInf, iPkOut, ia, ib);
-  emxFree_int32_T(&ib);
-  emxFree_int32_T(&ia);
-}
-
-//
-// Arguments    : const emxArray_real_T2 *x
-//                emxArray_real_T2 *y
-// Return Type  : void
-//
-static void diff(const emxArray_real_T2 *x, emxArray_real_T2 *y)
-{
-  int iyLead;
-  int orderForDim;
-  emxArray_real_T2 *work;
-  int ySize_idx_0;
-  int m;
-  double tmp1;
-  int k;
-  double tmp2;
-  if (x->size[0] == 0) {
-    iyLead = y->size[0];
-    y->size[0] = 0;
-    emxEnsureCapacity((emxArray__common *)y, iyLead, (int)sizeof(double));
-  } else {
-    if (x->size[0] - 1 <= 1) {
-      orderForDim = x->size[0] - 1;
-    } else {
-      orderForDim = 1;
-    }
-
-    if (orderForDim < 1) {
-      iyLead = y->size[0];
-      y->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)y, iyLead, (int)sizeof(double));
-    } else {
-      emxInit_real_T1(&work, 1);
-      ySize_idx_0 = x->size[0] - orderForDim;
-      iyLead = work->size[0];
-      work->size[0] = orderForDim;
-      emxEnsureCapacity((emxArray__common *)work, iyLead, (int)sizeof(double));
-      iyLead = y->size[0];
-      y->size[0] = ySize_idx_0;
-      emxEnsureCapacity((emxArray__common *)y, iyLead, (int)sizeof(double));
-      if (!(y->size[0] == 0)) {
-        ySize_idx_0 = 1;
-        iyLead = 0;
-        work->data[0] = x->data[0];
-        if (orderForDim >= 2) {
-          for (m = 1; m < orderForDim; m++) {
-            tmp1 = x->data[ySize_idx_0];
-            for (k = 0; k + 1 <= m; k++) {
-              tmp2 = work->data[k];
-              work->data[k] = tmp1;
-              tmp1 -= tmp2;
-            }
-
-            work->data[m] = tmp1;
-            ySize_idx_0++;
-          }
-        }
-
-        for (m = orderForDim + 1; m <= x->size[0]; m++) {
-          tmp1 = x->data[ySize_idx_0];
-          for (k = 0; k + 1 <= orderForDim; k++) {
-            tmp2 = work->data[k];
-            work->data[k] = tmp1;
-            tmp1 -= tmp2;
-          }
-
-          ySize_idx_0++;
-          y->data[iyLead] = tmp1;
-          iyLead++;
-        }
-      }
-
-      emxFree_real_T(&work);
-    }
-  }
-}
-
-//
-// Arguments    : int numerator
-//                int denominator
-// Return Type  : int
-//
-static int div_s32_floor(int numerator, int denominator)
-{
-  int quotient;
-  unsigned int absNumerator;
-  unsigned int absDenominator;
-  boolean_T quotientNeedsNegation;
-  unsigned int tempAbsQuotient;
-  if (denominator == 0) {
-    if (numerator >= 0) {
-      quotient = MAX_int32_T;
-    } else {
-      quotient = MIN_int32_T;
-    }
-  } else {
-    if (numerator < 0) {
-      absNumerator = ~(unsigned int)numerator + 1U;
-    } else {
-      absNumerator = (unsigned int)numerator;
-    }
-
-    if (denominator < 0) {
-      absDenominator = ~(unsigned int)denominator + 1U;
-    } else {
-      absDenominator = (unsigned int)denominator;
-    }
-
-    quotientNeedsNegation = ((numerator < 0) != (denominator < 0));
-    tempAbsQuotient = absNumerator / absDenominator;
-    if (quotientNeedsNegation) {
-      absNumerator %= absDenominator;
-      if (absNumerator > 0U) {
-        tempAbsQuotient++;
-      }
-    }
-
-    if (quotientNeedsNegation) {
-      quotient = -(int)tempAbsQuotient;
-    } else {
-      quotient = (int)tempAbsQuotient;
-    }
-  }
-
-  return quotient;
-}
-
-//
-// Arguments    : const emxArray_real_T2 *a
-//                const emxArray_real_T2 *b
-//                emxArray_real_T2 *c
-//                emxArray_int32_T *ia
-//                emxArray_int32_T *ib
-// Return Type  : void
-//
-static void do_vectors(const emxArray_real_T2 *a, const emxArray_real_T2 *b,
-  emxArray_real_T2 *c, emxArray_int32_T *ia, emxArray_int32_T *ib)
-{
-  int na;
-  int nb;
-  int ncmax;
-  int ibfirst;
-  int nc;
-  int nia;
-  int nib;
-  int iafirst;
-  int ialast;
-  int iblast;
-  int b_ialast;
-  double ak;
-  int b_iblast;
-  double bk;
-  double absxk;
-  emxArray_int32_T *b_ia;
-  int exponent;
-  emxArray_int32_T *b_ib;
-  boolean_T p;
-  emxArray_real_T2 *b_c;
-  na = a->size[0];
-  nb = b->size[0];
-  ncmax = a->size[0] + b->size[0];
-  ibfirst = c->size[0];
-  c->size[0] = ncmax;
-  emxEnsureCapacity((emxArray__common *)c, ibfirst, (int)sizeof(double));
-  ibfirst = ia->size[0];
-  ia->size[0] = a->size[0];
-  emxEnsureCapacity((emxArray__common *)ia, ibfirst, (int)sizeof(int));
-  ibfirst = ib->size[0];
-  ib->size[0] = b->size[0];
-  emxEnsureCapacity((emxArray__common *)ib, ibfirst, (int)sizeof(int));
-  nc = -1;
-  nia = -1;
-  nib = 0;
-  iafirst = 1;
-  ialast = 1;
-  ibfirst = 0;
-  iblast = 1;
-  while ((ialast <= na) && (iblast <= nb)) {
-    b_ialast = ialast;
-    ak = skip_to_last_equal_value(&b_ialast, a);
-    ialast = b_ialast;
-    b_iblast = iblast;
-    bk = skip_to_last_equal_value(&b_iblast, b);
-    iblast = b_iblast;
-    absxk = std::fabs(bk / 2.0);
-    if ((!rtIsInf(absxk)) && (!rtIsNaN(absxk))) {
-      if (absxk <= 2.2250738585072014E-308) {
-        absxk = 4.94065645841247E-324;
-      } else {
-        frexp(absxk, &exponent);
-        absxk = std::ldexp(1.0, exponent - 53);
-      }
-    } else {
-      absxk = rtNaN;
-    }
-
-    if ((std::fabs(bk - ak) < absxk) || (rtIsInf(ak) && rtIsInf(bk) && ((ak > 0.0)
-          == (bk > 0.0)))) {
-      p = true;
-    } else {
-      p = false;
-    }
-
-    if (p) {
-      nc++;
-      c->data[nc] = ak;
-      nia++;
-      ia->data[nia] = iafirst;
-      ialast = b_ialast + 1;
-      iafirst = b_ialast + 1;
-      iblast = b_iblast + 1;
-      ibfirst = b_iblast;
-    } else {
-      if ((ak < bk) || rtIsNaN(bk)) {
-        p = true;
-      } else {
-        p = false;
-      }
-
-      if (p) {
-        nc++;
-        nia++;
-        c->data[nc] = ak;
-        ia->data[nia] = iafirst;
-        ialast = b_ialast + 1;
-        iafirst = b_ialast + 1;
-      } else {
-        nc++;
-        nib++;
-        c->data[nc] = bk;
-        ib->data[nib - 1] = ibfirst + 1;
-        iblast = b_iblast + 1;
-        ibfirst = b_iblast;
-      }
-    }
-  }
-
-  while (ialast <= na) {
-    iafirst = ialast;
-    ak = skip_to_last_equal_value(&iafirst, a);
-    nc++;
-    nia++;
-    c->data[nc] = ak;
-    ia->data[nia] = ialast;
-    ialast = iafirst + 1;
-  }
-
-  while (iblast <= nb) {
-    iafirst = iblast;
-    bk = skip_to_last_equal_value(&iafirst, b);
-    nc++;
-    nib++;
-    c->data[nc] = bk;
-    ib->data[nib - 1] = iblast;
-    iblast = iafirst + 1;
-  }
-
-  if (a->size[0] > 0) {
-    if (1 > nia + 1) {
-      iafirst = -1;
-    } else {
-      iafirst = nia;
-    }
-
-    emxInit_int32_T1(&b_ia, 1);
-    ibfirst = b_ia->size[0];
-    b_ia->size[0] = iafirst + 1;
-    emxEnsureCapacity((emxArray__common *)b_ia, ibfirst, (int)sizeof(int));
-    for (ibfirst = 0; ibfirst <= iafirst; ibfirst++) {
-      b_ia->data[ibfirst] = ia->data[ibfirst];
-    }
-
-    ibfirst = ia->size[0];
-    ia->size[0] = b_ia->size[0];
-    emxEnsureCapacity((emxArray__common *)ia, ibfirst, (int)sizeof(int));
-    iafirst = b_ia->size[0];
-    for (ibfirst = 0; ibfirst < iafirst; ibfirst++) {
-      ia->data[ibfirst] = b_ia->data[ibfirst];
-    }
-
-    emxFree_int32_T(&b_ia);
-  }
-
-  if (b->size[0] > 0) {
-    if (1 > nib) {
-      iafirst = 0;
-    } else {
-      iafirst = nib;
-    }
-
-    emxInit_int32_T1(&b_ib, 1);
-    ibfirst = b_ib->size[0];
-    b_ib->size[0] = iafirst;
-    emxEnsureCapacity((emxArray__common *)b_ib, ibfirst, (int)sizeof(int));
-    for (ibfirst = 0; ibfirst < iafirst; ibfirst++) {
-      b_ib->data[ibfirst] = ib->data[ibfirst];
-    }
-
-    ibfirst = ib->size[0];
-    ib->size[0] = b_ib->size[0];
-    emxEnsureCapacity((emxArray__common *)ib, ibfirst, (int)sizeof(int));
-    iafirst = b_ib->size[0];
-    for (ibfirst = 0; ibfirst < iafirst; ibfirst++) {
-      ib->data[ibfirst] = b_ib->data[ibfirst];
-    }
-
-    emxFree_int32_T(&b_ib);
-  }
-
-  if (ncmax > 0) {
-    if (1 > nc + 1) {
-      iafirst = -1;
-    } else {
-      iafirst = nc;
-    }
-
-    emxInit_real_T1(&b_c, 1);
-    ibfirst = b_c->size[0];
-    b_c->size[0] = iafirst + 1;
-    emxEnsureCapacity((emxArray__common *)b_c, ibfirst, (int)sizeof(double));
-    for (ibfirst = 0; ibfirst <= iafirst; ibfirst++) {
-      b_c->data[ibfirst] = c->data[ibfirst];
-    }
-
-    ibfirst = c->size[0];
-    c->size[0] = b_c->size[0];
-    emxEnsureCapacity((emxArray__common *)c, ibfirst, (int)sizeof(double));
-    iafirst = b_c->size[0];
-    for (ibfirst = 0; ibfirst < iafirst; ibfirst++) {
-      c->data[ibfirst] = b_c->data[ibfirst];
-    }
-
-    emxFree_real_T(&b_c);
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *x
-//                int N2
-//                int n1
-//                const emxArray_real_T2 *costab
-//                const emxArray_real_T2 *sintab
-//                const emxArray_real_T2 *sintabinv
-//                emxArray_creal_T *y
-// Return Type  : void
-//
-static void dobluesteinfft(const emxArray_real_T2 *x, int N2, int n1, const
-  emxArray_real_T2 *costab, const emxArray_real_T2 *sintab, const emxArray_real_T2 *
-  sintabinv, emxArray_creal_T *y)
-{
-  emxArray_creal_T *wwc;
-  int minNrowsNx;
-  int ix;
-  int xidx;
-  double r;
-  double twid_im;
-  emxArray_creal_T *fy;
-  int istart;
-  emxArray_creal_T *fv;
-  int nRowsD2;
-  int nRowsD4;
-  int i;
-  boolean_T tst;
-  double temp_re;
-  double temp_im;
-  int j;
-  double fv_re;
-  double fv_im;
-  int ihi;
-  double wwc_im;
-  double b_fv_re;
-  emxInit_creal_T1(&wwc, 1);
-  bluestein_setup(n1, wwc);
-  if (n1 <= x->size[0]) {
-    minNrowsNx = n1;
-  } else {
-    minNrowsNx = x->size[0];
-  }
-
-  ix = y->size[0];
-  y->size[0] = n1;
-  emxEnsureCapacity((emxArray__common *)y, ix, (int)sizeof(creal_T));
-  if (n1 > x->size[0]) {
-    xidx = y->size[0];
-    ix = y->size[0];
-    y->size[0] = xidx;
-    emxEnsureCapacity((emxArray__common *)y, ix, (int)sizeof(creal_T));
-    for (ix = 0; ix < xidx; ix++) {
-      y->data[ix].re = 0.0;
-      y->data[ix].im = 0.0;
-    }
-  }
-
-  xidx = 0;
-  for (ix = 0; ix + 1 <= minNrowsNx; ix++) {
-    r = wwc->data[(n1 + ix) - 1].re;
-    twid_im = wwc->data[(n1 + ix) - 1].im;
-    y->data[ix].re = r * x->data[xidx];
-    y->data[ix].im = twid_im * -x->data[xidx];
-    xidx++;
-  }
-
-  while (minNrowsNx + 1 <= n1) {
-    y->data[minNrowsNx].re = 0.0;
-    y->data[minNrowsNx].im = 0.0;
-    minNrowsNx++;
-  }
-
-  emxInit_creal_T1(&fy, 1);
-  r2br_r2dit_trig_impl(y, 0, N2, costab, sintab, fy);
-  if (wwc->size[0] <= N2) {
-    istart = wwc->size[0];
-  } else {
-    istart = N2;
-  }
-
-  emxInit_creal_T1(&fv, 1);
-  nRowsD2 = N2 / 2;
-  nRowsD4 = nRowsD2 / 2;
-  ix = fv->size[0];
-  fv->size[0] = N2;
-  emxEnsureCapacity((emxArray__common *)fv, ix, (int)sizeof(creal_T));
-  if (N2 > wwc->size[0]) {
-    xidx = fv->size[0];
-    ix = fv->size[0];
-    fv->size[0] = xidx;
-    emxEnsureCapacity((emxArray__common *)fv, ix, (int)sizeof(creal_T));
-    for (ix = 0; ix < xidx; ix++) {
-      fv->data[ix].re = 0.0;
-      fv->data[ix].im = 0.0;
-    }
-  }
-
-  ix = 0;
-  minNrowsNx = 0;
-  xidx = 0;
-  for (i = 1; i < istart; i++) {
-    fv->data[xidx] = wwc->data[ix];
-    xidx = N2;
-    tst = true;
-    while (tst) {
-      xidx >>= 1;
-      minNrowsNx ^= xidx;
-      tst = ((minNrowsNx & xidx) == 0);
-    }
-
-    xidx = minNrowsNx;
-    ix++;
-  }
-
-  fv->data[xidx] = wwc->data[ix];
-  if (N2 > 1) {
-    for (i = 0; i <= N2 - 2; i += 2) {
-      temp_re = fv->data[i + 1].re;
-      temp_im = fv->data[i + 1].im;
-      fv->data[i + 1].re = fv->data[i].re - fv->data[i + 1].re;
-      fv->data[i + 1].im = fv->data[i].im - fv->data[i + 1].im;
-      fv->data[i].re += temp_re;
-      fv->data[i].im += temp_im;
-    }
-  }
-
-  xidx = 2;
-  minNrowsNx = 4;
-  ix = 1 + ((nRowsD4 - 1) << 2);
-  while (nRowsD4 > 0) {
-    for (i = 0; i < ix; i += minNrowsNx) {
-      temp_re = fv->data[i + xidx].re;
-      temp_im = fv->data[i + xidx].im;
-      fv->data[i + xidx].re = fv->data[i].re - temp_re;
-      fv->data[i + xidx].im = fv->data[i].im - temp_im;
-      fv->data[i].re += temp_re;
-      fv->data[i].im += temp_im;
-    }
-
-    istart = 1;
-    for (j = nRowsD4; j < nRowsD2; j += nRowsD4) {
-      r = costab->data[j];
-      twid_im = sintab->data[j];
-      i = istart;
-      ihi = istart + ix;
-      while (i < ihi) {
-        temp_re = r * fv->data[i + xidx].re - twid_im * fv->data[i + xidx].im;
-        temp_im = r * fv->data[i + xidx].im + twid_im * fv->data[i + xidx].re;
-        fv->data[i + xidx].re = fv->data[i].re - temp_re;
-        fv->data[i + xidx].im = fv->data[i].im - temp_im;
-        fv->data[i].re += temp_re;
-        fv->data[i].im += temp_im;
-        i += minNrowsNx;
-      }
-
-      istart++;
-    }
-
-    nRowsD4 /= 2;
-    xidx = minNrowsNx;
-    minNrowsNx <<= 1;
-    ix -= xidx;
-  }
-
-  ix = fy->size[0];
-  emxEnsureCapacity((emxArray__common *)fy, ix, (int)sizeof(creal_T));
-  xidx = fy->size[0];
-  for (ix = 0; ix < xidx; ix++) {
-    r = fy->data[ix].re;
-    twid_im = fy->data[ix].im;
-    fv_re = fv->data[ix].re;
-    fv_im = fv->data[ix].im;
-    fy->data[ix].re = r * fv_re - twid_im * fv_im;
-    fy->data[ix].im = r * fv_im + twid_im * fv_re;
-  }
-
-  if (fy->size[0] <= N2) {
-    istart = fy->size[0];
-  } else {
-    istart = N2;
-  }
-
-  nRowsD2 = N2 / 2;
-  nRowsD4 = nRowsD2 / 2;
-  ix = fv->size[0];
-  fv->size[0] = N2;
-  emxEnsureCapacity((emxArray__common *)fv, ix, (int)sizeof(creal_T));
-  if (N2 > fy->size[0]) {
-    xidx = fv->size[0];
-    ix = fv->size[0];
-    fv->size[0] = xidx;
-    emxEnsureCapacity((emxArray__common *)fv, ix, (int)sizeof(creal_T));
-    for (ix = 0; ix < xidx; ix++) {
-      fv->data[ix].re = 0.0;
-      fv->data[ix].im = 0.0;
-    }
-  }
-
-  ix = 0;
-  minNrowsNx = 0;
-  xidx = 0;
-  for (i = 1; i < istart; i++) {
-    fv->data[xidx] = fy->data[ix];
-    xidx = N2;
-    tst = true;
-    while (tst) {
-      xidx >>= 1;
-      minNrowsNx ^= xidx;
-      tst = ((minNrowsNx & xidx) == 0);
-    }
-
-    xidx = minNrowsNx;
-    ix++;
-  }
-
-  fv->data[xidx] = fy->data[ix];
-  emxFree_creal_T(&fy);
-  if (N2 > 1) {
-    for (i = 0; i <= N2 - 2; i += 2) {
-      temp_re = fv->data[i + 1].re;
-      temp_im = fv->data[i + 1].im;
-      fv->data[i + 1].re = fv->data[i].re - fv->data[i + 1].re;
-      fv->data[i + 1].im = fv->data[i].im - fv->data[i + 1].im;
-      fv->data[i].re += temp_re;
-      fv->data[i].im += temp_im;
-    }
-  }
-
-  xidx = 2;
-  minNrowsNx = 4;
-  ix = 1 + ((nRowsD4 - 1) << 2);
-  while (nRowsD4 > 0) {
-    for (i = 0; i < ix; i += minNrowsNx) {
-      temp_re = fv->data[i + xidx].re;
-      temp_im = fv->data[i + xidx].im;
-      fv->data[i + xidx].re = fv->data[i].re - temp_re;
-      fv->data[i + xidx].im = fv->data[i].im - temp_im;
-      fv->data[i].re += temp_re;
-      fv->data[i].im += temp_im;
-    }
-
-    istart = 1;
-    for (j = nRowsD4; j < nRowsD2; j += nRowsD4) {
-      r = costab->data[j];
-      twid_im = sintabinv->data[j];
-      i = istart;
-      ihi = istart + ix;
-      while (i < ihi) {
-        temp_re = r * fv->data[i + xidx].re - twid_im * fv->data[i + xidx].im;
-        temp_im = r * fv->data[i + xidx].im + twid_im * fv->data[i + xidx].re;
-        fv->data[i + xidx].re = fv->data[i].re - temp_re;
-        fv->data[i + xidx].im = fv->data[i].im - temp_im;
-        fv->data[i].re += temp_re;
-        fv->data[i].im += temp_im;
-        i += minNrowsNx;
-      }
-
-      istart++;
-    }
-
-    nRowsD4 /= 2;
-    xidx = minNrowsNx;
-    minNrowsNx <<= 1;
-    ix -= xidx;
-  }
-
-  if (fv->size[0] > 1) {
-    r = 1.0 / (double)fv->size[0];
-    ix = fv->size[0];
-    emxEnsureCapacity((emxArray__common *)fv, ix, (int)sizeof(creal_T));
-    xidx = fv->size[0];
-    for (ix = 0; ix < xidx; ix++) {
-      fv->data[ix].re *= r;
-      fv->data[ix].im *= r;
-    }
-  }
-
-  xidx = 0;
-  for (ix = n1 - 1; ix + 1 <= wwc->size[0]; ix++) {
-    r = wwc->data[ix].re;
-    fv_re = fv->data[ix].re;
-    twid_im = wwc->data[ix].im;
-    fv_im = fv->data[ix].im;
-    temp_re = wwc->data[ix].re;
-    temp_im = fv->data[ix].im;
-    wwc_im = wwc->data[ix].im;
-    b_fv_re = fv->data[ix].re;
-    y->data[xidx].re = r * fv_re + twid_im * fv_im;
-    y->data[xidx].im = temp_re * temp_im - wwc_im * b_fv_re;
-    xidx++;
-  }
-
-  emxFree_creal_T(&fv);
-  emxFree_creal_T(&wwc);
-}
-
-//
-// Arguments    : emxArray__common *emxArray
-//                int oldNumel
-//                int elementSize
-// Return Type  : void
-//
-static void emxEnsureCapacity(emxArray__common *emxArray, int oldNumel, int
-  elementSize)
-{
-  int newNumel;
-  int i;
-  void *newData;
-  newNumel = 1;
-  for (i = 0; i < emxArray->numDimensions; i++) {
-    newNumel *= emxArray->size[i];
-  }
-
-  if (newNumel > emxArray->allocatedSize) {
-    i = emxArray->allocatedSize;
-    if (i < 16) {
-      i = 16;
-    }
-
-    while (i < newNumel) {
-      if (i > 1073741823) {
-        i = MAX_int32_T;
-      } else {
-        i <<= 1;
-      }
-    }
-
-    newData = calloc((unsigned int)i, (unsigned int)elementSize);
-    if (emxArray->data != NULL) {
-      memcpy(newData, emxArray->data, (unsigned int)(elementSize * oldNumel));
-      if (emxArray->canFreeData) {
-        free(emxArray->data);
-      }
-    }
-
-    emxArray->data = newData;
-    emxArray->allocatedSize = i;
-    emxArray->canFreeData = true;
-  }
-}
-
-//
-// Arguments    : emxArray_boolean_T **pEmxArray
-// Return Type  : void
-//
-static void emxFree_boolean_T(emxArray_boolean_T **pEmxArray)
-{
-  if (*pEmxArray != (emxArray_boolean_T *)NULL) {
-    if (((*pEmxArray)->data != (boolean_T *)NULL) && (*pEmxArray)->canFreeData)
-    {
-      free((void *)(*pEmxArray)->data);
-    }
-
-    free((void *)(*pEmxArray)->size);
-    free((void *)*pEmxArray);
-    *pEmxArray = (emxArray_boolean_T *)NULL;
-  }
-}
-
-//
-// Arguments    : emxArray_creal_T **pEmxArray
-// Return Type  : void
-//
-static void emxFree_creal_T(emxArray_creal_T **pEmxArray)
-{
-  if (*pEmxArray != (emxArray_creal_T *)NULL) {
-    if (((*pEmxArray)->data != (creal_T *)NULL) && (*pEmxArray)->canFreeData) {
-      free((void *)(*pEmxArray)->data);
-    }
-
-    free((void *)(*pEmxArray)->size);
-    free((void *)*pEmxArray);
-    *pEmxArray = (emxArray_creal_T *)NULL;
-  }
-}
-
-//
-// Arguments    : emxArray_int32_T **pEmxArray
-// Return Type  : void
-//
-static void emxFree_int32_T(emxArray_int32_T **pEmxArray)
-{
-  if (*pEmxArray != (emxArray_int32_T *)NULL) {
-    if (((*pEmxArray)->data != (int *)NULL) && (*pEmxArray)->canFreeData) {
-      free((void *)(*pEmxArray)->data);
-    }
-
-    free((void *)(*pEmxArray)->size);
-    free((void *)*pEmxArray);
-    *pEmxArray = (emxArray_int32_T *)NULL;
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 **pEmxArray
-// Return Type  : void
-//
-static void emxFree_real_T(emxArray_real_T2 **pEmxArray)
-{
-  if (*pEmxArray != (emxArray_real_T2 *)NULL) {
-    if (((*pEmxArray)->data != (double *)NULL) && (*pEmxArray)->canFreeData) {
-      free((void *)(*pEmxArray)->data);
-    }
-
-    free((void *)(*pEmxArray)->size);
-    free((void *)*pEmxArray);
-    *pEmxArray = (emxArray_real_T2 *)NULL;
-  }
-}
-
-//
-// Arguments    : emxArray_boolean_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_boolean_T(emxArray_boolean_T **pEmxArray, int numDimensions)
-{
-  emxArray_boolean_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_boolean_T *)malloc(sizeof(emxArray_boolean_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (boolean_T *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_boolean_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_boolean_T1(emxArray_boolean_T **pEmxArray, int numDimensions)
-{
-  emxArray_boolean_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_boolean_T *)malloc(sizeof(emxArray_boolean_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (boolean_T *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_creal_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_creal_T(emxArray_creal_T **pEmxArray, int numDimensions)
-{
-  emxArray_creal_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_creal_T *)malloc(sizeof(emxArray_creal_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (creal_T *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_creal_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_creal_T1(emxArray_creal_T **pEmxArray, int numDimensions)
-{
-  emxArray_creal_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_creal_T *)malloc(sizeof(emxArray_creal_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (creal_T *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_int32_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_int32_T(emxArray_int32_T **pEmxArray, int numDimensions)
-{
-  emxArray_int32_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_int32_T *)malloc(sizeof(emxArray_int32_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (int *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_int32_T **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_int32_T1(emxArray_int32_T **pEmxArray, int numDimensions)
-{
-  emxArray_int32_T *emxArray;
-  int i;
-  *pEmxArray = (emxArray_int32_T *)malloc(sizeof(emxArray_int32_T));
-  emxArray = *pEmxArray;
-  emxArray->data = (int *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions)
-{
-  emxArray_real_T2 *emxArray;
-  int i;
-  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
-  emxArray = *pEmxArray;
-  emxArray->data = (double *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions)
-{
-  emxArray_real_T2 *emxArray;
-  int i;
-  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
-  emxArray = *pEmxArray;
-  emxArray->data = (double *)NULL;
-  emxArray->numDimensions = numDimensions;
-  emxArray->size = (int *)malloc((unsigned int)(sizeof(int) * numDimensions));
-  emxArray->allocatedSize = 0;
-  emxArray->canFreeData = true;
-  for (i = 0; i < numDimensions; i++) {
-    emxArray->size[i] = 0;
-  }
-}
-
-//
-// FESSVEP Feature Extraction for single (m x 1) SSVEP EEG Data Vector
-//    X (m x 1) vectorize input:
-//  Fix X size:
-// Arguments    : const emxArray_real_T2 *X0
-//                double Fs
-//                double SSVEP_FEATURES[40]
-//                double P[56]
-// Return Type  : void
-//
-static void fESSVEP(const emxArray_real_T2 *X0, double Fs, double SSVEP_FEATURES
-                    [40], double P[56])
-{
-  emxArray_real_T2 *X;
-  int nm1d2;
-  int i0;
-  double threshFFT[8];
-  double threshPSD[8];
-  double Pfft[4];
-  double Ppsd[4];
-  double Pstft[4];
-  emxArray_real_T2 *hW;
-  double nfft;
-  emxArray_real_T2 *F;
-  emxArray_real_T2 *T;
-  emxArray_real_T2 *f;
-  int wlen;
-  emxArray_real_T2 *FFT;
-  emxArray_real_T2 *PSD;
-  emxArray_real_T2 *fPSD;
-  double ndbl;
-  double x;
-  int jA2;
-  double anew;
-  int i;
-  double apnd;
-  double b_threshFFT[2];
-  double cdiff;
-  int k;
-  int nA;
-  emxArray_boolean_T *r2;
-  emxArray_boolean_T *r3;
-  emxArray_boolean_T *r4;
-  emxArray_real_T2 *SS;
-  double K;
-  emxArray_real_T2 *F1;
-  emxArray_real_T2 *convconv;
-  emxArray_creal_T *S;
-  emxArray_int32_T *r5;
-  static double sigs[140000];
-  double wfreqs[1024];
-  double Mconv[28];
-  short Lconv[28];
-  emxArray_real_T2 *b_convconv;
-  emxArray_creal_T *b_x;
-  static const double dv3[28] = { 9.7, 9.7999999999999989, 9.8999999999999986,
-    10.0, 10.100000000000001, 10.200000000000001, 10.3, 12.1, 12.2,
-    12.299999999999999, 12.399999999999999, 12.5, 12.6, 12.7, 14.8, 14.9, 15.0,
-    15.100000000000001, 15.200000000000001, 15.3, 15.4, 16.2, 16.3, 16.4, 16.5,
-    16.6, 16.7, 16.8 };
-
-  emxArray_creal_T *b_S;
-  static double b[5000];
-  static const double b_b[5000] = { 0.0, 0.004, 0.008, 0.012, 0.016, 0.02, 0.024,
-    0.028, 0.032, 0.036000000000000004, 0.04, 0.044, 0.048, 0.052000000000000005,
-    0.056, 0.06, 0.064, 0.068, 0.072000000000000008, 0.076, 0.08, 0.084, 0.088,
-    0.092, 0.096, 0.1, 0.10400000000000001, 0.108, 0.112, 0.116, 0.12, 0.124,
-    0.128, 0.132, 0.136, 0.14, 0.14400000000000002, 0.148, 0.152, 0.156, 0.16,
-    0.164, 0.168, 0.17200000000000001, 0.176, 0.18, 0.184, 0.188, 0.192, 0.196,
-    0.2, 0.20400000000000001, 0.20800000000000002, 0.212, 0.216, 0.22, 0.224,
-    0.228, 0.232, 0.23600000000000002, 0.24, 0.244, 0.248, 0.252, 0.256, 0.26,
-    0.264, 0.268, 0.272, 0.276, 0.28, 0.28400000000000003, 0.28800000000000003,
-    0.292, 0.296, 0.3, 0.304, 0.308, 0.312, 0.316, 0.32, 0.324, 0.328, 0.332,
-    0.336, 0.34, 0.34400000000000003, 0.34800000000000003, 0.352, 0.356, 0.36,
-    0.364, 0.368, 0.372, 0.376, 0.38, 0.384, 0.388, 0.392, 0.396, 0.4, 0.404,
-    0.40800000000000003, 0.41200000000000003, 0.41600000000000004, 0.42, 0.424,
-    0.428, 0.432, 0.436, 0.44, 0.444, 0.448, 0.452, 0.456, 0.46, 0.464, 0.468,
-    0.47200000000000003, 0.47600000000000003, 0.48, 0.484, 0.488, 0.492, 0.496,
-    0.5, 0.504, 0.508, 0.512, 0.516, 0.52, 0.524, 0.528, 0.532, 0.536, 0.54,
-    0.544, 0.548, 0.552, 0.556, 0.56, 0.56400000000000006, 0.56800000000000006,
-    0.57200000000000006, 0.57600000000000007, 0.58, 0.584, 0.588, 0.592, 0.596,
-    0.6, 0.604, 0.608, 0.612, 0.616, 0.62, 0.624, 0.628, 0.632, 0.636, 0.64,
-    0.644, 0.648, 0.652, 0.656, 0.66, 0.664, 0.668, 0.672, 0.676, 0.68, 0.684,
-    0.68800000000000006, 0.69200000000000006, 0.69600000000000006,
-    0.70000000000000007, 0.704, 0.708, 0.712, 0.716, 0.72, 0.724, 0.728, 0.732,
-    0.736, 0.74, 0.744, 0.748, 0.752, 0.756, 0.76, 0.764, 0.768, 0.772, 0.776,
-    0.78, 0.784, 0.788, 0.792, 0.796, 0.8, 0.804, 0.808, 0.812,
-    0.81600000000000006, 0.82000000000000006, 0.82400000000000007,
-    0.82800000000000007, 0.83200000000000007, 0.836, 0.84, 0.844, 0.848, 0.852,
-    0.856, 0.86, 0.864, 0.868, 0.872, 0.876, 0.88, 0.884, 0.888, 0.892, 0.896,
-    0.9, 0.904, 0.908, 0.912, 0.916, 0.92, 0.924, 0.928, 0.932, 0.936,
-    0.94000000000000006, 0.94400000000000006, 0.94800000000000006,
-    0.95200000000000007, 0.95600000000000007, 0.96, 0.964, 0.968, 0.972, 0.976,
-    0.98, 0.984, 0.988, 0.992, 0.996, 1.0, 1.004, 1.008, 1.012, 1.016, 1.02,
-    1.024, 1.028, 1.032, 1.036, 1.04, 1.044, 1.048, 1.052, 1.056, 1.06, 1.064,
-    1.068, 1.072, 1.076, 1.08, 1.084, 1.088, 1.092, 1.096, 1.1, 1.104, 1.108,
-    1.112, 1.116, 1.12, 1.124, 1.1280000000000001, 1.1320000000000001,
-    1.1360000000000001, 1.1400000000000001, 1.1440000000000001,
-    1.1480000000000001, 1.1520000000000001, 1.156, 1.16, 1.164, 1.168, 1.172,
-    1.176, 1.18, 1.184, 1.188, 1.192, 1.196, 1.2, 1.204, 1.208, 1.212, 1.216,
-    1.22, 1.224, 1.228, 1.232, 1.236, 1.24, 1.244, 1.248, 1.252, 1.256, 1.26,
-    1.264, 1.268, 1.272, 1.276, 1.28, 1.284, 1.288, 1.292, 1.296, 1.3, 1.304,
-    1.308, 1.312, 1.316, 1.32, 1.324, 1.328, 1.332, 1.336, 1.34, 1.344, 1.348,
-    1.352, 1.356, 1.36, 1.364, 1.368, 1.372, 1.3760000000000001,
-    1.3800000000000001, 1.3840000000000001, 1.3880000000000001,
-    1.3920000000000001, 1.3960000000000001, 1.4000000000000001,
-    1.4040000000000001, 1.408, 1.412, 1.416, 1.42, 1.424, 1.428, 1.432, 1.436,
-    1.44, 1.444, 1.448, 1.452, 1.456, 1.46, 1.464, 1.468, 1.472, 1.476, 1.48,
-    1.484, 1.488, 1.492, 1.496, 1.5, 1.504, 1.508, 1.512, 1.516, 1.52, 1.524,
-    1.528, 1.532, 1.536, 1.54, 1.544, 1.548, 1.552, 1.556, 1.56, 1.564, 1.568,
-    1.572, 1.576, 1.58, 1.584, 1.588, 1.592, 1.596, 1.6, 1.604, 1.608, 1.612,
-    1.616, 1.62, 1.624, 1.6280000000000001, 1.6320000000000001,
-    1.6360000000000001, 1.6400000000000001, 1.6440000000000001,
-    1.6480000000000001, 1.6520000000000001, 1.6560000000000001,
-    1.6600000000000001, 1.6640000000000001, 1.668, 1.672, 1.676, 1.68, 1.684,
-    1.688, 1.692, 1.696, 1.7, 1.704, 1.708, 1.712, 1.716, 1.72, 1.724, 1.728,
-    1.732, 1.736, 1.74, 1.744, 1.748, 1.752, 1.756, 1.76, 1.764, 1.768, 1.772,
-    1.776, 1.78, 1.784, 1.788, 1.792, 1.796, 1.8, 1.804, 1.808, 1.812, 1.816,
-    1.82, 1.824, 1.828, 1.832, 1.836, 1.84, 1.844, 1.848, 1.852, 1.856, 1.86,
-    1.864, 1.868, 1.872, 1.8760000000000001, 1.8800000000000001,
-    1.8840000000000001, 1.8880000000000001, 1.8920000000000001,
-    1.8960000000000001, 1.9000000000000001, 1.9040000000000001,
-    1.9080000000000001, 1.9120000000000001, 1.9160000000000001, 1.92, 1.924,
-    1.928, 1.932, 1.936, 1.94, 1.944, 1.948, 1.952, 1.956, 1.96, 1.964, 1.968,
-    1.972, 1.976, 1.98, 1.984, 1.988, 1.992, 1.996, 2.0, 2.004, 2.008, 2.012,
-    2.016, 2.02, 2.024, 2.028, 2.032, 2.036, 2.04, 2.044, 2.048, 2.052, 2.056,
-    2.06, 2.064, 2.068, 2.072, 2.076, 2.08, 2.084, 2.088, 2.092, 2.096, 2.1,
-    2.104, 2.108, 2.112, 2.116, 2.12, 2.124, 2.128, 2.132, 2.136, 2.14, 2.144,
-    2.148, 2.152, 2.156, 2.16, 2.164, 2.168, 2.172, 2.176, 2.18, 2.184, 2.188,
-    2.192, 2.196, 2.2, 2.204, 2.208, 2.212, 2.216, 2.22, 2.224, 2.228, 2.232,
-    2.236, 2.24, 2.244, 2.248, 2.2520000000000002, 2.2560000000000002,
-    2.2600000000000002, 2.2640000000000002, 2.2680000000000002,
-    2.2720000000000002, 2.2760000000000002, 2.2800000000000002,
-    2.2840000000000003, 2.2880000000000003, 2.2920000000000003,
-    2.2960000000000003, 2.3000000000000003, 2.3040000000000003, 2.308, 2.312,
-    2.316, 2.32, 2.324, 2.328, 2.332, 2.336, 2.34, 2.344, 2.348, 2.352, 2.356,
-    2.36, 2.364, 2.368, 2.372, 2.376, 2.38, 2.384, 2.388, 2.392, 2.396, 2.4,
-    2.404, 2.408, 2.412, 2.416, 2.42, 2.424, 2.428, 2.432, 2.436, 2.44, 2.444,
-    2.448, 2.452, 2.456, 2.46, 2.464, 2.468, 2.472, 2.476, 2.48, 2.484, 2.488,
-    2.492, 2.496, 2.5, 2.504, 2.508, 2.512, 2.516, 2.52, 2.524, 2.528, 2.532,
-    2.536, 2.54, 2.544, 2.548, 2.552, 2.556, 2.56, 2.564, 2.568, 2.572, 2.576,
-    2.58, 2.584, 2.588, 2.592, 2.596, 2.6, 2.604, 2.608, 2.612, 2.616, 2.62,
-    2.624, 2.628, 2.632, 2.636, 2.64, 2.644, 2.648, 2.652, 2.656, 2.66, 2.664,
-    2.668, 2.672, 2.676, 2.68, 2.684, 2.688, 2.692, 2.696, 2.7, 2.704, 2.708,
-    2.712, 2.716, 2.72, 2.724, 2.728, 2.732, 2.736, 2.74, 2.744, 2.748,
-    2.7520000000000002, 2.7560000000000002, 2.7600000000000002,
-    2.7640000000000002, 2.7680000000000002, 2.7720000000000002,
-    2.7760000000000002, 2.7800000000000002, 2.7840000000000003,
-    2.7880000000000003, 2.7920000000000003, 2.7960000000000003,
-    2.8000000000000003, 2.8040000000000003, 2.8080000000000003,
-    2.8120000000000003, 2.816, 2.82, 2.824, 2.828, 2.832, 2.836, 2.84, 2.844,
-    2.848, 2.852, 2.856, 2.86, 2.864, 2.868, 2.872, 2.876, 2.88, 2.884, 2.888,
-    2.892, 2.896, 2.9, 2.904, 2.908, 2.912, 2.916, 2.92, 2.924, 2.928, 2.932,
-    2.936, 2.94, 2.944, 2.948, 2.952, 2.956, 2.96, 2.964, 2.968, 2.972, 2.976,
-    2.98, 2.984, 2.988, 2.992, 2.996, 3.0, 3.004, 3.008, 3.012, 3.016, 3.02,
-    3.024, 3.028, 3.032, 3.036, 3.04, 3.044, 3.048, 3.052, 3.056, 3.06, 3.064,
-    3.068, 3.072, 3.076, 3.08, 3.084, 3.088, 3.092, 3.096, 3.1, 3.104, 3.108,
-    3.112, 3.116, 3.12, 3.124, 3.128, 3.132, 3.136, 3.14, 3.144, 3.148, 3.152,
-    3.156, 3.16, 3.164, 3.168, 3.172, 3.176, 3.18, 3.184, 3.188, 3.192, 3.196,
-    3.2, 3.204, 3.208, 3.212, 3.216, 3.22, 3.224, 3.228, 3.232, 3.236, 3.24,
-    3.244, 3.248, 3.2520000000000002, 3.2560000000000002, 3.2600000000000002,
-    3.2640000000000002, 3.2680000000000002, 3.2720000000000002,
-    3.2760000000000002, 3.2800000000000002, 3.2840000000000003,
-    3.2880000000000003, 3.2920000000000003, 3.2960000000000003,
-    3.3000000000000003, 3.3040000000000003, 3.3080000000000003,
-    3.3120000000000003, 3.3160000000000003, 3.3200000000000003,
-    3.3240000000000003, 3.3280000000000003, 3.332, 3.336, 3.34, 3.344, 3.348,
-    3.352, 3.356, 3.36, 3.364, 3.368, 3.372, 3.376, 3.38, 3.384, 3.388, 3.392,
-    3.396, 3.4, 3.404, 3.408, 3.412, 3.416, 3.42, 3.424, 3.428, 3.432, 3.436,
-    3.44, 3.444, 3.448, 3.452, 3.456, 3.46, 3.464, 3.468, 3.472, 3.476, 3.48,
-    3.484, 3.488, 3.492, 3.496, 3.5, 3.504, 3.508, 3.512, 3.516, 3.52, 3.524,
-    3.528, 3.532, 3.536, 3.54, 3.544, 3.548, 3.552, 3.556, 3.56, 3.564, 3.568,
-    3.572, 3.576, 3.58, 3.584, 3.588, 3.592, 3.596, 3.6, 3.604, 3.608, 3.612,
-    3.616, 3.62, 3.624, 3.628, 3.632, 3.636, 3.64, 3.644, 3.648, 3.652, 3.656,
-    3.66, 3.664, 3.668, 3.672, 3.676, 3.68, 3.684, 3.688, 3.692, 3.696, 3.7,
-    3.704, 3.708, 3.712, 3.716, 3.72, 3.724, 3.728, 3.732, 3.736, 3.74, 3.744,
-    3.748, 3.7520000000000002, 3.7560000000000002, 3.7600000000000002,
-    3.7640000000000002, 3.7680000000000002, 3.7720000000000002,
-    3.7760000000000002, 3.7800000000000002, 3.7840000000000003,
-    3.7880000000000003, 3.7920000000000003, 3.7960000000000003,
-    3.8000000000000003, 3.8040000000000003, 3.8080000000000003,
-    3.8120000000000003, 3.8160000000000003, 3.8200000000000003,
-    3.8240000000000003, 3.8280000000000003, 3.8320000000000003,
-    3.8360000000000003, 3.84, 3.844, 3.848, 3.852, 3.856, 3.86, 3.864, 3.868,
-    3.872, 3.876, 3.88, 3.884, 3.888, 3.892, 3.896, 3.9, 3.904, 3.908, 3.912,
-    3.916, 3.92, 3.924, 3.928, 3.932, 3.936, 3.94, 3.944, 3.948, 3.952, 3.956,
-    3.96, 3.964, 3.968, 3.972, 3.976, 3.98, 3.984, 3.988, 3.992, 3.996, 4.0,
-    4.0040000000000004, 4.008, 4.0120000000000005, 4.016, 4.0200000000000005,
-    4.024, 4.0280000000000005, 4.032, 4.0360000000000005, 4.04,
-    4.0440000000000005, 4.048, 4.0520000000000005, 4.056, 4.0600000000000005,
-    4.064, 4.0680000000000005, 4.072, 4.0760000000000005, 4.08,
-    4.0840000000000005, 4.088, 4.0920000000000005, 4.096, 4.1, 4.104, 4.108,
-    4.112, 4.116, 4.12, 4.124, 4.128, 4.132, 4.136, 4.14, 4.144, 4.148, 4.152,
-    4.156, 4.16, 4.164, 4.168, 4.172, 4.176, 4.18, 4.184, 4.188, 4.192, 4.196,
-    4.2, 4.204, 4.208, 4.212, 4.216, 4.22, 4.224, 4.228, 4.232, 4.236, 4.24,
-    4.244, 4.248, 4.252, 4.256, 4.26, 4.264, 4.268, 4.272, 4.276, 4.28, 4.284,
-    4.288, 4.292, 4.296, 4.3, 4.304, 4.308, 4.312, 4.316, 4.32, 4.324, 4.328,
-    4.332, 4.336, 4.34, 4.344, 4.348, 4.352, 4.356, 4.36, 4.364, 4.368, 4.372,
-    4.376, 4.38, 4.384, 4.388, 4.392, 4.396, 4.4, 4.404, 4.408, 4.412, 4.416,
-    4.42, 4.424, 4.428, 4.432, 4.436, 4.44, 4.444, 4.448, 4.452, 4.456, 4.46,
-    4.464, 4.468, 4.472, 4.476, 4.48, 4.484, 4.488, 4.492, 4.496, 4.5,
-    4.5040000000000004, 4.508, 4.5120000000000005, 4.516, 4.5200000000000005,
-    4.524, 4.5280000000000005, 4.532, 4.5360000000000005, 4.54,
-    4.5440000000000005, 4.548, 4.5520000000000005, 4.556, 4.5600000000000005,
-    4.564, 4.5680000000000005, 4.572, 4.5760000000000005, 4.58,
-    4.5840000000000005, 4.588, 4.5920000000000005, 4.596, 4.6000000000000005,
-    4.604, 4.6080000000000005, 4.612, 4.616, 4.62, 4.624, 4.628, 4.632, 4.636,
-    4.64, 4.644, 4.648, 4.652, 4.656, 4.66, 4.664, 4.668, 4.672, 4.676, 4.68,
-    4.684, 4.688, 4.692, 4.696, 4.7, 4.704, 4.708, 4.712, 4.716, 4.72, 4.724,
-    4.728, 4.732, 4.736, 4.74, 4.744, 4.748, 4.752, 4.756, 4.76, 4.764, 4.768,
-    4.772, 4.776, 4.78, 4.784, 4.788, 4.792, 4.796, 4.8, 4.804, 4.808, 4.812,
-    4.816, 4.82, 4.824, 4.828, 4.832, 4.836, 4.84, 4.844, 4.848, 4.852, 4.856,
-    4.86, 4.864, 4.868, 4.872, 4.876, 4.88, 4.884, 4.888, 4.892, 4.896, 4.9,
-    4.904, 4.908, 4.912, 4.916, 4.92, 4.924, 4.928, 4.932, 4.936, 4.94, 4.944,
-    4.948, 4.952, 4.956, 4.96, 4.964, 4.968, 4.972, 4.976, 4.98, 4.984, 4.988,
-    4.992, 4.996, 5.0, 5.0040000000000004, 5.008, 5.0120000000000005, 5.016,
-    5.0200000000000005, 5.024, 5.0280000000000005, 5.032, 5.0360000000000005,
-    5.04, 5.0440000000000005, 5.048, 5.0520000000000005, 5.056,
-    5.0600000000000005, 5.064, 5.0680000000000005, 5.072, 5.0760000000000005,
-    5.08, 5.0840000000000005, 5.088, 5.0920000000000005, 5.096,
-    5.1000000000000005, 5.104, 5.1080000000000005, 5.112, 5.1160000000000005,
-    5.12, 5.124, 5.128, 5.132, 5.136, 5.14, 5.144, 5.148, 5.152, 5.156, 5.16,
-    5.164, 5.168, 5.172, 5.176, 5.18, 5.184, 5.188, 5.192, 5.196, 5.2, 5.204,
-    5.208, 5.212, 5.216, 5.22, 5.224, 5.228, 5.232, 5.236, 5.24, 5.244, 5.248,
-    5.252, 5.256, 5.26, 5.264, 5.268, 5.272, 5.276, 5.28, 5.284, 5.288, 5.292,
-    5.296, 5.3, 5.304, 5.308, 5.312, 5.316, 5.32, 5.324, 5.328, 5.332, 5.336,
-    5.34, 5.344, 5.348, 5.352, 5.356, 5.36, 5.364, 5.368, 5.372, 5.376, 5.38,
-    5.384, 5.388, 5.392, 5.396, 5.4, 5.404, 5.408, 5.412, 5.416, 5.42, 5.424,
-    5.428, 5.432, 5.436, 5.44, 5.444, 5.448, 5.452, 5.456, 5.46, 5.464, 5.468,
-    5.472, 5.476, 5.48, 5.484, 5.488, 5.492, 5.496, 5.5, 5.5040000000000004,
-    5.508, 5.5120000000000005, 5.516, 5.5200000000000005, 5.524,
-    5.5280000000000005, 5.532, 5.5360000000000005, 5.54, 5.5440000000000005,
-    5.548, 5.5520000000000005, 5.556, 5.5600000000000005, 5.564,
-    5.5680000000000005, 5.572, 5.5760000000000005, 5.58, 5.5840000000000005,
-    5.588, 5.5920000000000005, 5.596, 5.6000000000000005, 5.604,
-    5.6080000000000005, 5.612, 5.6160000000000005, 5.62, 5.6240000000000006,
-    5.628, 5.632, 5.636, 5.64, 5.644, 5.648, 5.652, 5.656, 5.66, 5.664, 5.668,
-    5.672, 5.676, 5.68, 5.684, 5.688, 5.692, 5.696, 5.7, 5.704, 5.708, 5.712,
-    5.716, 5.72, 5.724, 5.728, 5.732, 5.736, 5.74, 5.744, 5.748, 5.752, 5.756,
-    5.76, 5.764, 5.768, 5.772, 5.776, 5.78, 5.784, 5.788, 5.792, 5.796, 5.8,
-    5.804, 5.808, 5.812, 5.816, 5.82, 5.824, 5.828, 5.832, 5.836, 5.84, 5.844,
-    5.848, 5.852, 5.856, 5.86, 5.864, 5.868, 5.872, 5.876, 5.88, 5.884, 5.888,
-    5.892, 5.896, 5.9, 5.904, 5.908, 5.912, 5.916, 5.92, 5.924, 5.928, 5.932,
-    5.936, 5.94, 5.944, 5.948, 5.952, 5.956, 5.96, 5.964, 5.968, 5.972, 5.976,
-    5.98, 5.984, 5.988, 5.992, 5.996, 6.0, 6.0040000000000004, 6.008,
-    6.0120000000000005, 6.016, 6.0200000000000005, 6.024, 6.0280000000000005,
-    6.032, 6.0360000000000005, 6.04, 6.0440000000000005, 6.048,
-    6.0520000000000005, 6.056, 6.0600000000000005, 6.064, 6.0680000000000005,
-    6.072, 6.0760000000000005, 6.08, 6.0840000000000005, 6.088,
-    6.0920000000000005, 6.096, 6.1000000000000005, 6.104, 6.1080000000000005,
-    6.112, 6.1160000000000005, 6.12, 6.1240000000000006, 6.128,
-    6.1320000000000006, 6.136, 6.1400000000000006, 6.144, 6.148, 6.152, 6.156,
-    6.16, 6.164, 6.168, 6.172, 6.176, 6.18, 6.184, 6.188, 6.192, 6.196, 6.2,
-    6.204, 6.208, 6.212, 6.216, 6.22, 6.224, 6.228, 6.232, 6.236, 6.24, 6.244,
-    6.248, 6.252, 6.256, 6.26, 6.264, 6.268, 6.272, 6.276, 6.28, 6.284, 6.288,
-    6.292, 6.296, 6.3, 6.304, 6.308, 6.312, 6.316, 6.32, 6.324, 6.328, 6.332,
-    6.336, 6.34, 6.344, 6.348, 6.352, 6.356, 6.36, 6.364, 6.368, 6.372, 6.376,
-    6.38, 6.384, 6.388, 6.392, 6.396, 6.4, 6.404, 6.408, 6.412, 6.416, 6.42,
-    6.424, 6.428, 6.432, 6.436, 6.44, 6.444, 6.448, 6.452, 6.456, 6.46, 6.464,
-    6.468, 6.472, 6.476, 6.48, 6.484, 6.488, 6.492, 6.496, 6.5,
-    6.5040000000000004, 6.508, 6.5120000000000005, 6.516, 6.5200000000000005,
-    6.524, 6.5280000000000005, 6.532, 6.5360000000000005, 6.54,
-    6.5440000000000005, 6.548, 6.5520000000000005, 6.556, 6.5600000000000005,
-    6.564, 6.5680000000000005, 6.572, 6.5760000000000005, 6.58,
-    6.5840000000000005, 6.588, 6.5920000000000005, 6.596, 6.6000000000000005,
-    6.604, 6.6080000000000005, 6.612, 6.6160000000000005, 6.62,
-    6.6240000000000006, 6.628, 6.6320000000000006, 6.636, 6.6400000000000006,
-    6.644, 6.6480000000000006, 6.652, 6.6560000000000006, 6.66, 6.664, 6.668,
-    6.672, 6.676, 6.68, 6.684, 6.688, 6.692, 6.696, 6.7, 6.704, 6.708, 6.712,
-    6.716, 6.72, 6.724, 6.728, 6.732, 6.736, 6.74, 6.744, 6.748, 6.752, 6.756,
-    6.76, 6.764, 6.768, 6.772, 6.776, 6.78, 6.784, 6.788, 6.792, 6.796, 6.8,
-    6.804, 6.808, 6.812, 6.816, 6.82, 6.824, 6.828, 6.832, 6.836, 6.84, 6.844,
-    6.848, 6.852, 6.856, 6.86, 6.864, 6.868, 6.872, 6.876, 6.88, 6.884, 6.888,
-    6.892, 6.896, 6.9, 6.904, 6.908, 6.912, 6.916, 6.92, 6.924, 6.928, 6.932,
-    6.936, 6.94, 6.944, 6.948, 6.952, 6.956, 6.96, 6.964, 6.968, 6.972, 6.976,
-    6.98, 6.984, 6.988, 6.992, 6.996, 7.0, 7.0040000000000004, 7.008,
-    7.0120000000000005, 7.016, 7.0200000000000005, 7.024, 7.0280000000000005,
-    7.032, 7.0360000000000005, 7.04, 7.0440000000000005, 7.048,
-    7.0520000000000005, 7.056, 7.0600000000000005, 7.064, 7.0680000000000005,
-    7.072, 7.0760000000000005, 7.08, 7.0840000000000005, 7.088,
-    7.0920000000000005, 7.096, 7.1000000000000005, 7.104, 7.1080000000000005,
-    7.112, 7.1160000000000005, 7.12, 7.1240000000000006, 7.128,
-    7.1320000000000006, 7.136, 7.1400000000000006, 7.144, 7.1480000000000006,
-    7.152, 7.1560000000000006, 7.16, 7.1640000000000006, 7.168, 7.172, 7.176,
-    7.18, 7.184, 7.188, 7.192, 7.196, 7.2, 7.204, 7.208, 7.212, 7.216, 7.22,
-    7.224, 7.228, 7.232, 7.236, 7.24, 7.244, 7.248, 7.252, 7.256, 7.26, 7.264,
-    7.268, 7.272, 7.276, 7.28, 7.284, 7.288, 7.292, 7.296, 7.3, 7.304, 7.308,
-    7.312, 7.316, 7.32, 7.324, 7.328, 7.332, 7.336, 7.34, 7.344, 7.348, 7.352,
-    7.356, 7.36, 7.364, 7.368, 7.372, 7.376, 7.38, 7.384, 7.388, 7.392, 7.396,
-    7.4, 7.404, 7.408, 7.412, 7.416, 7.42, 7.424, 7.428, 7.432, 7.436, 7.44,
-    7.444, 7.448, 7.452, 7.456, 7.46, 7.464, 7.468, 7.472, 7.476, 7.48, 7.484,
-    7.488, 7.492, 7.496, 7.5, 7.5040000000000004, 7.508, 7.5120000000000005,
-    7.516, 7.5200000000000005, 7.524, 7.5280000000000005, 7.532,
-    7.5360000000000005, 7.54, 7.5440000000000005, 7.548, 7.5520000000000005,
-    7.556, 7.5600000000000005, 7.564, 7.5680000000000005, 7.572,
-    7.5760000000000005, 7.58, 7.5840000000000005, 7.588, 7.5920000000000005,
-    7.596, 7.6000000000000005, 7.604, 7.6080000000000005, 7.612,
-    7.6160000000000005, 7.62, 7.6240000000000006, 7.628, 7.6320000000000006,
-    7.636, 7.6400000000000006, 7.644, 7.6480000000000006, 7.652,
-    7.6560000000000006, 7.66, 7.6640000000000006, 7.668, 7.6720000000000006,
-    7.676, 7.68, 7.684, 7.688, 7.692, 7.696, 7.7, 7.704, 7.708, 7.712, 7.716,
-    7.72, 7.724, 7.728, 7.732, 7.736, 7.74, 7.744, 7.748, 7.752, 7.756, 7.76,
-    7.764, 7.768, 7.772, 7.776, 7.78, 7.784, 7.788, 7.792, 7.796, 7.8, 7.804,
-    7.808, 7.812, 7.816, 7.82, 7.824, 7.828, 7.832, 7.836, 7.84, 7.844, 7.848,
-    7.852, 7.856, 7.86, 7.864, 7.868, 7.872, 7.876, 7.88, 7.884, 7.888, 7.892,
-    7.896, 7.9, 7.904, 7.908, 7.912, 7.916, 7.92, 7.924, 7.928, 7.932, 7.936,
-    7.94, 7.944, 7.948, 7.952, 7.956, 7.96, 7.964, 7.968, 7.972, 7.976, 7.98,
-    7.984, 7.988, 7.992, 7.996, 8.0, 8.004, 8.0080000000000009, 8.012, 8.016,
-    8.02, 8.0240000000000009, 8.028, 8.032, 8.036, 8.0400000000000009, 8.044,
-    8.048, 8.052, 8.0560000000000009, 8.06, 8.064, 8.068, 8.072000000000001,
-    8.076, 8.08, 8.084, 8.088000000000001, 8.092, 8.096, 8.1, 8.104000000000001,
-    8.108, 8.112, 8.116, 8.120000000000001, 8.124, 8.128, 8.132,
-    8.136000000000001, 8.14, 8.144, 8.148, 8.152000000000001, 8.156, 8.16, 8.164,
-    8.168000000000001, 8.172, 8.176, 8.18, 8.1840000000000011, 8.188, 8.192,
-    8.196, 8.2, 8.204, 8.208, 8.212, 8.216, 8.22, 8.224, 8.228, 8.232, 8.236,
-    8.24, 8.244, 8.248, 8.252, 8.256, 8.26, 8.264, 8.268, 8.272, 8.276, 8.28,
-    8.284, 8.288, 8.292, 8.296, 8.3, 8.304, 8.308, 8.312, 8.316, 8.32, 8.324,
-    8.328, 8.332, 8.336, 8.34, 8.344, 8.348, 8.352, 8.356, 8.36, 8.364, 8.368,
-    8.372, 8.376, 8.38, 8.384, 8.388, 8.392, 8.396, 8.4, 8.404, 8.408, 8.412,
-    8.416, 8.42, 8.424, 8.428, 8.432, 8.436, 8.44, 8.444, 8.448, 8.452, 8.456,
-    8.46, 8.464, 8.468, 8.472, 8.476, 8.48, 8.484, 8.488, 8.492, 8.496, 8.5,
-    8.504, 8.5080000000000009, 8.512, 8.516, 8.52, 8.5240000000000009, 8.528,
-    8.532, 8.536, 8.5400000000000009, 8.544, 8.548, 8.552, 8.5560000000000009,
-    8.56, 8.564, 8.568, 8.572000000000001, 8.576, 8.58, 8.584, 8.588000000000001,
-    8.592, 8.596, 8.6, 8.604000000000001, 8.608, 8.612, 8.616, 8.620000000000001,
-    8.624, 8.628, 8.632, 8.636000000000001, 8.64, 8.644, 8.648,
-    8.652000000000001, 8.656, 8.66, 8.664, 8.668000000000001, 8.672, 8.676, 8.68,
-    8.6840000000000011, 8.688, 8.692, 8.696, 8.7000000000000011, 8.704, 8.708,
-    8.712, 8.716, 8.72, 8.724, 8.728, 8.732, 8.736, 8.74, 8.744, 8.748, 8.752,
-    8.756, 8.76, 8.764, 8.768, 8.772, 8.776, 8.78, 8.784, 8.788, 8.792, 8.796,
-    8.8, 8.804, 8.808, 8.812, 8.816, 8.82, 8.824, 8.828, 8.832, 8.836, 8.84,
-    8.844, 8.848, 8.852, 8.856, 8.86, 8.864, 8.868, 8.872, 8.876, 8.88, 8.884,
-    8.888, 8.892, 8.896, 8.9, 8.904, 8.908, 8.912, 8.916, 8.92, 8.924, 8.928,
-    8.932, 8.936, 8.94, 8.944, 8.948, 8.952, 8.956, 8.96, 8.964, 8.968, 8.972,
-    8.976, 8.98, 8.984, 8.988, 8.992, 8.996, 9.0, 9.004, 9.0080000000000009,
-    9.012, 9.016, 9.02, 9.0240000000000009, 9.028, 9.032, 9.036,
-    9.0400000000000009, 9.044, 9.048, 9.052, 9.0560000000000009, 9.06, 9.064,
-    9.068, 9.072000000000001, 9.076, 9.08, 9.084, 9.088000000000001, 9.092,
-    9.096, 9.1, 9.104000000000001, 9.108, 9.112, 9.116, 9.120000000000001, 9.124,
-    9.128, 9.132, 9.136000000000001, 9.14, 9.144, 9.148, 9.152000000000001,
-    9.156, 9.16, 9.164, 9.168000000000001, 9.172, 9.176, 9.18,
-    9.1840000000000011, 9.188, 9.192, 9.196, 9.2000000000000011, 9.204, 9.208,
-    9.212, 9.2160000000000011, 9.22, 9.224, 9.228, 9.232, 9.236, 9.24, 9.244,
-    9.248, 9.252, 9.256, 9.26, 9.264, 9.268, 9.272, 9.276, 9.28, 9.284, 9.288,
-    9.292, 9.296, 9.3, 9.304, 9.308, 9.312, 9.316, 9.32, 9.324, 9.328, 9.332,
-    9.336, 9.34, 9.344, 9.348, 9.352, 9.356, 9.36, 9.364, 9.368, 9.372, 9.376,
-    9.38, 9.384, 9.388, 9.392, 9.396, 9.4, 9.404, 9.408, 9.412, 9.416, 9.42,
-    9.424, 9.428, 9.432, 9.436, 9.44, 9.444, 9.448, 9.452, 9.456, 9.46, 9.464,
-    9.468, 9.472, 9.476, 9.48, 9.484, 9.488, 9.492, 9.496, 9.5, 9.504,
-    9.5080000000000009, 9.512, 9.516, 9.52, 9.5240000000000009, 9.528, 9.532,
-    9.536, 9.5400000000000009, 9.544, 9.548, 9.552, 9.5560000000000009, 9.56,
-    9.564, 9.568, 9.572000000000001, 9.576, 9.58, 9.584, 9.588000000000001,
-    9.592, 9.596, 9.6, 9.604000000000001, 9.608, 9.612, 9.616, 9.620000000000001,
-    9.624, 9.628, 9.632, 9.636000000000001, 9.64, 9.644, 9.648,
-    9.652000000000001, 9.656, 9.66, 9.664, 9.668000000000001, 9.672, 9.676, 9.68,
-    9.6840000000000011, 9.688, 9.692, 9.696, 9.7000000000000011, 9.704, 9.708,
-    9.712, 9.7160000000000011, 9.72, 9.724, 9.728, 9.732, 9.736, 9.74, 9.744,
-    9.748, 9.752, 9.756, 9.76, 9.764, 9.768, 9.772, 9.776, 9.78, 9.784, 9.788,
-    9.792, 9.796, 9.8, 9.804, 9.808, 9.812, 9.816, 9.82, 9.824, 9.828, 9.832,
-    9.836, 9.84, 9.844, 9.848, 9.852, 9.856, 9.86, 9.864, 9.868, 9.872, 9.876,
-    9.88, 9.884, 9.888, 9.892, 9.896, 9.9, 9.904, 9.908, 9.912, 9.916, 9.92,
-    9.924, 9.928, 9.932, 9.936, 9.94, 9.944, 9.948, 9.952, 9.956, 9.96, 9.964,
-    9.968, 9.972, 9.976, 9.98, 9.984, 9.988, 9.992, 9.996, 9.9999999999999982,
-    10.003999999999998, 10.008, 10.011999999999999, 10.015999999999998,
-    10.019999999999998, 10.024, 10.027999999999999, 10.031999999999998,
-    10.035999999999998, 10.04, 10.043999999999999, 10.047999999999998,
-    10.051999999999998, 10.056, 10.059999999999999, 10.063999999999998,
-    10.067999999999998, 10.072, 10.075999999999999, 10.079999999999998,
-    10.083999999999998, 10.088, 10.091999999999999, 10.095999999999998,
-    10.099999999999998, 10.104, 10.107999999999999, 10.111999999999998,
-    10.115999999999998, 10.12, 10.123999999999999, 10.127999999999998,
-    10.131999999999998, 10.136, 10.139999999999999, 10.143999999999998,
-    10.147999999999998, 10.152, 10.155999999999999, 10.159999999999998,
-    10.163999999999998, 10.168, 10.171999999999999, 10.175999999999998,
-    10.179999999999998, 10.184, 10.187999999999999, 10.191999999999998,
-    10.195999999999998, 10.2, 10.203999999999999, 10.207999999999998,
-    10.211999999999998, 10.216, 10.219999999999999, 10.223999999999998,
-    10.227999999999998, 10.232, 10.235999999999999, 10.239999999999998,
-    10.243999999999998, 10.248, 10.251999999999999, 10.255999999999998,
-    10.259999999999998, 10.264, 10.267999999999999, 10.271999999999998,
-    10.275999999999998, 10.279999999999998, 10.283999999999999,
-    10.287999999999998, 10.291999999999998, 10.295999999999998,
-    10.299999999999999, 10.303999999999998, 10.307999999999998,
-    10.311999999999998, 10.315999999999999, 10.319999999999999,
-    10.323999999999998, 10.327999999999998, 10.331999999999999,
-    10.335999999999999, 10.339999999999998, 10.343999999999998,
-    10.347999999999999, 10.351999999999999, 10.355999999999998,
-    10.359999999999998, 10.363999999999999, 10.367999999999999,
-    10.371999999999998, 10.375999999999998, 10.379999999999999,
-    10.383999999999999, 10.387999999999998, 10.391999999999998,
-    10.395999999999999, 10.399999999999999, 10.403999999999998,
-    10.407999999999998, 10.411999999999999, 10.415999999999999,
-    10.419999999999998, 10.423999999999998, 10.427999999999999,
-    10.431999999999999, 10.435999999999998, 10.439999999999998,
-    10.443999999999999, 10.447999999999999, 10.451999999999998,
-    10.455999999999998, 10.459999999999999, 10.463999999999999,
-    10.467999999999998, 10.471999999999998, 10.475999999999999,
-    10.479999999999999, 10.483999999999998, 10.487999999999998,
-    10.491999999999999, 10.495999999999999, 10.499999999999998,
-    10.503999999999998, 10.508, 10.511999999999999, 10.515999999999998,
-    10.519999999999998, 10.524, 10.527999999999999, 10.531999999999998,
-    10.535999999999998, 10.54, 10.543999999999999, 10.547999999999998,
-    10.551999999999998, 10.556, 10.559999999999999, 10.563999999999998,
-    10.567999999999998, 10.572, 10.575999999999999, 10.579999999999998,
-    10.583999999999998, 10.588, 10.591999999999999, 10.595999999999998,
-    10.599999999999998, 10.604, 10.607999999999999, 10.611999999999998,
-    10.615999999999998, 10.62, 10.623999999999999, 10.627999999999998,
-    10.631999999999998, 10.636, 10.639999999999999, 10.643999999999998,
-    10.647999999999998, 10.652, 10.655999999999999, 10.659999999999998,
-    10.663999999999998, 10.668, 10.671999999999999, 10.675999999999998,
-    10.679999999999998, 10.684, 10.687999999999999, 10.691999999999998,
-    10.695999999999998, 10.7, 10.703999999999999, 10.707999999999998,
-    10.711999999999998, 10.716, 10.719999999999999, 10.723999999999998,
-    10.727999999999998, 10.732, 10.735999999999999, 10.739999999999998,
-    10.743999999999998, 10.748, 10.751999999999999, 10.755999999999998,
-    10.759999999999998, 10.764, 10.767999999999999, 10.771999999999998,
-    10.775999999999998, 10.779999999999998, 10.783999999999999,
-    10.787999999999998, 10.791999999999998, 10.795999999999998,
-    10.799999999999999, 10.803999999999998, 10.807999999999998,
-    10.811999999999998, 10.815999999999999, 10.819999999999999,
-    10.823999999999998, 10.827999999999998, 10.831999999999999,
-    10.835999999999999, 10.839999999999998, 10.843999999999998,
-    10.847999999999999, 10.851999999999999, 10.855999999999998,
-    10.859999999999998, 10.863999999999999, 10.867999999999999,
-    10.871999999999998, 10.875999999999998, 10.879999999999999,
-    10.883999999999999, 10.887999999999998, 10.891999999999998,
-    10.895999999999999, 10.899999999999999, 10.903999999999998,
-    10.907999999999998, 10.911999999999999, 10.915999999999999,
-    10.919999999999998, 10.923999999999998, 10.927999999999999,
-    10.931999999999999, 10.935999999999998, 10.939999999999998,
-    10.943999999999999, 10.947999999999999, 10.951999999999998,
-    10.955999999999998, 10.959999999999999, 10.963999999999999,
-    10.967999999999998, 10.971999999999998, 10.975999999999999,
-    10.979999999999999, 10.983999999999998, 10.987999999999998,
-    10.991999999999999, 10.995999999999999, 10.999999999999998,
-    11.003999999999998, 11.008, 11.011999999999999, 11.015999999999998,
-    11.019999999999998, 11.024, 11.027999999999999, 11.031999999999998,
-    11.035999999999998, 11.04, 11.043999999999999, 11.047999999999998,
-    11.051999999999998, 11.056, 11.059999999999999, 11.063999999999998,
-    11.067999999999998, 11.072, 11.075999999999999, 11.079999999999998,
-    11.083999999999998, 11.088, 11.091999999999999, 11.095999999999998,
-    11.099999999999998, 11.104, 11.107999999999999, 11.111999999999998,
-    11.115999999999998, 11.12, 11.123999999999999, 11.127999999999998,
-    11.131999999999998, 11.136, 11.139999999999999, 11.143999999999998,
-    11.147999999999998, 11.152, 11.155999999999999, 11.159999999999998,
-    11.163999999999998, 11.168, 11.171999999999999, 11.175999999999998,
-    11.179999999999998, 11.184, 11.187999999999999, 11.191999999999998,
-    11.195999999999998, 11.2, 11.203999999999999, 11.207999999999998,
-    11.211999999999998, 11.216, 11.219999999999999, 11.223999999999998,
-    11.227999999999998, 11.232, 11.235999999999999, 11.239999999999998,
-    11.243999999999998, 11.248, 11.251999999999999, 11.255999999999998,
-    11.259999999999998, 11.264, 11.267999999999999, 11.271999999999998,
-    11.275999999999998, 11.28, 11.283999999999999, 11.287999999999998,
-    11.291999999999998, 11.295999999999998, 11.299999999999999,
-    11.303999999999998, 11.307999999999998, 11.311999999999998,
-    11.315999999999999, 11.319999999999999, 11.323999999999998,
-    11.327999999999998, 11.331999999999999, 11.335999999999999,
-    11.339999999999998, 11.343999999999998, 11.347999999999999,
-    11.351999999999999, 11.355999999999998, 11.359999999999998,
-    11.363999999999999, 11.367999999999999, 11.371999999999998,
-    11.375999999999998, 11.379999999999999, 11.383999999999999,
-    11.387999999999998, 11.391999999999998, 11.395999999999999,
-    11.399999999999999, 11.403999999999998, 11.407999999999998,
-    11.411999999999999, 11.415999999999999, 11.419999999999998,
-    11.423999999999998, 11.427999999999999, 11.431999999999999,
-    11.435999999999998, 11.439999999999998, 11.443999999999999,
-    11.447999999999999, 11.451999999999998, 11.455999999999998,
-    11.459999999999999, 11.463999999999999, 11.467999999999998,
-    11.471999999999998, 11.475999999999999, 11.479999999999999,
-    11.483999999999998, 11.487999999999998, 11.491999999999999,
-    11.495999999999999, 11.499999999999998, 11.503999999999998, 11.508,
-    11.511999999999999, 11.515999999999998, 11.519999999999998, 11.524,
-    11.527999999999999, 11.531999999999998, 11.535999999999998, 11.54,
-    11.543999999999999, 11.547999999999998, 11.551999999999998, 11.556,
-    11.559999999999999, 11.563999999999998, 11.567999999999998, 11.572,
-    11.575999999999999, 11.579999999999998, 11.583999999999998, 11.588,
-    11.591999999999999, 11.595999999999998, 11.599999999999998, 11.604,
-    11.607999999999999, 11.611999999999998, 11.615999999999998, 11.62,
-    11.623999999999999, 11.627999999999998, 11.631999999999998, 11.636,
-    11.639999999999999, 11.643999999999998, 11.647999999999998, 11.652,
-    11.655999999999999, 11.659999999999998, 11.663999999999998, 11.668,
-    11.671999999999999, 11.675999999999998, 11.679999999999998, 11.684,
-    11.687999999999999, 11.691999999999998, 11.695999999999998, 11.7,
-    11.703999999999999, 11.707999999999998, 11.711999999999998, 11.716,
-    11.719999999999999, 11.723999999999998, 11.727999999999998, 11.732,
-    11.735999999999999, 11.739999999999998, 11.743999999999998, 11.748,
-    11.751999999999999, 11.755999999999998, 11.759999999999998, 11.764,
-    11.767999999999999, 11.771999999999998, 11.775999999999998, 11.78,
-    11.783999999999999, 11.787999999999998, 11.791999999999998, 11.796,
-    11.799999999999999, 11.803999999999998, 11.807999999999998,
-    11.811999999999998, 11.815999999999999, 11.819999999999999,
-    11.823999999999998, 11.827999999999998, 11.831999999999999,
-    11.835999999999999, 11.839999999999998, 11.843999999999998,
-    11.847999999999999, 11.851999999999999, 11.855999999999998,
-    11.859999999999998, 11.863999999999999, 11.867999999999999,
-    11.871999999999998, 11.875999999999998, 11.879999999999999,
-    11.883999999999999, 11.887999999999998, 11.891999999999998,
-    11.895999999999999, 11.899999999999999, 11.903999999999998,
-    11.907999999999998, 11.911999999999999, 11.915999999999999,
-    11.919999999999998, 11.923999999999998, 11.927999999999999,
-    11.931999999999999, 11.935999999999998, 11.939999999999998,
-    11.943999999999999, 11.947999999999999, 11.951999999999998,
-    11.955999999999998, 11.959999999999999, 11.963999999999999,
-    11.967999999999998, 11.971999999999998, 11.975999999999999,
-    11.979999999999999, 11.983999999999998, 11.987999999999998,
-    11.991999999999999, 11.995999999999999, 11.999999999999998,
-    12.003999999999998, 12.008, 12.011999999999999, 12.015999999999998, 12.02,
-    12.023999999999997, 12.027999999999999, 12.031999999999998,
-    12.035999999999998, 12.04, 12.043999999999999, 12.047999999999998, 12.052,
-    12.055999999999997, 12.059999999999999, 12.063999999999998,
-    12.067999999999998, 12.072, 12.075999999999999, 12.079999999999998, 12.084,
-    12.087999999999997, 12.091999999999999, 12.095999999999998,
-    12.099999999999998, 12.104, 12.107999999999999, 12.111999999999998, 12.116,
-    12.119999999999997, 12.123999999999999, 12.127999999999998,
-    12.131999999999998, 12.136, 12.139999999999999, 12.143999999999998, 12.148,
-    12.151999999999997, 12.155999999999999, 12.159999999999998,
-    12.163999999999998, 12.168, 12.171999999999999, 12.175999999999998, 12.18,
-    12.183999999999997, 12.187999999999999, 12.191999999999998,
-    12.195999999999998, 12.2, 12.203999999999999, 12.207999999999998, 12.212,
-    12.215999999999998, 12.219999999999999, 12.223999999999998,
-    12.227999999999998, 12.232, 12.235999999999999, 12.239999999999998, 12.244,
-    12.247999999999998, 12.251999999999999, 12.255999999999998,
-    12.259999999999998, 12.264, 12.267999999999999, 12.271999999999998, 12.276,
-    12.279999999999998, 12.283999999999999, 12.287999999999998,
-    12.291999999999998, 12.296, 12.299999999999999, 12.303999999999998, 12.308,
-    12.311999999999998, 12.315999999999999, 12.319999999999999,
-    12.323999999999998, 12.328, 12.331999999999997, 12.335999999999999,
-    12.339999999999998, 12.343999999999998, 12.347999999999999,
-    12.351999999999999, 12.355999999999998, 12.36, 12.363999999999997,
-    12.367999999999999, 12.371999999999998, 12.375999999999998,
-    12.379999999999999, 12.383999999999999, 12.387999999999998, 12.392,
-    12.395999999999997, 12.399999999999999, 12.403999999999998,
-    12.407999999999998, 12.411999999999999, 12.415999999999999,
-    12.419999999999998, 12.424, 12.427999999999997, 12.431999999999999,
-    12.435999999999998, 12.439999999999998, 12.443999999999999,
-    12.447999999999999, 12.451999999999998, 12.456, 12.459999999999997,
-    12.463999999999999, 12.467999999999998, 12.471999999999998,
-    12.475999999999999, 12.479999999999999, 12.483999999999998, 12.488,
-    12.491999999999997, 12.495999999999999, 12.499999999999998,
-    12.503999999999998, 12.508, 12.511999999999999, 12.515999999999998, 12.52,
-    12.523999999999997, 12.527999999999999, 12.531999999999998,
-    12.535999999999998, 12.54, 12.543999999999999, 12.547999999999998, 12.552,
-    12.555999999999997, 12.559999999999999, 12.563999999999998,
-    12.567999999999998, 12.572, 12.575999999999999, 12.579999999999998, 12.584,
-    12.587999999999997, 12.591999999999999, 12.595999999999998,
-    12.599999999999998, 12.604, 12.607999999999999, 12.611999999999998, 12.616,
-    12.619999999999997, 12.623999999999999, 12.627999999999998,
-    12.631999999999998, 12.636, 12.639999999999999, 12.643999999999998, 12.648,
-    12.651999999999997, 12.655999999999999, 12.659999999999998,
-    12.663999999999998, 12.668, 12.671999999999999, 12.675999999999998, 12.68,
-    12.683999999999997, 12.687999999999999, 12.691999999999998,
-    12.695999999999998, 12.7, 12.703999999999999, 12.707999999999998, 12.712,
-    12.715999999999998, 12.719999999999999, 12.723999999999998,
-    12.727999999999998, 12.732, 12.735999999999999, 12.739999999999998, 12.744,
-    12.747999999999998, 12.751999999999999, 12.755999999999998,
-    12.759999999999998, 12.764, 12.767999999999999, 12.771999999999998, 12.776,
-    12.779999999999998, 12.783999999999999, 12.787999999999998,
-    12.791999999999998, 12.796, 12.799999999999999, 12.803999999999998, 12.808,
-    12.811999999999998, 12.815999999999999, 12.819999999999999,
-    12.823999999999998, 12.828, 12.831999999999997, 12.835999999999999,
-    12.839999999999998, 12.843999999999998, 12.847999999999999,
-    12.851999999999999, 12.855999999999998, 12.86, 12.863999999999997,
-    12.867999999999999, 12.871999999999998, 12.875999999999998,
-    12.879999999999999, 12.883999999999999, 12.887999999999998, 12.892,
-    12.895999999999997, 12.899999999999999, 12.903999999999998,
-    12.907999999999998, 12.911999999999999, 12.915999999999999,
-    12.919999999999998, 12.924, 12.927999999999997, 12.931999999999999,
-    12.935999999999998, 12.939999999999998, 12.943999999999999,
-    12.947999999999999, 12.951999999999998, 12.956, 12.959999999999997,
-    12.963999999999999, 12.967999999999998, 12.971999999999998,
-    12.975999999999999, 12.979999999999999, 12.983999999999998, 12.988,
-    12.991999999999997, 12.995999999999999, 12.999999999999998,
-    13.003999999999998, 13.008, 13.011999999999999, 13.015999999999998, 13.02,
-    13.023999999999997, 13.027999999999999, 13.031999999999998,
-    13.035999999999998, 13.04, 13.043999999999999, 13.047999999999998, 13.052,
-    13.055999999999997, 13.059999999999999, 13.063999999999998,
-    13.067999999999998, 13.072, 13.075999999999999, 13.079999999999998, 13.084,
-    13.087999999999997, 13.091999999999999, 13.095999999999998,
-    13.099999999999998, 13.104, 13.107999999999999, 13.111999999999998, 13.116,
-    13.119999999999997, 13.123999999999999, 13.127999999999998,
-    13.131999999999998, 13.136, 13.139999999999999, 13.143999999999998, 13.148,
-    13.151999999999997, 13.155999999999999, 13.159999999999998,
-    13.163999999999998, 13.168, 13.171999999999999, 13.175999999999998, 13.18,
-    13.183999999999997, 13.187999999999999, 13.191999999999998,
-    13.195999999999998, 13.2, 13.203999999999999, 13.207999999999998, 13.212,
-    13.215999999999998, 13.219999999999999, 13.223999999999998,
-    13.227999999999998, 13.232, 13.235999999999999, 13.239999999999998, 13.244,
-    13.247999999999998, 13.251999999999999, 13.255999999999998,
-    13.259999999999998, 13.264, 13.267999999999999, 13.271999999999998, 13.276,
-    13.279999999999998, 13.283999999999999, 13.287999999999998,
-    13.291999999999998, 13.296, 13.299999999999999, 13.303999999999998, 13.308,
-    13.311999999999998, 13.315999999999999, 13.319999999999999,
-    13.323999999999998, 13.328, 13.331999999999999, 13.335999999999999,
-    13.339999999999998, 13.343999999999998, 13.347999999999999,
-    13.351999999999999, 13.355999999999998, 13.36, 13.363999999999997,
-    13.367999999999999, 13.371999999999998, 13.375999999999998,
-    13.379999999999999, 13.383999999999999, 13.387999999999998, 13.392,
-    13.395999999999997, 13.399999999999999, 13.403999999999998,
-    13.407999999999998, 13.411999999999999, 13.415999999999999,
-    13.419999999999998, 13.424, 13.427999999999997, 13.431999999999999,
-    13.435999999999998, 13.439999999999998, 13.443999999999999,
-    13.447999999999999, 13.451999999999998, 13.456, 13.459999999999997,
-    13.463999999999999, 13.467999999999998, 13.471999999999998,
-    13.475999999999999, 13.479999999999999, 13.483999999999998, 13.488,
-    13.491999999999997, 13.495999999999999, 13.499999999999998,
-    13.503999999999998, 13.508, 13.511999999999999, 13.515999999999998, 13.52,
-    13.523999999999997, 13.527999999999999, 13.531999999999998,
-    13.535999999999998, 13.54, 13.543999999999999, 13.547999999999998, 13.552,
-    13.555999999999997, 13.559999999999999, 13.563999999999998,
-    13.567999999999998, 13.572, 13.575999999999999, 13.579999999999998, 13.584,
-    13.587999999999997, 13.591999999999999, 13.595999999999998,
-    13.599999999999998, 13.604, 13.607999999999999, 13.611999999999998, 13.616,
-    13.619999999999997, 13.623999999999999, 13.627999999999998,
-    13.631999999999998, 13.636, 13.639999999999999, 13.643999999999998, 13.648,
-    13.651999999999997, 13.655999999999999, 13.659999999999998,
-    13.663999999999998, 13.668, 13.671999999999999, 13.675999999999998, 13.68,
-    13.683999999999997, 13.687999999999999, 13.691999999999998,
-    13.695999999999998, 13.7, 13.703999999999999, 13.707999999999998, 13.712,
-    13.715999999999998, 13.719999999999999, 13.723999999999998,
-    13.727999999999998, 13.732, 13.735999999999999, 13.739999999999998, 13.744,
-    13.747999999999998, 13.751999999999999, 13.755999999999998,
-    13.759999999999998, 13.764, 13.767999999999999, 13.771999999999998, 13.776,
-    13.779999999999998, 13.783999999999999, 13.787999999999998,
-    13.791999999999998, 13.796, 13.799999999999999, 13.803999999999998, 13.808,
-    13.811999999999998, 13.815999999999999, 13.819999999999999,
-    13.823999999999998, 13.828, 13.831999999999999, 13.835999999999999, 13.84,
-    13.843999999999998, 13.847999999999999, 13.851999999999999,
-    13.855999999999998, 13.86, 13.863999999999997, 13.867999999999999,
-    13.871999999999998, 13.875999999999998, 13.879999999999999,
-    13.883999999999999, 13.887999999999998, 13.892, 13.895999999999997,
-    13.899999999999999, 13.903999999999998, 13.907999999999998,
-    13.911999999999999, 13.915999999999999, 13.919999999999998, 13.924,
-    13.927999999999997, 13.931999999999999, 13.935999999999998,
-    13.939999999999998, 13.943999999999999, 13.947999999999999,
-    13.951999999999998, 13.956, 13.959999999999997, 13.963999999999999,
-    13.967999999999998, 13.971999999999998, 13.975999999999999,
-    13.979999999999999, 13.983999999999998, 13.988, 13.991999999999997,
-    13.995999999999999, 13.999999999999998, 14.003999999999998, 14.008,
-    14.011999999999999, 14.015999999999998, 14.02, 14.023999999999997,
-    14.027999999999999, 14.031999999999998, 14.035999999999998, 14.04,
-    14.043999999999999, 14.047999999999998, 14.052, 14.055999999999997,
-    14.059999999999999, 14.063999999999998, 14.067999999999998, 14.072,
-    14.075999999999999, 14.079999999999998, 14.084, 14.087999999999997,
-    14.091999999999999, 14.095999999999998, 14.099999999999998, 14.104,
-    14.107999999999999, 14.111999999999998, 14.116, 14.119999999999997,
-    14.123999999999999, 14.127999999999998, 14.131999999999998, 14.136,
-    14.139999999999999, 14.143999999999998, 14.148, 14.151999999999997,
-    14.155999999999999, 14.159999999999998, 14.163999999999998, 14.168,
-    14.171999999999999, 14.175999999999998, 14.18, 14.183999999999997,
-    14.187999999999999, 14.191999999999998, 14.195999999999998, 14.2,
-    14.203999999999999, 14.207999999999998, 14.212, 14.215999999999998,
-    14.219999999999999, 14.223999999999998, 14.227999999999998, 14.232,
-    14.235999999999999, 14.239999999999998, 14.244, 14.247999999999998,
-    14.251999999999999, 14.255999999999998, 14.259999999999998, 14.264,
-    14.267999999999999, 14.271999999999998, 14.276, 14.279999999999998,
-    14.283999999999999, 14.287999999999998, 14.291999999999998, 14.296,
-    14.299999999999999, 14.303999999999998, 14.308, 14.311999999999998,
-    14.315999999999999, 14.319999999999999, 14.323999999999998, 14.328,
-    14.331999999999999, 14.335999999999999, 14.34, 14.343999999999998,
-    14.347999999999999, 14.351999999999999, 14.355999999999998, 14.36,
-    14.363999999999999, 14.367999999999999, 14.371999999999998,
-    14.375999999999998, 14.379999999999999, 14.383999999999999,
-    14.387999999999998, 14.392, 14.395999999999997, 14.399999999999999,
-    14.403999999999998, 14.407999999999998, 14.411999999999999,
-    14.415999999999999, 14.419999999999998, 14.424, 14.427999999999997,
-    14.431999999999999, 14.435999999999998, 14.439999999999998,
-    14.443999999999999, 14.447999999999999, 14.451999999999998, 14.456,
-    14.459999999999997, 14.463999999999999, 14.467999999999998,
-    14.471999999999998, 14.475999999999999, 14.479999999999999,
-    14.483999999999998, 14.488, 14.491999999999997, 14.495999999999999,
-    14.499999999999998, 14.503999999999998, 14.508, 14.511999999999999,
-    14.515999999999998, 14.52, 14.523999999999997, 14.527999999999999,
-    14.531999999999998, 14.535999999999998, 14.54, 14.543999999999999,
-    14.547999999999998, 14.552, 14.555999999999997, 14.559999999999999,
-    14.563999999999998, 14.567999999999998, 14.572, 14.575999999999999,
-    14.579999999999998, 14.584, 14.587999999999997, 14.591999999999999,
-    14.595999999999998, 14.599999999999998, 14.604, 14.607999999999999,
-    14.611999999999998, 14.616, 14.619999999999997, 14.623999999999999,
-    14.627999999999998, 14.631999999999998, 14.636, 14.639999999999999,
-    14.643999999999998, 14.648, 14.651999999999997, 14.655999999999999,
-    14.659999999999998, 14.663999999999998, 14.668, 14.671999999999999,
-    14.675999999999998, 14.68, 14.683999999999997, 14.687999999999999,
-    14.691999999999998, 14.695999999999998, 14.7, 14.703999999999999,
-    14.707999999999998, 14.712, 14.715999999999998, 14.719999999999999,
-    14.723999999999998, 14.727999999999998, 14.732, 14.735999999999999,
-    14.739999999999998, 14.744, 14.747999999999998, 14.751999999999999,
-    14.755999999999998, 14.759999999999998, 14.764, 14.767999999999999,
-    14.771999999999998, 14.776, 14.779999999999998, 14.783999999999999,
-    14.787999999999998, 14.791999999999998, 14.796, 14.799999999999999,
-    14.803999999999998, 14.808, 14.811999999999998, 14.815999999999999,
-    14.819999999999999, 14.823999999999998, 14.828, 14.831999999999999,
-    14.835999999999999, 14.84, 14.843999999999998, 14.847999999999999,
-    14.851999999999999, 14.855999999999998, 14.86, 14.863999999999999,
-    14.867999999999999, 14.872, 14.875999999999998, 14.879999999999999,
-    14.883999999999999, 14.887999999999998, 14.892, 14.895999999999997,
-    14.899999999999999, 14.903999999999998, 14.907999999999998,
-    14.911999999999999, 14.915999999999999, 14.919999999999998, 14.924,
-    14.927999999999997, 14.931999999999999, 14.935999999999998,
-    14.939999999999998, 14.943999999999999, 14.947999999999999,
-    14.951999999999998, 14.956, 14.959999999999997, 14.963999999999999,
-    14.967999999999998, 14.971999999999998, 14.975999999999999,
-    14.979999999999999, 14.983999999999998, 14.988, 14.991999999999997,
-    14.995999999999999, 14.999999999999998, 15.003999999999998, 15.008,
-    15.011999999999999, 15.015999999999998, 15.02, 15.023999999999997,
-    15.027999999999999, 15.031999999999998, 15.035999999999998, 15.04,
-    15.043999999999999, 15.047999999999998, 15.052, 15.055999999999997,
-    15.059999999999999, 15.063999999999998, 15.067999999999998, 15.072,
-    15.075999999999999, 15.079999999999998, 15.084, 15.087999999999997,
-    15.091999999999999, 15.095999999999998, 15.099999999999998, 15.104,
-    15.107999999999999, 15.111999999999998, 15.116, 15.119999999999997,
-    15.123999999999999, 15.127999999999998, 15.131999999999998, 15.136,
-    15.139999999999999, 15.143999999999998, 15.148, 15.151999999999997,
-    15.155999999999999, 15.159999999999998, 15.163999999999998, 15.168,
-    15.171999999999999, 15.175999999999998, 15.18, 15.183999999999997,
-    15.187999999999999, 15.191999999999998, 15.195999999999998, 15.2,
-    15.203999999999999, 15.207999999999998, 15.212, 15.215999999999998,
-    15.219999999999999, 15.223999999999998, 15.227999999999998, 15.232,
-    15.235999999999999, 15.239999999999998, 15.244, 15.247999999999998,
-    15.251999999999999, 15.255999999999998, 15.259999999999998, 15.264,
-    15.267999999999999, 15.271999999999998, 15.276, 15.279999999999998,
-    15.283999999999999, 15.287999999999998, 15.291999999999998, 15.296,
-    15.299999999999999, 15.303999999999998, 15.308, 15.311999999999998,
-    15.315999999999999, 15.319999999999999, 15.323999999999998, 15.328,
-    15.331999999999999, 15.335999999999999, 15.34, 15.343999999999998,
-    15.347999999999999, 15.351999999999999, 15.355999999999998, 15.36,
-    15.363999999999999, 15.367999999999999, 15.372, 15.375999999999998,
-    15.379999999999999, 15.383999999999999, 15.387999999999998, 15.392,
-    15.395999999999997, 15.399999999999999, 15.403999999999998,
-    15.407999999999998, 15.411999999999999, 15.415999999999999,
-    15.419999999999998, 15.424, 15.427999999999997, 15.431999999999999,
-    15.435999999999998, 15.439999999999998, 15.443999999999999,
-    15.447999999999999, 15.451999999999998, 15.456, 15.459999999999997,
-    15.463999999999999, 15.467999999999998, 15.471999999999998,
-    15.475999999999999, 15.479999999999999, 15.483999999999998, 15.488,
-    15.491999999999997, 15.495999999999999, 15.499999999999998,
-    15.503999999999998, 15.508, 15.511999999999999, 15.515999999999998, 15.52,
-    15.523999999999997, 15.527999999999999, 15.531999999999998,
-    15.535999999999998, 15.54, 15.543999999999999, 15.547999999999998, 15.552,
-    15.555999999999997, 15.559999999999999, 15.563999999999998,
-    15.567999999999998, 15.572, 15.575999999999999, 15.579999999999998, 15.584,
-    15.587999999999997, 15.591999999999999, 15.595999999999998,
-    15.599999999999998, 15.604, 15.607999999999999, 15.611999999999998, 15.616,
-    15.619999999999997, 15.623999999999999, 15.627999999999998,
-    15.631999999999998, 15.636, 15.639999999999999, 15.643999999999998, 15.648,
-    15.651999999999997, 15.655999999999999, 15.659999999999998,
-    15.663999999999998, 15.668, 15.671999999999999, 15.675999999999998, 15.68,
-    15.683999999999997, 15.687999999999999, 15.691999999999998,
-    15.695999999999998, 15.7, 15.703999999999999, 15.707999999999998, 15.712,
-    15.715999999999998, 15.719999999999999, 15.723999999999998,
-    15.727999999999998, 15.732, 15.735999999999999, 15.739999999999998, 15.744,
-    15.747999999999998, 15.751999999999999, 15.755999999999998,
-    15.759999999999998, 15.764, 15.767999999999999, 15.771999999999998, 15.776,
-    15.779999999999998, 15.783999999999999, 15.787999999999998,
-    15.791999999999998, 15.796, 15.799999999999999, 15.803999999999998, 15.808,
-    15.811999999999998, 15.815999999999999, 15.819999999999999,
-    15.823999999999998, 15.828, 15.831999999999999, 15.835999999999999, 15.84,
-    15.843999999999998, 15.847999999999999, 15.851999999999999,
-    15.855999999999998, 15.86, 15.863999999999999, 15.867999999999999, 15.872,
-    15.875999999999998, 15.879999999999999, 15.883999999999999,
-    15.887999999999998, 15.892, 15.895999999999999, 15.899999999999999,
-    15.903999999999998, 15.907999999999998, 15.911999999999999,
-    15.915999999999999, 15.919999999999998, 15.924, 15.927999999999997,
-    15.931999999999999, 15.935999999999998, 15.939999999999998,
-    15.943999999999999, 15.947999999999999, 15.951999999999998, 15.956,
-    15.959999999999997, 15.963999999999999, 15.967999999999998,
-    15.971999999999998, 15.975999999999999, 15.979999999999999,
-    15.983999999999998, 15.988, 15.991999999999997, 15.995999999999999,
-    15.999999999999998, 16.003999999999998, 16.008, 16.012, 16.016, 16.02,
-    16.023999999999997, 16.028, 16.032, 16.035999999999998, 16.04,
-    16.043999999999997, 16.048, 16.052, 16.055999999999997, 16.06, 16.064,
-    16.067999999999998, 16.072, 16.076, 16.08, 16.084, 16.087999999999997,
-    16.092, 16.096, 16.099999999999998, 16.104, 16.107999999999997, 16.112,
-    16.116, 16.119999999999997, 16.124, 16.128, 16.131999999999998, 16.136,
-    16.14, 16.144, 16.148, 16.151999999999997, 16.156, 16.159999999999997,
-    16.163999999999998, 16.168, 16.171999999999997, 16.176, 16.18,
-    16.183999999999997, 16.188, 16.192, 16.195999999999998, 16.2,
-    16.203999999999997, 16.208, 16.212, 16.215999999999998, 16.22,
-    16.223999999999997, 16.227999999999998, 16.232, 16.235999999999997, 16.24,
-    16.244, 16.247999999999998, 16.252, 16.256, 16.259999999999998, 16.264,
-    16.267999999999997, 16.272, 16.276, 16.279999999999998, 16.284,
-    16.287999999999997, 16.291999999999998, 16.296, 16.299999999999997, 16.304,
-    16.308, 16.311999999999998, 16.316, 16.32, 16.323999999999998, 16.328,
-    16.331999999999997, 16.336, 16.34, 16.343999999999998, 16.348,
-    16.351999999999997, 16.355999999999998, 16.36, 16.363999999999997, 16.368,
-    16.372, 16.375999999999998, 16.38, 16.384, 16.387999999999998, 16.392,
-    16.395999999999997, 16.4, 16.404, 16.407999999999998, 16.412,
-    16.415999999999997, 16.419999999999998, 16.424, 16.427999999999997, 16.432,
-    16.436, 16.439999999999998, 16.444, 16.448, 16.451999999999998, 16.456,
-    16.459999999999997, 16.464, 16.468, 16.471999999999998, 16.476,
-    16.479999999999997, 16.483999999999998, 16.488, 16.491999999999997, 16.496,
-    16.5, 16.503999999999998, 16.508, 16.512, 16.516, 16.52, 16.523999999999997,
-    16.528, 16.532, 16.535999999999998, 16.54, 16.543999999999997, 16.548,
-    16.552, 16.555999999999997, 16.56, 16.564, 16.567999999999998, 16.572,
-    16.576, 16.58, 16.584, 16.587999999999997, 16.592, 16.596,
-    16.599999999999998, 16.604, 16.607999999999997, 16.612, 16.616,
-    16.619999999999997, 16.624, 16.628, 16.631999999999998, 16.636, 16.64,
-    16.644, 16.648, 16.651999999999997, 16.656, 16.66, 16.663999999999998,
-    16.668, 16.671999999999997, 16.676, 16.68, 16.683999999999997, 16.688,
-    16.692, 16.695999999999998, 16.7, 16.703999999999997, 16.708, 16.712,
-    16.715999999999998, 16.72, 16.723999999999997, 16.727999999999998, 16.732,
-    16.735999999999997, 16.74, 16.744, 16.747999999999998, 16.752, 16.756,
-    16.759999999999998, 16.764, 16.767999999999997, 16.772, 16.776,
-    16.779999999999998, 16.784, 16.787999999999997, 16.791999999999998, 16.796,
-    16.799999999999997, 16.804, 16.808, 16.811999999999998, 16.816, 16.82,
-    16.823999999999998, 16.828, 16.831999999999997, 16.836, 16.84,
-    16.843999999999998, 16.848, 16.851999999999997, 16.855999999999998, 16.86,
-    16.863999999999997, 16.868, 16.872, 16.875999999999998, 16.88, 16.884,
-    16.887999999999998, 16.892, 16.895999999999997, 16.9, 16.904,
-    16.907999999999998, 16.912, 16.915999999999997, 16.919999999999998, 16.924,
-    16.927999999999997, 16.932, 16.936, 16.939999999999998, 16.944, 16.948,
-    16.951999999999998, 16.956, 16.959999999999997, 16.964, 16.968,
-    16.971999999999998, 16.976, 16.979999999999997, 16.983999999999998, 16.988,
-    16.991999999999997, 16.996, 17.0, 17.003999999999998, 17.008, 17.012, 17.016,
-    17.02, 17.023999999999997, 17.028, 17.032, 17.035999999999998, 17.04,
-    17.043999999999997, 17.048, 17.052, 17.055999999999997, 17.06, 17.064,
-    17.067999999999998, 17.072, 17.076, 17.08, 17.084, 17.087999999999997,
-    17.092, 17.096, 17.099999999999998, 17.104, 17.107999999999997, 17.112,
-    17.116, 17.119999999999997, 17.124, 17.128, 17.131999999999998, 17.136,
-    17.14, 17.144, 17.148, 17.151999999999997, 17.156, 17.16, 17.163999999999998,
-    17.168, 17.171999999999997, 17.176, 17.18, 17.183999999999997, 17.188,
-    17.192, 17.195999999999998, 17.2, 17.203999999999997, 17.208, 17.212,
-    17.215999999999998, 17.22, 17.223999999999997, 17.227999999999998, 17.232,
-    17.235999999999997, 17.24, 17.244, 17.247999999999998, 17.252, 17.256,
-    17.259999999999998, 17.264, 17.267999999999997, 17.272, 17.276,
-    17.279999999999998, 17.284, 17.287999999999997, 17.291999999999998, 17.296,
-    17.299999999999997, 17.304, 17.308, 17.311999999999998, 17.316, 17.32,
-    17.323999999999998, 17.328, 17.331999999999997, 17.336, 17.34,
-    17.343999999999998, 17.348, 17.351999999999997, 17.355999999999998, 17.36,
-    17.363999999999997, 17.368, 17.372, 17.375999999999998, 17.38, 17.384,
-    17.387999999999998, 17.392, 17.395999999999997, 17.4, 17.404,
-    17.407999999999998, 17.412, 17.415999999999997, 17.419999999999998, 17.424,
-    17.427999999999997, 17.432, 17.436, 17.439999999999998, 17.444, 17.448,
-    17.451999999999998, 17.456, 17.459999999999997, 17.464, 17.468,
-    17.471999999999998, 17.476, 17.479999999999997, 17.483999999999998, 17.488,
-    17.491999999999997, 17.496, 17.5, 17.503999999999998, 17.508, 17.512, 17.516,
-    17.52, 17.523999999999997, 17.528, 17.532, 17.535999999999998, 17.54,
-    17.543999999999997, 17.548, 17.552, 17.555999999999997, 17.56, 17.564,
-    17.567999999999998, 17.572, 17.576, 17.58, 17.584, 17.587999999999997,
-    17.592, 17.596, 17.599999999999998, 17.604, 17.607999999999997, 17.612,
-    17.616, 17.619999999999997, 17.624, 17.628, 17.631999999999998, 17.636,
-    17.64, 17.644, 17.648, 17.651999999999997, 17.656, 17.66, 17.663999999999998,
-    17.668, 17.671999999999997, 17.676, 17.68, 17.683999999999997, 17.688,
-    17.692, 17.695999999999998, 17.7, 17.703999999999997, 17.708, 17.712,
-    17.715999999999998, 17.72, 17.723999999999997, 17.727999999999998, 17.732,
-    17.735999999999997, 17.74, 17.744, 17.747999999999998, 17.752, 17.756,
-    17.759999999999998, 17.764, 17.767999999999997, 17.772, 17.776,
-    17.779999999999998, 17.784, 17.787999999999997, 17.791999999999998, 17.796,
-    17.799999999999997, 17.804, 17.808, 17.811999999999998, 17.816, 17.82,
-    17.823999999999998, 17.828, 17.831999999999997, 17.836, 17.84,
-    17.843999999999998, 17.848, 17.851999999999997, 17.855999999999998, 17.86,
-    17.863999999999997, 17.868, 17.872, 17.875999999999998, 17.88, 17.884,
-    17.887999999999998, 17.892, 17.895999999999997, 17.9, 17.904,
-    17.907999999999998, 17.912, 17.915999999999997, 17.919999999999998, 17.924,
-    17.927999999999997, 17.932, 17.936, 17.939999999999998, 17.944, 17.948,
-    17.951999999999998, 17.956, 17.959999999999997, 17.964, 17.968,
-    17.971999999999998, 17.976, 17.979999999999997, 17.983999999999998, 17.988,
-    17.991999999999997, 17.996, 18.0, 18.003999999999998, 18.008, 18.012, 18.016,
-    18.02, 18.023999999999997, 18.028, 18.032, 18.035999999999998, 18.04,
-    18.043999999999997, 18.048, 18.052, 18.055999999999997, 18.06, 18.064,
-    18.067999999999998, 18.072, 18.076, 18.08, 18.084, 18.087999999999997,
-    18.092, 18.096, 18.099999999999998, 18.104, 18.107999999999997, 18.112,
-    18.116, 18.119999999999997, 18.124, 18.128, 18.131999999999998, 18.136,
-    18.139999999999997, 18.144, 18.148, 18.151999999999997, 18.156, 18.16,
-    18.163999999999998, 18.168, 18.171999999999997, 18.176, 18.18,
-    18.183999999999997, 18.188, 18.192, 18.195999999999998, 18.2,
-    18.203999999999997, 18.208, 18.212, 18.215999999999998, 18.22, 18.224,
-    18.227999999999998, 18.232, 18.235999999999997, 18.24, 18.244,
-    18.247999999999998, 18.252, 18.256, 18.259999999999998, 18.264,
-    18.267999999999997, 18.272, 18.276, 18.279999999999998, 18.284, 18.288,
-    18.291999999999998, 18.296, 18.299999999999997, 18.304, 18.308,
-    18.311999999999998, 18.316, 18.32, 18.323999999999998, 18.328,
-    18.331999999999997, 18.336, 18.34, 18.343999999999998, 18.348,
-    18.351999999999997, 18.355999999999998, 18.36, 18.363999999999997, 18.368,
-    18.372, 18.375999999999998, 18.38, 18.384, 18.387999999999998, 18.392,
-    18.395999999999997, 18.4, 18.404, 18.407999999999998, 18.412,
-    18.415999999999997, 18.419999999999998, 18.424, 18.427999999999997, 18.432,
-    18.436, 18.439999999999998, 18.444, 18.448, 18.451999999999998, 18.456,
-    18.459999999999997, 18.464, 18.468, 18.471999999999998, 18.476,
-    18.479999999999997, 18.483999999999998, 18.488, 18.491999999999997, 18.496,
-    18.5, 18.503999999999998, 18.508, 18.512, 18.516, 18.52, 18.523999999999997,
-    18.528, 18.532, 18.535999999999998, 18.54, 18.543999999999997, 18.548,
-    18.552, 18.555999999999997, 18.56, 18.564, 18.567999999999998, 18.572,
-    18.576, 18.58, 18.584, 18.587999999999997, 18.592, 18.596,
-    18.599999999999998, 18.604, 18.607999999999997, 18.612, 18.616,
-    18.619999999999997, 18.624, 18.628, 18.631999999999998, 18.636,
-    18.639999999999997, 18.644, 18.648, 18.651999999999997, 18.656, 18.66,
-    18.663999999999998, 18.668, 18.671999999999997, 18.676, 18.68,
-    18.683999999999997, 18.688, 18.692, 18.695999999999998, 18.7,
-    18.703999999999997, 18.708, 18.712, 18.715999999999998, 18.72, 18.724,
-    18.727999999999998, 18.732, 18.735999999999997, 18.74, 18.744,
-    18.747999999999998, 18.752, 18.756, 18.759999999999998, 18.764,
-    18.767999999999997, 18.772, 18.776, 18.779999999999998, 18.784, 18.788,
-    18.791999999999998, 18.796, 18.799999999999997, 18.804, 18.808,
-    18.811999999999998, 18.816, 18.82, 18.823999999999998, 18.828,
-    18.831999999999997, 18.836, 18.84, 18.843999999999998, 18.848,
-    18.851999999999997, 18.855999999999998, 18.86, 18.863999999999997, 18.868,
-    18.872, 18.875999999999998, 18.88, 18.884, 18.887999999999998, 18.892,
-    18.895999999999997, 18.9, 18.904, 18.907999999999998, 18.912,
-    18.915999999999997, 18.919999999999998, 18.924, 18.927999999999997, 18.932,
-    18.936, 18.939999999999998, 18.944, 18.948, 18.951999999999998, 18.956,
-    18.959999999999997, 18.964, 18.968, 18.971999999999998, 18.976,
-    18.979999999999997, 18.983999999999998, 18.988, 18.991999999999997, 18.996,
-    19.0, 19.003999999999998, 19.008, 19.012, 19.016, 19.02, 19.023999999999997,
-    19.028, 19.032, 19.035999999999998, 19.04, 19.043999999999997, 19.048,
-    19.052, 19.055999999999997, 19.06, 19.064, 19.067999999999998, 19.072,
-    19.075999999999997, 19.08, 19.084, 19.087999999999997, 19.092, 19.096,
-    19.099999999999998, 19.104, 19.107999999999997, 19.112, 19.116,
-    19.119999999999997, 19.124, 19.128, 19.131999999999998, 19.136,
-    19.139999999999997, 19.144, 19.148, 19.151999999999997, 19.156, 19.16,
-    19.163999999999998, 19.168, 19.171999999999997, 19.176, 19.18,
-    19.183999999999997, 19.188, 19.192, 19.195999999999998, 19.2,
-    19.203999999999997, 19.208, 19.212, 19.215999999999998, 19.22, 19.224,
-    19.227999999999998, 19.232, 19.235999999999997, 19.24, 19.244,
-    19.247999999999998, 19.252, 19.256, 19.259999999999998, 19.264,
-    19.267999999999997, 19.272, 19.276, 19.279999999999998, 19.284, 19.288,
-    19.291999999999998, 19.296, 19.299999999999997, 19.304, 19.308,
-    19.311999999999998, 19.316, 19.32, 19.323999999999998, 19.328,
-    19.331999999999997, 19.336, 19.34, 19.343999999999998, 19.348, 19.352,
-    19.355999999999998, 19.36, 19.363999999999997, 19.368, 19.372,
-    19.375999999999998, 19.38, 19.384, 19.387999999999998, 19.392,
-    19.395999999999997, 19.4, 19.404, 19.407999999999998, 19.412, 19.416,
-    19.419999999999998, 19.424, 19.427999999999997, 19.432, 19.436,
-    19.439999999999998, 19.444, 19.448, 19.451999999999998, 19.456,
-    19.459999999999997, 19.464, 19.468, 19.471999999999998, 19.476,
-    19.479999999999997, 19.483999999999998, 19.488, 19.491999999999997, 19.496,
-    19.5, 19.503999999999998, 19.508, 19.512, 19.516, 19.52, 19.523999999999997,
-    19.528, 19.532, 19.535999999999998, 19.54, 19.543999999999997, 19.548,
-    19.552, 19.555999999999997, 19.56, 19.564, 19.567999999999998, 19.572,
-    19.575999999999997, 19.58, 19.584, 19.587999999999997, 19.592, 19.596,
-    19.599999999999998, 19.604, 19.607999999999997, 19.612, 19.616,
-    19.619999999999997, 19.624, 19.628, 19.631999999999998, 19.636,
-    19.639999999999997, 19.644, 19.648, 19.651999999999997, 19.656, 19.66,
-    19.663999999999998, 19.668, 19.671999999999997, 19.676, 19.68,
-    19.683999999999997, 19.688, 19.692, 19.695999999999998, 19.7,
-    19.703999999999997, 19.708, 19.712, 19.715999999999998, 19.72, 19.724,
-    19.727999999999998, 19.732, 19.735999999999997, 19.74, 19.744,
-    19.747999999999998, 19.752, 19.756, 19.759999999999998, 19.764,
-    19.767999999999997, 19.772, 19.776, 19.779999999999998, 19.784, 19.788,
-    19.791999999999998, 19.796, 19.799999999999997, 19.804, 19.808,
-    19.811999999999998, 19.816, 19.82, 19.823999999999998, 19.828,
-    19.831999999999997, 19.836, 19.84, 19.843999999999998, 19.848, 19.852,
-    19.855999999999998, 19.86, 19.863999999999997, 19.868, 19.872,
-    19.875999999999998, 19.88, 19.884, 19.887999999999998, 19.892,
-    19.895999999999997, 19.9, 19.904, 19.907999999999998, 19.912, 19.916,
-    19.919999999999998, 19.924, 19.927999999999997, 19.932, 19.936,
-    19.939999999999998, 19.944, 19.948, 19.951999999999998, 19.956,
-    19.959999999999997, 19.964, 19.968, 19.971999999999998, 19.976, 19.98,
-    19.983999999999998, 19.988, 19.991999999999997, 19.996 };
-
-  static double a[5000];
-  double unusedExpr[5000];
-  int sz[2];
-  emxArray_real_T2 *S1;
-  double b_unusedExpr[5000];
-  emxArray_int32_T *r6;
-  int nC;
-  emxArray_int32_T *r7;
-  emxArray_int32_T *r8;
-  double varargin_1[1024];
-  boolean_T exitg1;
-  emxInit_real_T(&X, 2);
-  nm1d2 = X0->size[0] * X0->size[1];
-  i0 = X->size[0] * X->size[1];
-  X->size[0] = 1;
-  X->size[1] = nm1d2;
-  emxEnsureCapacity((emxArray__common *)X, i0, (int)sizeof(double));
-  for (i0 = 0; i0 < nm1d2; i0++) {
-    X->data[X->size[0] * i0] = X0->data[i0];
-  }
-
-  //  Fs        = Sampling Frequency;
-  //  plotData  = Plot Data
-  // %%%% - Thresholds: - %%%%%
-  for (i0 = 0; i0 < 2; i0++) {
-    threshFFT[i0 << 2] = 9.5 + 1.1300000000000008 * (double)i0;
-    threshFFT[1 + (i0 << 2)] = 11.9 + 0.79999999999999893 * (double)i0;
-    threshFFT[2 + (i0 << 2)] = 14.6 + 0.90000000000000036 * (double)i0;
-    threshFFT[3 + (i0 << 2)] = 16.1 + 1.0999999999999979 * (double)i0;
-  }
-
-  for (i0 = 0; i0 < 2; i0++) {
-    threshPSD[i0 << 2] = 9.0 + 2.0 * (double)i0;
-    threshPSD[1 + (i0 << 2)] = 11.0 + 2.0 * (double)i0;
-    threshPSD[2 + (i0 << 2)] = 14.0 + 1.5 * (double)i0;
-    threshPSD[3 + (i0 << 2)] = 15.5 + 2.0 * (double)i0;
-  }
-
-  // %% - Constants - %%%
-  // select dot color;
-  //  - Variables - %
-  for (i0 = 0; i0 < 4; i0++) {
-    Pfft[i0] = 0.0;
-    Ppsd[i0] = 0.0;
-    Pstft[i0] = 0.0;
-  }
-
-  emxInit_real_T1(&hW, 1);
-  nfft = rt_powd_snf(2.0, nextpow2((double)X->size[1]));
-  hannWin((double)X->size[1], hW);
-
-  //  Lfft = zeros(4,1);
-  emxInit_real_T(&F, 2);
-  emxInit_real_T(&T, 2);
-  if (X->size[1] >= 250) {
-    emxInit_real_T(&f, 2);
-    emxInit_real_T(&FFT, 2);
-    emxInit_real_T(&PSD, 2);
-    emxInit_real_T(&fPSD, 2);
-
-    // Recall Data is Already Filtered From Calling Method
-    get_nfft_data(X, Fs, (double)X->size[1], f, FFT);
-    welch_psd(X, Fs, hW, PSD, fPSD);
-    for (i = 0; i < 4; i++) {
-      for (i0 = 0; i0 < 2; i0++) {
-        b_threshFFT[i0] = threshFFT[i + (i0 << 2)];
-      }
-
-      get_fft_features(f, FFT, b_threshFFT, F, hW, &cdiff, &anew);
-      Pfft[i] = anew;
-      for (i0 = 0; i0 < 2; i0++) {
-        b_threshFFT[i0] = threshPSD[i + (i0 << 2)];
-      }
-
-      get_psd_features(fPSD, PSD, b_threshFFT, F, T, &cdiff, &anew);
-      Ppsd[i] = anew;
-    }
-
-    emxFree_real_T(&fPSD);
-    emxFree_real_T(&PSD);
-    emxFree_real_T(&FFT);
-    emxFree_real_T(&f);
-  }
-
-  wlen = 128;
-  if (X->size[1] >= 500) {
-    wlen = 256;
-  }
-
-  ndbl = (1.0 + nfft) / 2.0;
-  x = std::ceil(ndbl);
-  ndbl = std::ceil(ndbl) - 1.0;
-  if (rtIsNaN(ndbl)) {
-    jA2 = 1;
-    anew = rtNaN;
-    apnd = x - 1.0;
-  } else if (rtIsInf(ndbl)) {
-    jA2 = 1;
-    anew = rtNaN;
-    apnd = x - 1.0;
-  } else {
-    anew = 0.0;
-    ndbl = std::floor(ndbl + 0.5);
-    apnd = ndbl;
-    cdiff = ndbl - (x - 1.0);
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * (x - 1.0)) {
-      ndbl++;
-      apnd = x - 1.0;
-    } else if (cdiff > 0.0) {
-      apnd = ndbl - 1.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      jA2 = (int)ndbl;
-    } else {
-      jA2 = 0;
-    }
-  }
-
-  i0 = F->size[0] * F->size[1];
-  F->size[0] = 1;
-  F->size[1] = jA2;
-  emxEnsureCapacity((emxArray__common *)F, i0, (int)sizeof(double));
-  if (jA2 > 0) {
-    F->data[0] = anew;
-    if (jA2 > 1) {
-      F->data[jA2 - 1] = apnd;
-      nm1d2 = (jA2 - 1) / 2;
-      for (k = 1; k < nm1d2; k++) {
-        F->data[k] = anew + (double)k;
-        F->data[(jA2 - k) - 1] = apnd - (double)k;
-      }
-
-      if (nm1d2 << 1 == jA2 - 1) {
-        F->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        F->data[nm1d2] = anew + (double)nm1d2;
-        F->data[nm1d2 + 1] = apnd - (double)nm1d2;
-      }
-    }
-  }
-
-  i0 = F->size[0] * F->size[1];
-  F->size[0] = 1;
-  emxEnsureCapacity((emxArray__common *)F, i0, (int)sizeof(double));
-  nm1d2 = F->size[0];
-  jA2 = F->size[1];
-  nA = nm1d2 * jA2;
-  for (i0 = 0; i0 < nA; i0++) {
-    F->data[i0] = F->data[i0] * Fs / nfft;
-  }
-
-  emxInit_boolean_T(&r2, 2);
-  i0 = r2->size[0] * r2->size[1];
-  r2->size[0] = 1;
-  r2->size[1] = F->size[1];
-  emxEnsureCapacity((emxArray__common *)r2, i0, (int)sizeof(boolean_T));
-  nA = F->size[0] * F->size[1];
-  for (i0 = 0; i0 < nA; i0++) {
-    r2->data[i0] = (F->data[i0] < 18.0);
-  }
-
-  emxInit_boolean_T(&r3, 2);
-  i0 = r3->size[0] * r3->size[1];
-  r3->size[0] = 1;
-  r3->size[1] = F->size[1];
-  emxEnsureCapacity((emxArray__common *)r3, i0, (int)sizeof(boolean_T));
-  nA = F->size[0] * F->size[1];
-  for (i0 = 0; i0 < nA; i0++) {
-    r3->data[i0] = (F->data[i0] > 9.0);
-  }
-
-  emxInit_boolean_T(&r4, 2);
-  i0 = r4->size[0] * r4->size[1];
-  r4->size[0] = 1;
-  r4->size[1] = r2->size[1];
-  emxEnsureCapacity((emxArray__common *)r4, i0, (int)sizeof(boolean_T));
-  nA = r2->size[0] * r2->size[1];
-  for (i0 = 0; i0 < nA; i0++) {
-    r4->data[i0] = (r2->data[i0] && r3->data[i0]);
-  }
-
-  emxInit_real_T1(&SS, 1);
-  cdiff = b_sum(r4);
-  i0 = SS->size[0];
-  SS->size[0] = (int)cdiff;
-  emxEnsureCapacity((emxArray__common *)SS, i0, (int)sizeof(double));
-  nA = (int)cdiff;
-  emxFree_boolean_T(&r4);
-  for (i0 = 0; i0 < nA; i0++) {
-    SS->data[i0] = 0.0;
-  }
-
-  hammPeriodic((double)wlen, hW);
-  x = sum(hW);
-  K = x / (double)wlen;
-  if (X->size[1] >= 250) {
-    nA = r2->size[1] - 1;
-    nm1d2 = 0;
-    for (i = 0; i <= nA; i++) {
-      if (r2->data[i] && r3->data[i]) {
-        nm1d2++;
-      }
-    }
-
-    emxInit_real_T(&F1, 2);
-    i0 = F1->size[0] * F1->size[1];
-    F1->size[0] = 1;
-    F1->size[1] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)F1, i0, (int)sizeof(double));
-    jA2 = 0;
-    for (i = 0; i <= nA; i++) {
-      if (r2->data[i] && r3->data[i]) {
-        F1->data[jA2] = F->data[i];
-        jA2++;
-      }
-    }
-
-    emxInit_creal_T(&S, 2);
-    emxInit_int32_T(&r5, 2);
-
-    //  STFT:
-    stft2(X, (double)wlen, nfft, Fs, S, F, T);
-    nA = r2->size[1] - 1;
-    nm1d2 = 0;
-    for (i = 0; i <= nA; i++) {
-      if (r2->data[i] && r3->data[i]) {
-        nm1d2++;
-      }
-    }
-
-    i0 = r5->size[0] * r5->size[1];
-    r5->size[0] = 1;
-    r5->size[1] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)r5, i0, (int)sizeof(int));
-    jA2 = 0;
-    for (i = 0; i <= nA; i++) {
-      if (r2->data[i] && r3->data[i]) {
-        r5->data[jA2] = i + 1;
-        jA2++;
-      }
-    }
-
-    emxInit_creal_T(&b_x, 2);
-    nA = S->size[1];
-    i0 = b_x->size[0] * b_x->size[1];
-    b_x->size[0] = r5->size[1];
-    b_x->size[1] = nA;
-    emxEnsureCapacity((emxArray__common *)b_x, i0, (int)sizeof(creal_T));
-    for (i0 = 0; i0 < nA; i0++) {
-      jA2 = r5->size[1];
-      for (nm1d2 = 0; nm1d2 < jA2; nm1d2++) {
-        b_x->data[nm1d2 + b_x->size[0] * i0] = S->data[(r5->data[r5->size[0] *
-          nm1d2] + S->size[0] * i0) - 1];
-      }
-    }
-
-    emxInit_creal_T(&b_S, 2);
-    nA = S->size[1];
-    i0 = b_S->size[0] * b_S->size[1];
-    b_S->size[0] = r5->size[1];
-    b_S->size[1] = nA;
-    emxEnsureCapacity((emxArray__common *)b_S, i0, (int)sizeof(creal_T));
-    for (i0 = 0; i0 < nA; i0++) {
-      jA2 = r5->size[1];
-      for (nm1d2 = 0; nm1d2 < jA2; nm1d2++) {
-        b_S->data[nm1d2 + b_S->size[0] * i0] = S->data[(r5->data[r5->size[0] *
-          nm1d2] + S->size[0] * i0) - 1];
-      }
-    }
-
-    for (i0 = 0; i0 < 2; i0++) {
-      sz[i0] = b_S->size[i0];
-    }
-
-    emxFree_creal_T(&b_S);
-    emxInit_real_T(&S1, 2);
-    emxInit_int32_T1(&r6, 1);
-    i0 = S1->size[0] * S1->size[1];
-    S1->size[0] = sz[0];
-    S1->size[1] = sz[1];
-    emxEnsureCapacity((emxArray__common *)S1, i0, (int)sizeof(double));
-    i0 = S->size[1];
-    nm1d2 = r6->size[0];
-    r6->size[0] = r5->size[1];
-    emxEnsureCapacity((emxArray__common *)r6, nm1d2, (int)sizeof(int));
-    nA = r5->size[1];
-    for (nm1d2 = 0; nm1d2 < nA; nm1d2++) {
-      r6->data[nm1d2] = r5->data[r5->size[0] * nm1d2];
-    }
-
-    jA2 = r6->size[0] * i0;
-    k = 0;
-    emxFree_int32_T(&r6);
-    emxInit_int32_T1(&r7, 1);
-    emxInit_int32_T1(&r8, 1);
-    while (k + 1 <= jA2) {
-      i0 = r7->size[0];
-      r7->size[0] = r5->size[1];
-      emxEnsureCapacity((emxArray__common *)r7, i0, (int)sizeof(int));
-      nA = r5->size[1];
-      for (i0 = 0; i0 < nA; i0++) {
-        r7->data[i0] = r5->data[r5->size[0] * i0];
-      }
-
-      i0 = r8->size[0];
-      r8->size[0] = r5->size[1];
-      emxEnsureCapacity((emxArray__common *)r8, i0, (int)sizeof(int));
-      nA = r5->size[1];
-      for (i0 = 0; i0 < nA; i0++) {
-        r8->data[i0] = r5->data[r5->size[0] * i0];
-      }
-
-      S1->data[k] = rt_hypotd_snf(b_x->data[k].re, b_x->data[k].im);
-      k++;
-    }
-
-    emxFree_int32_T(&r8);
-    emxFree_int32_T(&r7);
-    emxFree_creal_T(&b_x);
-    emxFree_int32_T(&r5);
-    emxFree_creal_T(&S);
-    i0 = S1->size[0] * S1->size[1];
-    emxEnsureCapacity((emxArray__common *)S1, i0, (int)sizeof(double));
-    jA2 = S1->size[0];
-    nm1d2 = S1->size[1];
-    nA = jA2 * nm1d2;
-    for (i0 = 0; i0 < nA; i0++) {
-      S1->data[i0] = S1->data[i0] / (double)wlen / K + 1.0E-6;
-    }
-
-    b_log10(S1);
-    i0 = S1->size[0] * S1->size[1];
-    emxEnsureCapacity((emxArray__common *)S1, i0, (int)sizeof(double));
-    jA2 = S1->size[0];
-    nm1d2 = S1->size[1];
-    nA = jA2 * nm1d2;
-    for (i0 = 0; i0 < nA; i0++) {
-      S1->data[i0] *= 20.0;
-    }
-
-    for (i0 = 0; i0 < 2; i0++) {
-      sz[i0] = S1->size[i0];
-    }
-
-    i0 = hW->size[0];
-    hW->size[0] = sz[0];
-    emxEnsureCapacity((emxArray__common *)hW, i0, (int)sizeof(double));
-    if ((S1->size[0] == 0) || (S1->size[1] == 0)) {
-      nm1d2 = hW->size[0];
-      i0 = hW->size[0];
-      hW->size[0] = nm1d2;
-      emxEnsureCapacity((emxArray__common *)hW, i0, (int)sizeof(double));
-      for (i0 = 0; i0 < nm1d2; i0++) {
-        hW->data[i0] = 0.0;
-      }
-    } else {
-      nm1d2 = S1->size[0];
-      for (jA2 = 0; jA2 + 1 <= nm1d2; jA2++) {
-        ndbl = S1->data[jA2];
-        for (k = 2; k <= S1->size[1]; k++) {
-          ndbl += S1->data[jA2 + (k - 1) * nm1d2];
-        }
-
-        hW->data[jA2] = ndbl;
-      }
-    }
-
-    jA2 = S1->size[1];
-    nA = hW->size[0];
-    emxFree_real_T(&S1);
-    for (i0 = 0; i0 < nA; i0++) {
-      SS->data[i0] = hW->data[i0] / (double)jA2;
-    }
-
-    for (i = 0; i < 4; i++) {
-      for (i0 = 0; i0 < 2; i0++) {
-        b_threshFFT[i0] = threshFFT[i + (i0 << 2)];
-      }
-
-      get_stft_features(F1, SS, b_threshFFT, F, hW, &cdiff, &anew, &ndbl, &apnd);
-      Pstft[i] = anew;
-    }
-
-    emxFree_real_T(&F1);
-  }
-
-  emxFree_boolean_T(&r3);
-  emxFree_boolean_T(&r2);
-  emxFree_real_T(&SS);
-  emxFree_real_T(&F);
-  emxFree_real_T(&hW);
-  emxInit_real_T(&convconv, 2);
-
-  // %Convolution Amplification:
-  //  f_new=9:0.1:17;
-  //  Clusters:
-  i0 = convconv->size[0] * convconv->size[1];
-  convconv->size[0] = 28;
-  convconv->size[1] = (int)(((double)X->size[1] + 5000.0) - 1.0);
-  emxEnsureCapacity((emxArray__common *)convconv, i0, (int)sizeof(double));
-  nA = 28 * (int)(((double)X->size[1] + 5000.0) - 1.0);
-  for (i0 = 0; i0 < nA; i0++) {
-    convconv->data[i0] = 0.0;
-  }
-
-  //  S1 =
-  emxInit_real_T(&b_convconv, 2);
-  for (i = 0; i < 28; i++) {
-    // testSignal For generating idealized SSVEP Signals (Fourier Series)
-    //    freq = frequency of signal waveform
-    //    Fs = Sampling Frequency
-    // %% Outputs:
-    //  Y = Fundamental Frequency
-    //  T = time singal
-    //  Y1 = first harmonic
-    //  Y2 = second harmonic
-    //  SQW = square wave
-    // standard sampling freq
-    // Time Signal With Specified Frequency
-    ndbl = 6.2831853071795862 * dv3[i];
-    for (i0 = 0; i0 < 5000; i0++) {
-      b[i0] = ndbl * b_b[i0];
-    }
-
-    c_sin(b);
-    ndbl = 12.566370614359172 * dv3[i];
-    for (i0 = 0; i0 < 5000; i0++) {
-      a[i0] = ndbl * b_b[i0];
-    }
-
-    b_sin(a, unusedExpr);
-    ndbl = 18.849555921538759 * dv3[i];
-    for (i0 = 0; i0 < 5000; i0++) {
-      a[i0] = ndbl * b_b[i0];
-    }
-
-    b_sin(a, b_unusedExpr);
-
-    //  SQW = amplitude*square(2*pi*freq*T);
-    //  SQW = SQW(:);
-    for (i0 = 0; i0 < 5000; i0++) {
-      sigs[i + 28 * i0] = 0.0001 * b[i0];
-    }
-
-    //      convconv(i,:) = conv(X,sigs(i,:),'full');
-    nA = X->size[1];
-    if (X->size[1] == 0) {
-      nC = 5000;
-    } else {
-      nC = X->size[1] + 4999;
-    }
-
-    i0 = T->size[0] * T->size[1];
-    T->size[0] = 1;
-    T->size[1] = nC;
-    emxEnsureCapacity((emxArray__common *)T, i0, (int)sizeof(double));
-    if ((X->size[1] == 0) || (nC == 0)) {
-      i0 = T->size[0] * T->size[1];
-      T->size[0] = 1;
-      emxEnsureCapacity((emxArray__common *)T, i0, (int)sizeof(double));
-      nA = T->size[1];
-      for (i0 = 0; i0 < nA; i0++) {
-        T->data[T->size[0] * i0] = 0.0;
-      }
-    } else {
-      for (nm1d2 = 1; nm1d2 <= nC; nm1d2++) {
-        if (nA <= nm1d2) {
-          jA2 = nA;
-        } else {
-          jA2 = nm1d2;
-        }
-
-        ndbl = 0.0;
-        if (5000 < nm1d2 + 1) {
-          k = nm1d2 - 4999;
-        } else {
-          k = 1;
-        }
-
-        while (k <= jA2) {
-          ndbl += X->data[k - 1] * sigs[i + 28 * (nm1d2 - k)];
-          k++;
-        }
-
-        T->data[nm1d2 - 1] = ndbl;
-      }
-    }
-
-    nA = T->size[1];
-    for (i0 = 0; i0 < nA; i0++) {
-      convconv->data[i + convconv->size[0] * i0] = T->data[T->size[0] * i0];
-    }
-
-    nA = convconv->size[1];
-    i0 = b_convconv->size[0] * b_convconv->size[1];
-    b_convconv->size[0] = 1;
-    b_convconv->size[1] = nA;
-    emxEnsureCapacity((emxArray__common *)b_convconv, i0, (int)sizeof(double));
-    for (i0 = 0; i0 < nA; i0++) {
-      b_convconv->data[b_convconv->size[0] * i0] = convconv->data[i +
-        convconv->size[0] * i0];
-    }
-
-    b_welch_psd(b_convconv, Fs, varargin_1, wfreqs);
-    jA2 = 1;
-    ndbl = varargin_1[0];
-    nm1d2 = 1;
-    if (rtIsNaN(varargin_1[0])) {
-      nA = 2;
-      exitg1 = false;
-      while ((!exitg1) && (nA < 1025)) {
-        jA2 = nA;
-        if (!rtIsNaN(varargin_1[nA - 1])) {
-          ndbl = varargin_1[nA - 1];
-          nm1d2 = nA;
-          exitg1 = true;
-        } else {
-          nA++;
-        }
-      }
-    }
-
-    if (jA2 < 1024) {
-      while (jA2 + 1 < 1025) {
-        if (varargin_1[jA2] > ndbl) {
-          ndbl = varargin_1[jA2];
-          nm1d2 = jA2 + 1;
-        }
-
-        jA2++;
-      }
-    }
-
-    Mconv[i] = ndbl;
-    Lconv[i] = (short)nm1d2;
-  }
-
-  emxFree_real_T(&b_convconv);
-  emxFree_real_T(&T);
-  emxFree_real_T(&convconv);
-  emxFree_real_T(&X);
-
-  //  Fts:
-  //  SSVEP_FEATURES = [Lfft,Pfft,Lpsd,Ppsd,Lstft,Pstft,wfreqs(Lconv),Mconv];
-  for (i0 = 0; i0 < 28; i0++) {
-    P[i0] = wfreqs[Lconv[i0] - 1];
-    P[i0 + 28] = Mconv[i0];
-  }
-
-  for (i0 = 0; i0 < 4; i0++) {
-    SSVEP_FEATURES[i0] = Pfft[i0];
-    SSVEP_FEATURES[i0 + 4] = Ppsd[i0];
-    SSVEP_FEATURES[i0 + 8] = Pstft[i0];
-  }
-
-  memcpy(&SSVEP_FEATURES[12], &Mconv[0], 28U * sizeof(double));
-}
-
-//
-// Arguments    : const emxArray_real_T2 *x
-//                const double zi[6]
-//                emxArray_real_T2 *y
-// Return Type  : void
-//
-static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_T2
-                   *y)
-{
-  unsigned int unnamed_idx_0;
-  int k;
-  double dbuffer[7];
-  int j;
-  double b_dbuffer;
-  static const double dv1[7] = { 0.00259188624245653, 0.0, -0.00777565872736959,
-    0.0, 0.00777565872736959, 0.0, -0.00259188624245653 };
-
-  static const double dv2[7] = { 1.0, -5.12636114248572, 11.2013241099204,
-    -13.3475825890437, 9.14852464832994, -3.42093110978683, 0.54578683446378 };
-
-  unnamed_idx_0 = (unsigned int)x->size[0];
-  k = y->size[0];
-  y->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)y, k, (int)sizeof(double));
-  for (k = 0; k < 6; k++) {
-    dbuffer[k + 1] = zi[k];
-  }
-
-  for (j = 0; j + 1 <= x->size[0]; j++) {
-    for (k = 0; k < 6; k++) {
-      dbuffer[k] = dbuffer[k + 1];
-    }
-
-    dbuffer[6] = 0.0;
-    for (k = 0; k < 7; k++) {
-      b_dbuffer = dbuffer[k] + x->data[j] * dv1[k];
-      dbuffer[k] = b_dbuffer;
-    }
-
-    for (k = 0; k < 6; k++) {
-      dbuffer[k + 1] -= dbuffer[0] * dv2[k + 1];
-    }
-
-    y->data[j] = dbuffer[0];
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 *yTemp
-//                emxArray_real_T2 *iPk
-//                emxArray_real_T2 *iInflect
-// Return Type  : void
-//
-static void findLocalMaxima(emxArray_real_T2 *yTemp, emxArray_real_T2 *iPk,
-  emxArray_real_T2 *iInflect)
-{
-  emxArray_real_T2 *r14;
-  int i4;
-  int cdiff;
-  int ndbl;
-  int apnd;
-  int absb;
-  emxArray_real_T2 *y;
-  emxArray_real_T2 *iTemp;
-  emxArray_boolean_T *yFinite;
-  emxArray_boolean_T *x;
-  emxArray_int32_T *ii;
-  boolean_T exitg3;
-  boolean_T guard3 = false;
-  emxArray_int32_T *r15;
-  emxArray_real_T2 *b_iTemp;
-  emxArray_real_T2 *b_yTemp;
-  emxArray_real_T2 *s;
-  emxArray_real_T2 *r16;
-  double b_x;
-  boolean_T exitg2;
-  boolean_T guard2 = false;
-  emxArray_int32_T *b_ii;
-  boolean_T exitg1;
-  boolean_T guard1 = false;
-  emxInit_real_T1(&r14, 1);
-  i4 = r14->size[0];
-  r14->size[0] = 2 + yTemp->size[0];
-  emxEnsureCapacity((emxArray__common *)r14, i4, (int)sizeof(double));
-  r14->data[0] = rtNaN;
-  cdiff = yTemp->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    r14->data[i4 + 1] = yTemp->data[i4];
-  }
-
-  r14->data[1 + yTemp->size[0]] = rtNaN;
-  i4 = yTemp->size[0];
-  yTemp->size[0] = r14->size[0];
-  emxEnsureCapacity((emxArray__common *)yTemp, i4, (int)sizeof(double));
-  cdiff = r14->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    yTemp->data[i4] = r14->data[i4];
-  }
-
-  emxFree_real_T(&r14);
-  ndbl = (int)std::floor(((double)yTemp->size[0] - 1.0) + 0.5);
-  apnd = ndbl + 1;
-  cdiff = (ndbl - yTemp->size[0]) + 1;
-  absb = yTemp->size[0];
-  if (std::fabs((double)cdiff) < 4.4408920985006262E-16 * (double)absb) {
-    ndbl++;
-    apnd = yTemp->size[0];
-  } else if (cdiff > 0) {
-    apnd = ndbl;
-  } else {
-    ndbl++;
-  }
-
-  emxInit_real_T(&y, 2);
-  i4 = y->size[0] * y->size[1];
-  y->size[0] = 1;
-  y->size[1] = ndbl;
-  emxEnsureCapacity((emxArray__common *)y, i4, (int)sizeof(double));
-  y->data[0] = 1.0;
-  if (ndbl > 1) {
-    y->data[ndbl - 1] = apnd;
-    cdiff = (ndbl - 1) / 2;
-    for (absb = 1; absb < cdiff; absb++) {
-      y->data[absb] = 1.0 + (double)absb;
-      y->data[(ndbl - absb) - 1] = apnd - absb;
-    }
-
-    if (cdiff << 1 == ndbl - 1) {
-      y->data[cdiff] = (1.0 + (double)apnd) / 2.0;
-    } else {
-      y->data[cdiff] = 1.0 + (double)cdiff;
-      y->data[cdiff + 1] = apnd - cdiff;
-    }
-  }
-
-  emxInit_real_T1(&iTemp, 1);
-  i4 = iTemp->size[0];
-  iTemp->size[0] = y->size[1];
-  emxEnsureCapacity((emxArray__common *)iTemp, i4, (int)sizeof(double));
-  cdiff = y->size[1];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    iTemp->data[i4] = y->data[y->size[0] * i4];
-  }
-
-  emxFree_real_T(&y);
-  emxInit_boolean_T1(&yFinite, 1);
-  i4 = yFinite->size[0];
-  yFinite->size[0] = yTemp->size[0];
-  emxEnsureCapacity((emxArray__common *)yFinite, i4, (int)sizeof(boolean_T));
-  cdiff = yTemp->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    yFinite->data[i4] = rtIsNaN(yTemp->data[i4]);
-  }
-
-  i4 = yFinite->size[0];
-  emxEnsureCapacity((emxArray__common *)yFinite, i4, (int)sizeof(boolean_T));
-  cdiff = yFinite->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    yFinite->data[i4] = !yFinite->data[i4];
-  }
-
-  emxInit_boolean_T1(&x, 1);
-  cdiff = yTemp->size[0] - 1;
-  i4 = x->size[0];
-  x->size[0] = cdiff;
-  emxEnsureCapacity((emxArray__common *)x, i4, (int)sizeof(boolean_T));
-  for (i4 = 0; i4 < cdiff; i4++) {
-    x->data[i4] = ((yTemp->data[i4] != yTemp->data[1 + i4]) && (yFinite->data[i4]
-      || yFinite->data[1 + i4]));
-  }
-
-  emxFree_boolean_T(&yFinite);
-  emxInit_int32_T1(&ii, 1);
-  ndbl = x->size[0];
-  absb = 0;
-  i4 = ii->size[0];
-  ii->size[0] = x->size[0];
-  emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-  cdiff = 1;
-  exitg3 = false;
-  while ((!exitg3) && (cdiff <= ndbl)) {
-    guard3 = false;
-    if (x->data[cdiff - 1]) {
-      absb++;
-      ii->data[absb - 1] = cdiff;
-      if (absb >= ndbl) {
-        exitg3 = true;
-      } else {
-        guard3 = true;
-      }
-    } else {
-      guard3 = true;
-    }
-
-    if (guard3) {
-      cdiff++;
-    }
-  }
-
-  if (x->size[0] == 1) {
-    if (absb == 0) {
-      i4 = ii->size[0];
-      ii->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-    }
-  } else {
-    i4 = ii->size[0];
-    if (1 > absb) {
-      ii->size[0] = 0;
-    } else {
-      ii->size[0] = absb;
-    }
-
-    emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-  }
-
-  emxInit_int32_T1(&r15, 1);
-  i4 = r15->size[0];
-  r15->size[0] = 1 + ii->size[0];
-  emxEnsureCapacity((emxArray__common *)r15, i4, (int)sizeof(int));
-  r15->data[0] = 1;
-  cdiff = ii->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    r15->data[i4 + 1] = ii->data[i4] + 1;
-  }
-
-  emxInit_real_T1(&b_iTemp, 1);
-  i4 = b_iTemp->size[0];
-  b_iTemp->size[0] = r15->size[0];
-  emxEnsureCapacity((emxArray__common *)b_iTemp, i4, (int)sizeof(double));
-  cdiff = r15->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    b_iTemp->data[i4] = iTemp->data[r15->data[i4] - 1];
-  }
-
-  emxFree_int32_T(&r15);
-  i4 = iTemp->size[0];
-  iTemp->size[0] = b_iTemp->size[0];
-  emxEnsureCapacity((emxArray__common *)iTemp, i4, (int)sizeof(double));
-  cdiff = b_iTemp->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    iTemp->data[i4] = b_iTemp->data[i4];
-  }
-
-  emxFree_real_T(&b_iTemp);
-  emxInit_real_T1(&b_yTemp, 1);
-  i4 = b_yTemp->size[0];
-  b_yTemp->size[0] = iTemp->size[0];
-  emxEnsureCapacity((emxArray__common *)b_yTemp, i4, (int)sizeof(double));
-  cdiff = iTemp->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    b_yTemp->data[i4] = yTemp->data[(int)iTemp->data[i4] - 1];
-  }
-
-  emxInit_real_T1(&s, 1);
-  diff(b_yTemp, s);
-  ndbl = s->size[0];
-  absb = 0;
-  emxFree_real_T(&b_yTemp);
-  while (absb + 1 <= ndbl) {
-    if (s->data[absb] < 0.0) {
-      b_x = -1.0;
-    } else if (s->data[absb] > 0.0) {
-      b_x = 1.0;
-    } else if (s->data[absb] == 0.0) {
-      b_x = 0.0;
-    } else {
-      b_x = s->data[absb];
-    }
-
-    s->data[absb] = b_x;
-    absb++;
-  }
-
-  emxInit_real_T1(&r16, 1);
-  diff(s, r16);
-  i4 = x->size[0];
-  x->size[0] = r16->size[0];
-  emxEnsureCapacity((emxArray__common *)x, i4, (int)sizeof(boolean_T));
-  cdiff = r16->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    x->data[i4] = (r16->data[i4] < 0.0);
-  }
-
-  emxFree_real_T(&r16);
-  ndbl = x->size[0];
-  absb = 0;
-  i4 = ii->size[0];
-  ii->size[0] = x->size[0];
-  emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-  cdiff = 1;
-  exitg2 = false;
-  while ((!exitg2) && (cdiff <= ndbl)) {
-    guard2 = false;
-    if (x->data[cdiff - 1]) {
-      absb++;
-      ii->data[absb - 1] = cdiff;
-      if (absb >= ndbl) {
-        exitg2 = true;
-      } else {
-        guard2 = true;
-      }
-    } else {
-      guard2 = true;
-    }
-
-    if (guard2) {
-      cdiff++;
-    }
-  }
-
-  if (x->size[0] == 1) {
-    if (absb == 0) {
-      i4 = ii->size[0];
-      ii->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-    }
-  } else {
-    i4 = ii->size[0];
-    if (1 > absb) {
-      ii->size[0] = 0;
-    } else {
-      ii->size[0] = absb;
-    }
-
-    emxEnsureCapacity((emxArray__common *)ii, i4, (int)sizeof(int));
-  }
-
-  if (1 > s->size[0] - 1) {
-    cdiff = 0;
-  } else {
-    cdiff = s->size[0] - 1;
-  }
-
-  if (2 > s->size[0]) {
-    i4 = 0;
-  } else {
-    i4 = 1;
-  }
-
-  absb = x->size[0];
-  x->size[0] = cdiff;
-  emxEnsureCapacity((emxArray__common *)x, absb, (int)sizeof(boolean_T));
-  for (absb = 0; absb < cdiff; absb++) {
-    x->data[absb] = (s->data[absb] != s->data[i4 + absb]);
-  }
-
-  emxFree_real_T(&s);
-  emxInit_int32_T1(&b_ii, 1);
-  ndbl = x->size[0];
-  absb = 0;
-  i4 = b_ii->size[0];
-  b_ii->size[0] = x->size[0];
-  emxEnsureCapacity((emxArray__common *)b_ii, i4, (int)sizeof(int));
-  cdiff = 1;
-  exitg1 = false;
-  while ((!exitg1) && (cdiff <= ndbl)) {
-    guard1 = false;
-    if (x->data[cdiff - 1]) {
-      absb++;
-      b_ii->data[absb - 1] = cdiff;
-      if (absb >= ndbl) {
-        exitg1 = true;
-      } else {
-        guard1 = true;
-      }
-    } else {
-      guard1 = true;
-    }
-
-    if (guard1) {
-      cdiff++;
-    }
-  }
-
-  if (x->size[0] == 1) {
-    if (absb == 0) {
-      i4 = b_ii->size[0];
-      b_ii->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)b_ii, i4, (int)sizeof(int));
-    }
-  } else {
-    i4 = b_ii->size[0];
-    if (1 > absb) {
-      b_ii->size[0] = 0;
-    } else {
-      b_ii->size[0] = absb;
-    }
-
-    emxEnsureCapacity((emxArray__common *)b_ii, i4, (int)sizeof(int));
-  }
-
-  emxFree_boolean_T(&x);
-  i4 = iInflect->size[0];
-  iInflect->size[0] = b_ii->size[0];
-  emxEnsureCapacity((emxArray__common *)iInflect, i4, (int)sizeof(double));
-  cdiff = b_ii->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    iInflect->data[i4] = iTemp->data[b_ii->data[i4]] - 1.0;
-  }
-
-  emxFree_int32_T(&b_ii);
-  i4 = iPk->size[0];
-  iPk->size[0] = ii->size[0];
-  emxEnsureCapacity((emxArray__common *)iPk, i4, (int)sizeof(double));
-  cdiff = ii->size[0];
-  for (i4 = 0; i4 < cdiff; i4++) {
-    iPk->data[i4] = iTemp->data[ii->data[i4]] - 1.0;
-  }
-
-  emxFree_int32_T(&ii);
-  emxFree_real_T(&iTemp);
-}
-
-//
-// Arguments    : const emxArray_real_T2 *Yin
-//                emxArray_real_T2 *Ypk
-//                emxArray_real_T2 *Xpk
-// Return Type  : void
-//
-static void findpeaks(const emxArray_real_T2 *Yin, emxArray_real_T2 *Ypk,
-                      emxArray_real_T2 *Xpk)
-{
-  boolean_T yIsRow;
-  int nm1d2;
-  int cdiff;
-  int ndbl;
-  int apnd;
-  emxArray_real_T2 *y;
-  emxArray_real_T2 *x;
-  emxArray_real_T2 *iPk;
-  emxArray_real_T2 *idx;
-  emxArray_real_T2 *iInfite;
-  emxArray_real_T2 *b_iPk;
-  emxArray_real_T2 *c_iPk;
-  int b_Yin[1];
-  emxArray_real_T2 c_Yin;
-  int d_Yin[1];
-  int e_Yin[1];
-  int f_Yin[1];
-  int g_Yin[1];
-  yIsRow = (Yin->size[0] == 1);
-  nm1d2 = Yin->size[0];
-  if (nm1d2 < 1) {
-    cdiff = 0;
-    apnd = Yin->size[0];
-  } else {
-    nm1d2 = Yin->size[0];
-    ndbl = (int)std::floor(((double)nm1d2 - 1.0) + 0.5);
-    apnd = ndbl + 1;
-    nm1d2 = Yin->size[0];
-    cdiff = (ndbl - nm1d2) + 1;
-    nm1d2 = Yin->size[0];
-    if (1 >= nm1d2) {
-      nm1d2 = 1;
-    }
-
-    if (std::fabs((double)cdiff) < 4.4408920985006262E-16 * (double)nm1d2) {
-      ndbl++;
-      apnd = Yin->size[0];
-    } else if (cdiff > 0) {
-      apnd = ndbl;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0) {
-      cdiff = ndbl;
-    } else {
-      cdiff = 0;
-    }
-  }
-
-  emxInit_real_T(&y, 2);
-  ndbl = y->size[0] * y->size[1];
-  y->size[0] = 1;
-  y->size[1] = cdiff;
-  emxEnsureCapacity((emxArray__common *)y, ndbl, (int)sizeof(double));
-  if (cdiff > 0) {
-    y->data[0] = 1.0;
-    if (cdiff > 1) {
-      y->data[cdiff - 1] = apnd;
-      nm1d2 = (cdiff - 1) / 2;
-      for (ndbl = 1; ndbl < nm1d2; ndbl++) {
-        y->data[ndbl] = 1.0 + (double)ndbl;
-        y->data[(cdiff - ndbl) - 1] = apnd - ndbl;
-      }
-
-      if (nm1d2 << 1 == cdiff - 1) {
-        y->data[nm1d2] = (1.0 + (double)apnd) / 2.0;
-      } else {
-        y->data[nm1d2] = 1.0 + (double)nm1d2;
-        y->data[nm1d2 + 1] = apnd - nm1d2;
-      }
-    }
-  }
-
-  emxInit_real_T1(&x, 1);
-  ndbl = x->size[0];
-  x->size[0] = y->size[1];
-  emxEnsureCapacity((emxArray__common *)x, ndbl, (int)sizeof(double));
-  nm1d2 = y->size[1];
-  for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-    x->data[ndbl] = y->data[y->size[0] * ndbl];
-  }
-
-  emxFree_real_T(&y);
-  emxInit_real_T1(&iPk, 1);
-  emxInit_real_T1(&idx, 1);
-  emxInit_real_T1(&iInfite, 1);
-  emxInit_real_T1(&b_iPk, 1);
-  emxInit_real_T1(&c_iPk, 1);
-  b_Yin[0] = Yin->size[0];
-  c_Yin = *Yin;
-  c_Yin.size = (int *)&b_Yin;
-  c_Yin.numDimensions = 1;
-  getAllPeaks(&c_Yin, iPk, iInfite, idx);
-  d_Yin[0] = Yin->size[0];
-  c_Yin = *Yin;
-  c_Yin.size = (int *)&d_Yin;
-  c_Yin.numDimensions = 1;
-  removePeaksBelowMinPeakHeight(&c_Yin, iPk, rtMinusInf);
-  e_Yin[0] = Yin->size[0];
-  c_Yin = *Yin;
-  c_Yin.size = (int *)&e_Yin;
-  c_Yin.numDimensions = 1;
-  removePeaksBelowThreshold(&c_Yin, iPk, 0.0);
-  combinePeaks(iPk, iInfite, b_iPk);
-  c_findPeaksSeparatedByMoreThanM(b_iPk, idx);
-  f_Yin[0] = Yin->size[0];
-  c_Yin = *Yin;
-  c_Yin.size = (int *)&f_Yin;
-  c_Yin.numDimensions = 1;
-  orderPeaks(&c_Yin, b_iPk, idx);
-  nm1d2 = Yin->size[0];
-  keepAtMostNpPeaks(idx, (double)nm1d2);
-  ndbl = c_iPk->size[0];
-  c_iPk->size[0] = idx->size[0];
-  emxEnsureCapacity((emxArray__common *)c_iPk, ndbl, (int)sizeof(double));
-  nm1d2 = idx->size[0];
-  emxFree_real_T(&iInfite);
-  emxFree_real_T(&iPk);
-  for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-    c_iPk->data[ndbl] = b_iPk->data[(int)idx->data[ndbl] - 1];
-  }
-
-  emxFree_real_T(&b_iPk);
-  emxFree_real_T(&idx);
-  g_Yin[0] = Yin->size[0];
-  c_Yin = *Yin;
-  c_Yin.size = (int *)&g_Yin;
-  c_Yin.numDimensions = 1;
-  assignOutputs(&c_Yin, x, c_iPk, yIsRow, yIsRow, Ypk, Xpk);
-  emxFree_real_T(&c_iPk);
-  emxFree_real_T(&x);
-}
-
-//
-// Arguments    : int nRows
-//                boolean_T useRadix2
-//                emxArray_real_T2 *costab
-//                emxArray_real_T2 *sintab
-//                emxArray_real_T2 *sintabinv
-// Return Type  : void
-//
-static void generate_twiddle_tables(int nRows, boolean_T useRadix2,
-  emxArray_real_T2 *costab, emxArray_real_T2 *sintab, emxArray_real_T2 *sintabinv)
-{
-  emxArray_real_T2 *costab1q;
-  double e;
-  int nRowsD4;
-  int nd2;
-  int k;
-  int n2;
-  emxInit_real_T(&costab1q, 2);
-  e = 6.2831853071795862 / (double)nRows;
-  nRowsD4 = nRows / 2 / 2;
-  nd2 = costab1q->size[0] * costab1q->size[1];
-  costab1q->size[0] = 1;
-  costab1q->size[1] = nRowsD4 + 1;
-  emxEnsureCapacity((emxArray__common *)costab1q, nd2, (int)sizeof(double));
-  costab1q->data[0] = 1.0;
-  nd2 = nRowsD4 / 2;
-  for (k = 1; k <= nd2; k++) {
-    costab1q->data[k] = std::cos(e * (double)k);
-  }
-
-  for (k = nd2 + 1; k < nRowsD4; k++) {
-    costab1q->data[k] = std::sin(e * (double)(nRowsD4 - k));
-  }
-
-  costab1q->data[nRowsD4] = 0.0;
-  if (!useRadix2) {
-    nRowsD4 = costab1q->size[1] - 1;
-    n2 = (costab1q->size[1] - 1) << 1;
-    nd2 = costab->size[0] * costab->size[1];
-    costab->size[0] = 1;
-    costab->size[1] = n2 + 1;
-    emxEnsureCapacity((emxArray__common *)costab, nd2, (int)sizeof(double));
-    nd2 = sintab->size[0] * sintab->size[1];
-    sintab->size[0] = 1;
-    sintab->size[1] = n2 + 1;
-    emxEnsureCapacity((emxArray__common *)sintab, nd2, (int)sizeof(double));
-    costab->data[0] = 1.0;
-    sintab->data[0] = 0.0;
-    nd2 = sintabinv->size[0] * sintabinv->size[1];
-    sintabinv->size[0] = 1;
-    sintabinv->size[1] = n2 + 1;
-    emxEnsureCapacity((emxArray__common *)sintabinv, nd2, (int)sizeof(double));
-    for (k = 1; k <= nRowsD4; k++) {
-      sintabinv->data[k] = costab1q->data[nRowsD4 - k];
-    }
-
-    for (k = costab1q->size[1]; k <= n2; k++) {
-      sintabinv->data[k] = costab1q->data[k - nRowsD4];
-    }
-
-    for (k = 1; k <= nRowsD4; k++) {
-      costab->data[k] = costab1q->data[k];
-      sintab->data[k] = -costab1q->data[nRowsD4 - k];
-    }
-
-    for (k = costab1q->size[1]; k <= n2; k++) {
-      costab->data[k] = -costab1q->data[n2 - k];
-      sintab->data[k] = -costab1q->data[k - nRowsD4];
-    }
-  } else {
-    nRowsD4 = costab1q->size[1] - 1;
-    n2 = (costab1q->size[1] - 1) << 1;
-    nd2 = costab->size[0] * costab->size[1];
-    costab->size[0] = 1;
-    costab->size[1] = n2 + 1;
-    emxEnsureCapacity((emxArray__common *)costab, nd2, (int)sizeof(double));
-    nd2 = sintab->size[0] * sintab->size[1];
-    sintab->size[0] = 1;
-    sintab->size[1] = n2 + 1;
-    emxEnsureCapacity((emxArray__common *)sintab, nd2, (int)sizeof(double));
-    costab->data[0] = 1.0;
-    sintab->data[0] = 0.0;
-    for (k = 1; k <= nRowsD4; k++) {
-      costab->data[k] = costab1q->data[k];
-      sintab->data[k] = -costab1q->data[nRowsD4 - k];
-    }
-
-    for (k = costab1q->size[1]; k <= n2; k++) {
-      costab->data[k] = -costab1q->data[n2 - k];
-      sintab->data[k] = -costab1q->data[k - nRowsD4];
-    }
-
-    nd2 = sintabinv->size[0] * sintabinv->size[1];
-    sintabinv->size[0] = 1;
-    sintabinv->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)sintabinv, nd2, (int)sizeof(double));
-  }
-
-  emxFree_real_T(&costab1q);
-}
-
-//
-// Arguments    : const emxArray_real_T2 *y
-//                emxArray_real_T2 *iPk
-//                emxArray_real_T2 *iInf
-//                emxArray_real_T2 *iInflect
-// Return Type  : void
-//
-static void getAllPeaks(const emxArray_real_T2 *y, emxArray_real_T2 *iPk,
-  emxArray_real_T2 *iInf, emxArray_real_T2 *iInflect)
-{
-  emxArray_boolean_T *x;
-  int i3;
-  int ii;
-  emxArray_int32_T *b_ii;
-  int nx;
-  int idx;
-  boolean_T exitg1;
-  boolean_T guard1 = false;
-  emxArray_real_T2 *yTemp;
-  emxInit_boolean_T1(&x, 1);
-  i3 = x->size[0];
-  x->size[0] = y->size[0];
-  emxEnsureCapacity((emxArray__common *)x, i3, (int)sizeof(boolean_T));
-  ii = y->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    x->data[i3] = rtIsInf(y->data[i3]);
-  }
-
-  i3 = x->size[0];
-  emxEnsureCapacity((emxArray__common *)x, i3, (int)sizeof(boolean_T));
-  ii = x->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    x->data[i3] = (x->data[i3] && (y->data[i3] > 0.0));
-  }
-
-  emxInit_int32_T1(&b_ii, 1);
-  nx = x->size[0];
-  idx = 0;
-  i3 = b_ii->size[0];
-  b_ii->size[0] = x->size[0];
-  emxEnsureCapacity((emxArray__common *)b_ii, i3, (int)sizeof(int));
-  ii = 1;
-  exitg1 = false;
-  while ((!exitg1) && (ii <= nx)) {
-    guard1 = false;
-    if (x->data[ii - 1]) {
-      idx++;
-      b_ii->data[idx - 1] = ii;
-      if (idx >= nx) {
-        exitg1 = true;
-      } else {
-        guard1 = true;
-      }
-    } else {
-      guard1 = true;
-    }
-
-    if (guard1) {
-      ii++;
-    }
-  }
-
-  if (x->size[0] == 1) {
-    if (idx == 0) {
-      i3 = b_ii->size[0];
-      b_ii->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)b_ii, i3, (int)sizeof(int));
-    }
-  } else {
-    i3 = b_ii->size[0];
-    if (1 > idx) {
-      b_ii->size[0] = 0;
-    } else {
-      b_ii->size[0] = idx;
-    }
-
-    emxEnsureCapacity((emxArray__common *)b_ii, i3, (int)sizeof(int));
-  }
-
-  emxFree_boolean_T(&x);
-  i3 = iInf->size[0];
-  iInf->size[0] = b_ii->size[0];
-  emxEnsureCapacity((emxArray__common *)iInf, i3, (int)sizeof(double));
-  ii = b_ii->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    iInf->data[i3] = b_ii->data[i3];
-  }
-
-  emxInit_real_T1(&yTemp, 1);
-  i3 = yTemp->size[0];
-  yTemp->size[0] = y->size[0];
-  emxEnsureCapacity((emxArray__common *)yTemp, i3, (int)sizeof(double));
-  ii = y->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    yTemp->data[i3] = y->data[i3];
-  }
-
-  i3 = b_ii->size[0];
-  b_ii->size[0] = iInf->size[0];
-  emxEnsureCapacity((emxArray__common *)b_ii, i3, (int)sizeof(int));
-  ii = iInf->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    b_ii->data[i3] = (int)iInf->data[i3];
-  }
-
-  ii = b_ii->size[0];
-  for (i3 = 0; i3 < ii; i3++) {
-    yTemp->data[b_ii->data[i3] - 1] = rtNaN;
-  }
-
-  emxFree_int32_T(&b_ii);
-  findLocalMaxima(yTemp, iPk, iInflect);
-  emxFree_real_T(&yTemp);
-}
-
-//
-// Arguments    : int n1
-//                boolean_T useRadix2
-//                int *N2blue
-//                int *nRows
-// Return Type  : void
-//
-static void get_algo_sizes(int n1, boolean_T useRadix2, int *N2blue, int *nRows)
-{
-  int nn1m1;
-  int pmax;
-  int pmin;
-  boolean_T exitg1;
-  int p;
-  int pow2p;
-  *N2blue = 1;
-  if (useRadix2) {
-    *nRows = n1;
-  } else {
-    if (n1 > 0) {
-      nn1m1 = (n1 + n1) - 1;
-      pmax = 31;
-      if (nn1m1 > MIN_int32_T) {
-        if (nn1m1 < 0) {
-          nn1m1 = -nn1m1;
-        }
-
-        if (nn1m1 <= 1) {
-          pmax = 0;
-        } else {
-          pmin = 0;
-          exitg1 = false;
-          while ((!exitg1) && (pmax - pmin > 1)) {
-            p = (pmin + pmax) >> 1;
-            pow2p = 1 << p;
-            if (pow2p == nn1m1) {
-              pmax = p;
-              exitg1 = true;
-            } else if (pow2p > nn1m1) {
-              pmax = p;
-            } else {
-              pmin = p;
-            }
-          }
-        }
-      }
-
-      *N2blue = 1 << pmax;
-    }
-
-    *nRows = *N2blue;
-  }
-}
-
-//
-// coder.varsize('fftselect');
-// Arguments    : const emxArray_real_T2 *f
-//                const emxArray_real_T2 *FFT
-//                const double threshold[2]
-//                emxArray_real_T2 *fselect
-//                emxArray_real_T2 *fftselect
-//                double *L
-//                double *P
-// Return Type  : void
-//
-static void get_fft_features(const emxArray_real_T2 *f, const emxArray_real_T2
-  *FFT, const double threshold[2], emxArray_real_T2 *fselect, emxArray_real_T2
-  *fftselect, double *L, double *P)
-{
-  emxArray_boolean_T *r11;
-  int i;
-  int loop_ub;
-  emxArray_boolean_T *r12;
-  int end;
-  emxArray_int32_T *r13;
-  emxArray_real_T2 *P1;
-  emxArray_real_T2 *L1;
-  emxArray_real_T2 *b_FFT;
-  emxInit_boolean_T(&r11, 2);
-  i = r11->size[0] * r11->size[1];
-  r11->size[0] = 1;
-  r11->size[1] = f->size[1];
-  emxEnsureCapacity((emxArray__common *)r11, i, (int)sizeof(boolean_T));
-  loop_ub = f->size[0] * f->size[1];
-  for (i = 0; i < loop_ub; i++) {
-    r11->data[i] = (f->data[i] > threshold[0]);
-  }
-
-  emxInit_boolean_T(&r12, 2);
-  i = r12->size[0] * r12->size[1];
-  r12->size[0] = 1;
-  r12->size[1] = f->size[1];
-  emxEnsureCapacity((emxArray__common *)r12, i, (int)sizeof(boolean_T));
-  loop_ub = f->size[0] * f->size[1];
-  for (i = 0; i < loop_ub; i++) {
-    r12->data[i] = (f->data[i] < threshold[1]);
-  }
-
-  end = r11->size[1] - 1;
-  loop_ub = 0;
-  for (i = 0; i <= end; i++) {
-    if (r11->data[i] && r12->data[i]) {
-      loop_ub++;
-    }
-  }
-
-  i = fselect->size[0] * fselect->size[1];
-  fselect->size[0] = 1;
-  fselect->size[1] = loop_ub;
-  emxEnsureCapacity((emxArray__common *)fselect, i, (int)sizeof(double));
-  loop_ub = 0;
-  for (i = 0; i <= end; i++) {
-    if (r11->data[i] && r12->data[i]) {
-      fselect->data[loop_ub] = f->data[i];
-      loop_ub++;
-    }
-  }
-
-  emxInit_int32_T(&r13, 2);
-  end = r11->size[1] - 1;
-  loop_ub = 0;
-  for (i = 0; i <= end; i++) {
-    if (r11->data[i] && r12->data[i]) {
-      loop_ub++;
-    }
-  }
-
-  i = r13->size[0] * r13->size[1];
-  r13->size[0] = 1;
-  r13->size[1] = loop_ub;
-  emxEnsureCapacity((emxArray__common *)r13, i, (int)sizeof(int));
-  loop_ub = 0;
-  for (i = 0; i <= end; i++) {
-    if (r11->data[i] && r12->data[i]) {
-      r13->data[loop_ub] = i + 1;
-      loop_ub++;
-    }
-  }
-
-  i = fftselect->size[0];
-  fftselect->size[0] = r13->size[1];
-  emxEnsureCapacity((emxArray__common *)fftselect, i, (int)sizeof(double));
-  loop_ub = r13->size[1];
-  for (i = 0; i < loop_ub; i++) {
-    fftselect->data[i] = FFT->data[r13->data[r13->size[0] * i] - 1];
-  }
-
-  end = r11->size[1];
-  loop_ub = 0;
-  for (i = 0; i < end; i++) {
-    if (r11->data[i] && r12->data[i]) {
-      loop_ub++;
-    }
-  }
-
-  emxInit_real_T(&P1, 2);
-  emxInit_real_T(&L1, 2);
-  if (loop_ub > 2) {
-    end = r11->size[1] - 1;
-    loop_ub = 0;
-    for (i = 0; i <= end; i++) {
-      if (r11->data[i] && r12->data[i]) {
-        loop_ub++;
-      }
-    }
-
-    i = r13->size[0] * r13->size[1];
-    r13->size[0] = 1;
-    r13->size[1] = loop_ub;
-    emxEnsureCapacity((emxArray__common *)r13, i, (int)sizeof(int));
-    loop_ub = 0;
-    for (i = 0; i <= end; i++) {
-      if (r11->data[i] && r12->data[i]) {
-        r13->data[loop_ub] = i + 1;
-        loop_ub++;
-      }
-    }
-
-    emxInit_real_T1(&b_FFT, 1);
-    i = b_FFT->size[0];
-    b_FFT->size[0] = r13->size[1];
-    emxEnsureCapacity((emxArray__common *)b_FFT, i, (int)sizeof(double));
-    loop_ub = r13->size[1];
-    for (i = 0; i < loop_ub; i++) {
-      b_FFT->data[i] = FFT->data[r13->data[r13->size[0] * i] - 1];
-    }
-
-    findpeaks(b_FFT, P1, L1);
-    emxFree_real_T(&b_FFT);
-  } else {
-    i = P1->size[0] * P1->size[1];
-    P1->size[0] = 0;
-    P1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)P1, i, (int)sizeof(double));
-    i = L1->size[0] * L1->size[1];
-    L1->size[0] = 0;
-    L1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)L1, i, (int)sizeof(double));
-  }
-
-  if (!((P1->size[0] == 0) || (P1->size[1] == 0))) {
-    end = r11->size[1] - 1;
-    loop_ub = 0;
-    for (i = 0; i <= end; i++) {
-      if (r11->data[i] && r12->data[i]) {
-        loop_ub++;
-      }
-    }
-
-    i = r13->size[0] * r13->size[1];
-    r13->size[0] = 1;
-    r13->size[1] = loop_ub;
-    emxEnsureCapacity((emxArray__common *)r13, i, (int)sizeof(int));
-    loop_ub = 0;
-    for (i = 0; i <= end; i++) {
-      if (r11->data[i] && r12->data[i]) {
-        r13->data[loop_ub] = i + 1;
-        loop_ub++;
-      }
-    }
-
-    *L = f->data[r13->data[r13->size[0] * ((int)L1->data[0] - 1)] - 1];
-    *P = P1->data[0];
-  } else {
-    *L = 0.0;
-    *P = 0.0;
-  }
-
-  emxFree_int32_T(&r13);
-  emxFree_boolean_T(&r12);
-  emxFree_boolean_T(&r11);
-  emxFree_real_T(&L1);
-  emxFree_real_T(&P1);
-}
-
-//
-// get_fft_data:
-//  X is filtered data
-//  L = size(X,1);
-//  L = number of FFT points
-// Arguments    : const emxArray_real_T2 *X
-//                double Fs
-//                double L
-//                emxArray_real_T2 *f
-//                emxArray_real_T2 *C
-// Return Type  : void
-//
-static void get_nfft_data(const emxArray_real_T2 *X, double Fs, double L,
-  emxArray_real_T2 *f, emxArray_real_T2 *C)
-{
-  int nRows;
-  emxArray_real_T2 *B;
-  emxArray_creal_T *b_y1;
-  emxArray_real_T2 *sintab;
-  emxArray_real_T2 *sintabinv;
-  boolean_T useRadix2;
-  int nm1d2;
-  int i1;
-  int b_X[1];
-  int c_X[1];
-  emxArray_real_T2 d_X;
-  emxArray_creal_T *y;
-  double b_y;
-  unsigned int uv0[2];
-  double anew;
-  int n;
-  emxArray_real_T2 *r9;
-  double ndbl;
-  double apnd;
-  double cdiff;
-  L = rt_powd_snf(2.0, nextpow2(L));
-  nRows = X->size[1];
-  emxInit_real_T(&B, 2);
-  emxInit_creal_T1(&b_y1, 1);
-  emxInit_real_T(&sintab, 2);
-  emxInit_real_T(&sintabinv, 2);
-  if ((nRows == 0) || ((int)L == 0)) {
-    i1 = b_y1->size[0];
-    b_y1->size[0] = (int)L;
-    emxEnsureCapacity((emxArray__common *)b_y1, i1, (int)sizeof(creal_T));
-    nRows = X->size[1];
-    if ((int)L > nRows) {
-      nRows = b_y1->size[0];
-      i1 = b_y1->size[0];
-      b_y1->size[0] = nRows;
-      emxEnsureCapacity((emxArray__common *)b_y1, i1, (int)sizeof(creal_T));
-      for (i1 = 0; i1 < nRows; i1++) {
-        b_y1->data[i1].re = 0.0;
-        b_y1->data[i1].im = 0.0;
-      }
-    }
-  } else {
-    useRadix2 = ((!((int)L <= 0)) && (((int)L & ((int)L - 1)) == 0));
-    get_algo_sizes((int)L, useRadix2, &nm1d2, &nRows);
-    generate_twiddle_tables(nRows, useRadix2, B, sintab, sintabinv);
-    if (useRadix2) {
-      nRows = X->size[1];
-      c_X[0] = nRows;
-      d_X = *X;
-      d_X.size = (int *)&c_X;
-      d_X.numDimensions = 1;
-      r2br_r2dit_trig(&d_X, (int)L, B, sintab, b_y1);
-    } else {
-      nRows = X->size[1];
-      b_X[0] = nRows;
-      d_X = *X;
-      d_X.size = (int *)&b_X;
-      d_X.numDimensions = 1;
-      dobluesteinfft(&d_X, nm1d2, (int)L, B, sintab, sintabinv, b_y1);
-    }
-  }
-
-  emxFree_real_T(&sintabinv);
-  emxFree_real_T(&sintab);
-  emxInit_creal_T(&y, 2);
-  i1 = y->size[0] * y->size[1];
-  y->size[0] = 1;
-  y->size[1] = (int)L;
-  emxEnsureCapacity((emxArray__common *)y, i1, (int)sizeof(creal_T));
-  nRows = (int)L;
-  for (i1 = 0; i1 < nRows; i1++) {
-    b_y = b_y1->data[i1].re;
-    anew = b_y1->data[i1].im;
-    if (anew == 0.0) {
-      y->data[i1].re = b_y / L;
-      y->data[i1].im = 0.0;
-    } else if (b_y == 0.0) {
-      y->data[i1].re = 0.0;
-      y->data[i1].im = anew / L;
-    } else {
-      y->data[i1].re = b_y / L;
-      y->data[i1].im = anew / L;
-    }
-  }
-
-  emxFree_creal_T(&b_y1);
-  for (i1 = 0; i1 < 2; i1++) {
-    uv0[i1] = (unsigned int)y->size[i1];
-  }
-
-  i1 = B->size[0] * B->size[1];
-  B->size[0] = 1;
-  B->size[1] = (int)uv0[1];
-  emxEnsureCapacity((emxArray__common *)B, i1, (int)sizeof(double));
-  for (nRows = 0; nRows + 1 <= y->size[1]; nRows++) {
-    B->data[nRows] = rt_hypotd_snf(y->data[nRows].re, y->data[nRows].im);
-  }
-
-  emxFree_creal_T(&y);
-
-  // % TEMP : ONLY FOR EVEN SIZED ARRAYS:
-  //  C = zeros(1,(L/2+1));
-  b_y = L / 2.0;
-  nRows = (int)(L / 2.0 + 1.0);
-  i1 = C->size[0] * C->size[1];
-  C->size[0] = 1;
-  C->size[1] = (int)(b_y + 1.0);
-  emxEnsureCapacity((emxArray__common *)C, i1, (int)sizeof(double));
-  for (i1 = 0; i1 < nRows; i1++) {
-    C->data[C->size[0] * i1] = B->data[i1];
-  }
-
-  emxFree_real_T(&B);
-  if (2 > nRows - 1) {
-    i1 = 0;
-    nm1d2 = 0;
-  } else {
-    i1 = 1;
-    nm1d2 = (int)(b_y + 1.0) - 1;
-  }
-
-  if (2 > nRows - 1) {
-    n = 0;
-  } else {
-    n = 1;
-  }
-
-  emxInit_real_T(&r9, 2);
-  nRows = r9->size[0] * r9->size[1];
-  r9->size[0] = 1;
-  r9->size[1] = nm1d2 - i1;
-  emxEnsureCapacity((emxArray__common *)r9, nRows, (int)sizeof(double));
-  nRows = nm1d2 - i1;
-  for (nm1d2 = 0; nm1d2 < nRows; nm1d2++) {
-    r9->data[r9->size[0] * nm1d2] = 2.0 * C->data[i1 + nm1d2];
-  }
-
-  nRows = r9->size[1];
-  for (i1 = 0; i1 < nRows; i1++) {
-    C->data[n + i1] = r9->data[r9->size[0] * i1];
-  }
-
-  emxFree_real_T(&r9);
-
-  // {
-  // if mod(L,2) == 0
-  //     C = B(1:(L/2+1));
-  //     C(2:end-1) = 2*C(2:end-1);
-  // elseif mod(L,2) == 1
-  //     C = B(1:(L/2+0.5));
-  //     C(2:end-1) = 2*C(2:end-1);
-  // end
-  // }
-  b_y = L / 2.0;
-  if (rtIsNaN(b_y)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b_y;
-  } else if (rtIsInf(b_y)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b_y;
-  } else {
-    anew = 0.0;
-    ndbl = std::floor(b_y + 0.5);
-    apnd = ndbl;
-    cdiff = ndbl - b_y;
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * b_y) {
-      ndbl++;
-      apnd = b_y;
-    } else if (cdiff > 0.0) {
-      apnd = ndbl - 1.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      n = (int)ndbl;
-    } else {
-      n = 0;
-    }
-  }
-
-  i1 = f->size[0] * f->size[1];
-  f->size[0] = 1;
-  f->size[1] = n;
-  emxEnsureCapacity((emxArray__common *)f, i1, (int)sizeof(double));
-  if (n > 0) {
-    f->data[0] = anew;
-    if (n > 1) {
-      f->data[n - 1] = apnd;
-      nm1d2 = (n - 1) / 2;
-      for (nRows = 1; nRows < nm1d2; nRows++) {
-        f->data[nRows] = anew + (double)nRows;
-        f->data[(n - nRows) - 1] = apnd - (double)nRows;
-      }
-
-      if (nm1d2 << 1 == n - 1) {
-        f->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        f->data[nm1d2] = anew + (double)nm1d2;
-        f->data[nm1d2 + 1] = apnd - (double)nm1d2;
-      }
-    }
-  }
-
-  i1 = f->size[0] * f->size[1];
-  f->size[0] = 1;
-  emxEnsureCapacity((emxArray__common *)f, i1, (int)sizeof(double));
-  nRows = f->size[0];
-  nm1d2 = f->size[1];
-  nRows *= nm1d2;
-  for (i1 = 0; i1 < nRows; i1++) {
-    f->data[i1] = Fs * f->data[i1] / L;
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *f
-//                const emxArray_real_T2 *PSD
-//                const double tH[2]
-//                emxArray_real_T2 *fselect
-//                emxArray_real_T2 *PSDselect
-//                double *L
-//                double *P
-// Return Type  : void
-//
-static void get_psd_features(const emxArray_real_T2 *f, const emxArray_real_T2
-  *PSD, const double tH[2], emxArray_real_T2 *fselect, emxArray_real_T2 *PSDselect,
-  double *L, double *P)
-{
-  emxArray_boolean_T *r17;
-  int ndbl;
-  int nm1d2;
-  emxArray_boolean_T *r18;
-  int cdiff;
-  emxArray_real_T2 *P1;
-  emxArray_real_T2 *L1;
-  emxArray_int32_T *r19;
-  emxArray_real_T2 *Yin;
-  int apnd;
-  emxArray_real_T2 *y;
-  emxArray_real_T2 *x;
-  emxArray_real_T2 *iPk;
-  emxArray_real_T2 *idx;
-  emxArray_real_T2 *iInfite;
-  emxArray_real_T2 *b_iPk;
-  emxArray_real_T2 *c_iPk;
-  int iv0[1];
-  emxArray_real_T2 b_Yin;
-  int iv1[1];
-  int iv2[1];
-  int iv3[1];
-  int iv4[1];
-  emxInit_boolean_T(&r17, 2);
-  ndbl = r17->size[0] * r17->size[1];
-  r17->size[0] = 1;
-  r17->size[1] = f->size[1];
-  emxEnsureCapacity((emxArray__common *)r17, ndbl, (int)sizeof(boolean_T));
-  nm1d2 = f->size[0] * f->size[1];
-  for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-    r17->data[ndbl] = (f->data[ndbl] >= tH[0]);
-  }
-
-  emxInit_boolean_T(&r18, 2);
-  ndbl = r18->size[0] * r18->size[1];
-  r18->size[0] = 1;
-  r18->size[1] = f->size[1];
-  emxEnsureCapacity((emxArray__common *)r18, ndbl, (int)sizeof(boolean_T));
-  nm1d2 = f->size[0] * f->size[1];
-  for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-    r18->data[ndbl] = (f->data[ndbl] <= tH[1]);
-  }
-
-  // selectPSD
-  cdiff = r17->size[1] - 1;
-  nm1d2 = 0;
-  for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-    if (r17->data[ndbl] && r18->data[ndbl]) {
-      nm1d2++;
-    }
-  }
-
-  ndbl = fselect->size[0] * fselect->size[1];
-  fselect->size[0] = 1;
-  fselect->size[1] = nm1d2;
-  emxEnsureCapacity((emxArray__common *)fselect, ndbl, (int)sizeof(double));
-  nm1d2 = 0;
-  for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-    if (r17->data[ndbl] && r18->data[ndbl]) {
-      fselect->data[nm1d2] = f->data[ndbl];
-      nm1d2++;
-    }
-  }
-
-  cdiff = r17->size[1] - 1;
-  nm1d2 = 0;
-  for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-    if (r17->data[ndbl] && r18->data[ndbl]) {
-      nm1d2++;
-    }
-  }
-
-  ndbl = PSDselect->size[0] * PSDselect->size[1];
-  PSDselect->size[0] = 1;
-  PSDselect->size[1] = nm1d2;
-  emxEnsureCapacity((emxArray__common *)PSDselect, ndbl, (int)sizeof(double));
-  nm1d2 = 0;
-  for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-    if (r17->data[ndbl] && r18->data[ndbl]) {
-      PSDselect->data[nm1d2] = PSD->data[ndbl];
-      nm1d2++;
-    }
-  }
-
-  cdiff = r17->size[1];
-  nm1d2 = 0;
-  for (ndbl = 0; ndbl < cdiff; ndbl++) {
-    if (r17->data[ndbl] && r18->data[ndbl]) {
-      nm1d2++;
-    }
-  }
-
-  emxInit_real_T(&P1, 2);
-  emxInit_real_T(&L1, 2);
-  emxInit_int32_T(&r19, 2);
-  if (nm1d2 > 2) {
-    cdiff = r17->size[1] - 1;
-    nm1d2 = 0;
-    for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-      if (r17->data[ndbl] && r18->data[ndbl]) {
-        nm1d2++;
-      }
-    }
-
-    ndbl = r19->size[0] * r19->size[1];
-    r19->size[0] = 1;
-    r19->size[1] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)r19, ndbl, (int)sizeof(int));
-    nm1d2 = 0;
-    for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-      if (r17->data[ndbl] && r18->data[ndbl]) {
-        r19->data[nm1d2] = ndbl + 1;
-        nm1d2++;
-      }
-    }
-
-    emxInit_real_T(&Yin, 2);
-    ndbl = Yin->size[0] * Yin->size[1];
-    Yin->size[0] = 1;
-    Yin->size[1] = r19->size[1];
-    emxEnsureCapacity((emxArray__common *)Yin, ndbl, (int)sizeof(double));
-    nm1d2 = r19->size[0] * r19->size[1];
-    for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-      Yin->data[ndbl] = PSD->data[r19->data[ndbl] - 1];
-    }
-
-    nm1d2 = r19->size[1];
-    if (nm1d2 < 1) {
-      cdiff = 0;
-      apnd = r19->size[1];
-    } else {
-      nm1d2 = r19->size[1];
-      ndbl = (int)std::floor(((double)nm1d2 - 1.0) + 0.5);
-      apnd = ndbl + 1;
-      nm1d2 = r19->size[1];
-      cdiff = (ndbl - nm1d2) + 1;
-      nm1d2 = r19->size[1];
-      if (1 >= nm1d2) {
-        nm1d2 = 1;
-      }
-
-      if (std::fabs((double)cdiff) < 4.4408920985006262E-16 * (double)nm1d2) {
-        ndbl++;
-        apnd = r19->size[1];
-      } else if (cdiff > 0) {
-        apnd = ndbl;
-      } else {
-        ndbl++;
-      }
-
-      if (ndbl >= 0) {
-        cdiff = ndbl;
-      } else {
-        cdiff = 0;
-      }
-    }
-
-    emxInit_real_T(&y, 2);
-    ndbl = y->size[0] * y->size[1];
-    y->size[0] = 1;
-    y->size[1] = cdiff;
-    emxEnsureCapacity((emxArray__common *)y, ndbl, (int)sizeof(double));
-    if (cdiff > 0) {
-      y->data[0] = 1.0;
-      if (cdiff > 1) {
-        y->data[cdiff - 1] = apnd;
-        nm1d2 = (cdiff - 1) / 2;
-        for (ndbl = 1; ndbl < nm1d2; ndbl++) {
-          y->data[ndbl] = 1.0 + (double)ndbl;
-          y->data[(cdiff - ndbl) - 1] = apnd - ndbl;
-        }
-
-        if (nm1d2 << 1 == cdiff - 1) {
-          y->data[nm1d2] = (1.0 + (double)apnd) / 2.0;
-        } else {
-          y->data[nm1d2] = 1.0 + (double)nm1d2;
-          y->data[nm1d2 + 1] = apnd - nm1d2;
-        }
-      }
-    }
-
-    emxInit_real_T1(&x, 1);
-    ndbl = x->size[0];
-    x->size[0] = y->size[1];
-    emxEnsureCapacity((emxArray__common *)x, ndbl, (int)sizeof(double));
-    nm1d2 = y->size[1];
-    for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-      x->data[ndbl] = y->data[y->size[0] * ndbl];
-    }
-
-    emxFree_real_T(&y);
-    emxInit_real_T1(&iPk, 1);
-    emxInit_real_T1(&idx, 1);
-    emxInit_real_T1(&iInfite, 1);
-    emxInit_real_T1(&b_iPk, 1);
-    emxInit_real_T1(&c_iPk, 1);
-    iv0[0] = r19->size[1];
-    b_Yin = *Yin;
-    b_Yin.size = (int *)&iv0;
-    b_Yin.numDimensions = 1;
-    getAllPeaks(&b_Yin, iPk, iInfite, idx);
-    iv1[0] = r19->size[1];
-    b_Yin = *Yin;
-    b_Yin.size = (int *)&iv1;
-    b_Yin.numDimensions = 1;
-    removePeaksBelowMinPeakHeight(&b_Yin, iPk, rtMinusInf);
-    iv2[0] = r19->size[1];
-    b_Yin = *Yin;
-    b_Yin.size = (int *)&iv2;
-    b_Yin.numDimensions = 1;
-    removePeaksBelowThreshold(&b_Yin, iPk, 0.0);
-    combinePeaks(iPk, iInfite, b_iPk);
-    c_findPeaksSeparatedByMoreThanM(b_iPk, idx);
-    iv3[0] = r19->size[1];
-    b_Yin = *Yin;
-    b_Yin.size = (int *)&iv3;
-    b_Yin.numDimensions = 1;
-    orderPeaks(&b_Yin, b_iPk, idx);
-    nm1d2 = r19->size[1];
-    keepAtMostNpPeaks(idx, (double)nm1d2);
-    ndbl = c_iPk->size[0];
-    c_iPk->size[0] = idx->size[0];
-    emxEnsureCapacity((emxArray__common *)c_iPk, ndbl, (int)sizeof(double));
-    nm1d2 = idx->size[0];
-    emxFree_real_T(&iInfite);
-    emxFree_real_T(&iPk);
-    for (ndbl = 0; ndbl < nm1d2; ndbl++) {
-      c_iPk->data[ndbl] = b_iPk->data[(int)idx->data[ndbl] - 1];
-    }
-
-    emxFree_real_T(&b_iPk);
-    emxFree_real_T(&idx);
-    iv4[0] = r19->size[1];
-    b_Yin = *Yin;
-    b_Yin.size = (int *)&iv4;
-    b_Yin.numDimensions = 1;
-    assignOutputs(&b_Yin, x, c_iPk, true, true, P1, L1);
-    emxFree_real_T(&c_iPk);
-    emxFree_real_T(&x);
-    emxFree_real_T(&Yin);
-  } else {
-    ndbl = P1->size[0] * P1->size[1];
-    P1->size[0] = 0;
-    P1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)P1, ndbl, (int)sizeof(double));
-    ndbl = L1->size[0] * L1->size[1];
-    L1->size[0] = 0;
-    L1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)L1, ndbl, (int)sizeof(double));
-  }
-
-  if (!((P1->size[0] == 0) || (P1->size[1] == 0))) {
-    cdiff = r17->size[1] - 1;
-    nm1d2 = 0;
-    for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-      if (r17->data[ndbl] && r18->data[ndbl]) {
-        nm1d2++;
-      }
-    }
-
-    ndbl = r19->size[0] * r19->size[1];
-    r19->size[0] = 1;
-    r19->size[1] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)r19, ndbl, (int)sizeof(int));
-    nm1d2 = 0;
-    for (ndbl = 0; ndbl <= cdiff; ndbl++) {
-      if (r17->data[ndbl] && r18->data[ndbl]) {
-        r19->data[nm1d2] = ndbl + 1;
-        nm1d2++;
-      }
-    }
-
-    *L = f->data[r19->data[r19->size[0] * ((int)L1->data[0] - 1)] - 1];
-    *P = P1->data[0];
-  } else {
-    *L = 0.0;
-    *P = 0.0;
-  }
-
-  emxFree_int32_T(&r19);
-  emxFree_boolean_T(&r18);
-  emxFree_boolean_T(&r17);
-  emxFree_real_T(&L1);
-  emxFree_real_T(&P1);
-}
-
-//
-// Arguments    : const emxArray_real_T2 *F
-//                const emxArray_real_T2 *S
-//                const double tH[2]
-//                emxArray_real_T2 *fselect
-//                emxArray_real_T2 *stftselect
-//                double *L
-//                double *P
-//                double *M
-//                double *I
-// Return Type  : void
-//
-static void get_stft_features(const emxArray_real_T2 *F, const emxArray_real_T2 *S,
-  const double tH[2], emxArray_real_T2 *fselect, emxArray_real_T2 *stftselect,
-  double *L, double *P, double *M, double *I)
-{
-  emxArray_boolean_T *r20;
-  int i8;
-  int loop_ub;
-  emxArray_boolean_T *r21;
-  int ixstart;
-  int ix;
-  emxArray_int32_T *r22;
-  emxArray_int32_T *r23;
-  emxArray_int32_T *r24;
-  int n;
-  double mtmp;
-  int itmp;
-  emxArray_int32_T *r25;
-  boolean_T exitg1;
-  emxArray_real_T2 *P1;
-  emxArray_real_T2 *L1;
-  emxArray_real_T2 *b_S;
-  emxInit_boolean_T(&r20, 2);
-  i8 = r20->size[0] * r20->size[1];
-  r20->size[0] = 1;
-  r20->size[1] = F->size[1];
-  emxEnsureCapacity((emxArray__common *)r20, i8, (int)sizeof(boolean_T));
-  loop_ub = F->size[0] * F->size[1];
-  for (i8 = 0; i8 < loop_ub; i8++) {
-    r20->data[i8] = (F->data[i8] > tH[0]);
-  }
-
-  emxInit_boolean_T(&r21, 2);
-  i8 = r21->size[0] * r21->size[1];
-  r21->size[0] = 1;
-  r21->size[1] = F->size[1];
-  emxEnsureCapacity((emxArray__common *)r21, i8, (int)sizeof(boolean_T));
-  loop_ub = F->size[0] * F->size[1];
-  for (i8 = 0; i8 < loop_ub; i8++) {
-    r21->data[i8] = (F->data[i8] < tH[1]);
-  }
-
-  ixstart = r20->size[1] - 1;
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      ix++;
-    }
-  }
-
-  i8 = fselect->size[0] * fselect->size[1];
-  fselect->size[0] = 1;
-  fselect->size[1] = ix;
-  emxEnsureCapacity((emxArray__common *)fselect, i8, (int)sizeof(double));
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      fselect->data[ix] = F->data[loop_ub];
-      ix++;
-    }
-  }
-
-  emxInit_int32_T(&r22, 2);
-  ixstart = r20->size[1] - 1;
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      ix++;
-    }
-  }
-
-  i8 = r22->size[0] * r22->size[1];
-  r22->size[0] = 1;
-  r22->size[1] = ix;
-  emxEnsureCapacity((emxArray__common *)r22, i8, (int)sizeof(int));
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      r22->data[ix] = loop_ub + 1;
-      ix++;
-    }
-  }
-
-  i8 = stftselect->size[0];
-  stftselect->size[0] = r22->size[1];
-  emxEnsureCapacity((emxArray__common *)stftselect, i8, (int)sizeof(double));
-  loop_ub = r22->size[1];
-  for (i8 = 0; i8 < loop_ub; i8++) {
-    stftselect->data[i8] = S->data[r22->data[r22->size[0] * i8] - 1];
-  }
-
-  ixstart = r20->size[1] - 1;
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      ix++;
-    }
-  }
-
-  i8 = r22->size[0] * r22->size[1];
-  r22->size[0] = 1;
-  r22->size[1] = ix;
-  emxEnsureCapacity((emxArray__common *)r22, i8, (int)sizeof(int));
-  ix = 0;
-  for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      r22->data[ix] = loop_ub + 1;
-      ix++;
-    }
-  }
-
-  emxInit_int32_T1(&r23, 1);
-  ixstart = 1;
-  i8 = r23->size[0];
-  r23->size[0] = r22->size[1];
-  emxEnsureCapacity((emxArray__common *)r23, i8, (int)sizeof(int));
-  loop_ub = r22->size[1];
-  for (i8 = 0; i8 < loop_ub; i8++) {
-    r23->data[i8] = r22->data[r22->size[0] * i8];
-  }
-
-  emxInit_int32_T1(&r24, 1);
-  n = r23->size[0];
-  mtmp = S->data[r22->data[0] - 1];
-  itmp = 1;
-  i8 = r24->size[0];
-  r24->size[0] = r22->size[1];
-  emxEnsureCapacity((emxArray__common *)r24, i8, (int)sizeof(int));
-  loop_ub = r22->size[1];
-  emxFree_int32_T(&r23);
-  for (i8 = 0; i8 < loop_ub; i8++) {
-    r24->data[i8] = r22->data[r22->size[0] * i8];
-  }
-
-  if (r24->size[0] > 1) {
-    if (rtIsNaN(mtmp)) {
-      ix = 2;
-      exitg1 = false;
-      while ((!exitg1) && (ix <= n)) {
-        ixstart = ix;
-        if (!rtIsNaN(S->data[r22->data[r22->size[0] * (ix - 1)] - 1])) {
-          mtmp = S->data[r22->data[r22->size[0] * (ix - 1)] - 1];
-          itmp = ix;
-          exitg1 = true;
-        } else {
-          ix++;
-        }
-      }
-    }
-
-    emxInit_int32_T1(&r25, 1);
-    i8 = r25->size[0];
-    r25->size[0] = r22->size[1];
-    emxEnsureCapacity((emxArray__common *)r25, i8, (int)sizeof(int));
-    loop_ub = r22->size[1];
-    for (i8 = 0; i8 < loop_ub; i8++) {
-      r25->data[i8] = r22->data[r22->size[0] * i8];
-    }
-
-    if (ixstart < r25->size[0]) {
-      while (ixstart + 1 <= n) {
-        if (S->data[r22->data[r22->size[0] * ixstart] - 1] > mtmp) {
-          mtmp = S->data[r22->data[r22->size[0] * ixstart] - 1];
-          itmp = ixstart + 1;
-        }
-
-        ixstart++;
-      }
-    }
-
-    emxFree_int32_T(&r25);
-  }
-
-  emxFree_int32_T(&r24);
-  *M = mtmp;
-  *I = itmp;
-  ixstart = r20->size[1];
-  ix = 0;
-  for (loop_ub = 0; loop_ub < ixstart; loop_ub++) {
-    if (r20->data[loop_ub] && r21->data[loop_ub]) {
-      ix++;
-    }
-  }
-
-  emxInit_real_T(&P1, 2);
-  emxInit_real_T(&L1, 2);
-  if (ix > 2) {
-    ixstart = r20->size[1] - 1;
-    ix = 0;
-    for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-      if (r20->data[loop_ub] && r21->data[loop_ub]) {
-        ix++;
-      }
-    }
-
-    i8 = r22->size[0] * r22->size[1];
-    r22->size[0] = 1;
-    r22->size[1] = ix;
-    emxEnsureCapacity((emxArray__common *)r22, i8, (int)sizeof(int));
-    ix = 0;
-    for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-      if (r20->data[loop_ub] && r21->data[loop_ub]) {
-        r22->data[ix] = loop_ub + 1;
-        ix++;
-      }
-    }
-
-    emxInit_real_T1(&b_S, 1);
-    i8 = b_S->size[0];
-    b_S->size[0] = r22->size[1];
-    emxEnsureCapacity((emxArray__common *)b_S, i8, (int)sizeof(double));
-    loop_ub = r22->size[1];
-    for (i8 = 0; i8 < loop_ub; i8++) {
-      b_S->data[i8] = S->data[r22->data[r22->size[0] * i8] - 1];
-    }
-
-    findpeaks(b_S, P1, L1);
-    emxFree_real_T(&b_S);
-  } else {
-    i8 = P1->size[0] * P1->size[1];
-    P1->size[0] = 0;
-    P1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)P1, i8, (int)sizeof(double));
-    i8 = L1->size[0] * L1->size[1];
-    L1->size[0] = 0;
-    L1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)L1, i8, (int)sizeof(double));
-  }
-
-  if (!((P1->size[0] == 0) || (P1->size[1] == 0))) {
-    ixstart = r20->size[1] - 1;
-    ix = 0;
-    for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-      if (r20->data[loop_ub] && r21->data[loop_ub]) {
-        ix++;
-      }
-    }
-
-    i8 = r22->size[0] * r22->size[1];
-    r22->size[0] = 1;
-    r22->size[1] = ix;
-    emxEnsureCapacity((emxArray__common *)r22, i8, (int)sizeof(int));
-    ix = 0;
-    for (loop_ub = 0; loop_ub <= ixstart; loop_ub++) {
-      if (r20->data[loop_ub] && r21->data[loop_ub]) {
-        r22->data[ix] = loop_ub + 1;
-        ix++;
-      }
-    }
-
-    *L = F->data[r22->data[r22->size[0] * ((int)L1->data[0] - 1)] - 1];
-    *P = P1->data[0];
-  } else {
-    *L = 0.0;
-    *P = 0.0;
-  }
-
-  emxFree_int32_T(&r22);
-  emxFree_boolean_T(&r21);
-  emxFree_boolean_T(&r20);
-  emxFree_real_T(&L1);
-  emxFree_real_T(&P1);
-}
-
-//
-// UNTITLED2 Summary of this function goes here
-//    Detailed explanation goes here
-// Arguments    : double x
-//                emxArray_real_T2 *w
-// Return Type  : void
-//
-static void hammPeriodic(double x, emxArray_real_T2 *w)
-{
-  emxArray_real_T2 *wt;
-  emxArray_real_T2 *y;
-  double half;
-  double ndbl;
-  int n;
-  double anew;
-  double apnd;
-  double cdiff;
-  int i6;
-  int nm1d2;
-  int k;
-  int i7;
-  x++;
-  emxInit_real_T1(&wt, 1);
-  emxInit_real_T(&y, 2);
-  if (!(rt_remd_snf(x, 2.0) != 0.0)) {
-    //  Even length window
-    half = x / 2.0;
-
-    //      w = calc_window(half,x);
-    ndbl = x / 2.0 - 1.0;
-    if (rtIsNaN(ndbl)) {
-      n = 1;
-      anew = rtNaN;
-      apnd = half - 1.0;
-    } else if (half - 1.0 < 0.0) {
-      n = 0;
-      anew = 0.0;
-      apnd = half - 1.0;
-    } else if (rtIsInf(ndbl)) {
-      n = 1;
-      anew = rtNaN;
-      apnd = half - 1.0;
-    } else {
-      anew = 0.0;
-      ndbl = std::floor(ndbl + 0.5);
-      apnd = ndbl;
-      cdiff = ndbl - (half - 1.0);
-      if (std::fabs(cdiff) < 4.4408920985006262E-16 * std::fabs(half - 1.0)) {
-        ndbl++;
-        apnd = half - 1.0;
-      } else if (cdiff > 0.0) {
-        apnd = ndbl - 1.0;
-      } else {
-        ndbl++;
-      }
-
-      if (ndbl >= 0.0) {
-        n = (int)ndbl;
-      } else {
-        n = 0;
-      }
-    }
-
-    i6 = y->size[0] * y->size[1];
-    y->size[0] = 1;
-    y->size[1] = n;
-    emxEnsureCapacity((emxArray__common *)y, i6, (int)sizeof(double));
-    if (n > 0) {
-      y->data[0] = anew;
-      if (n > 1) {
-        y->data[n - 1] = apnd;
-        nm1d2 = (n - 1) / 2;
-        for (k = 1; k < nm1d2; k++) {
-          y->data[k] = anew + (double)k;
-          y->data[(n - k) - 1] = apnd - (double)k;
-        }
-
-        if (nm1d2 << 1 == n - 1) {
-          y->data[nm1d2] = (anew + apnd) / 2.0;
-        } else {
-          y->data[nm1d2] = anew + (double)nm1d2;
-          y->data[nm1d2 + 1] = apnd - (double)nm1d2;
-        }
-      }
-    }
-
-    i6 = w->size[0];
-    w->size[0] = y->size[1];
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    nm1d2 = y->size[1];
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = 6.2831853071795862 * (y->data[y->size[0] * i6] / (x - 1.0));
-    }
-
-    b_cos(w);
-    i6 = w->size[0];
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    nm1d2 = w->size[0];
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = 0.54 - 0.46 * w->data[i6];
-    }
-
-    if (1 > w->size[0]) {
-      i6 = 1;
-      k = 1;
-      n = 0;
-    } else {
-      i6 = w->size[0];
-      k = -1;
-      n = 1;
-    }
-
-    i7 = wt->size[0];
-    wt->size[0] = (w->size[0] + div_s32_floor(n - i6, k)) + 1;
-    emxEnsureCapacity((emxArray__common *)wt, i7, (int)sizeof(double));
-    nm1d2 = w->size[0];
-    for (i7 = 0; i7 < nm1d2; i7++) {
-      wt->data[i7] = w->data[i7];
-    }
-
-    nm1d2 = div_s32_floor(n - i6, k);
-    for (n = 0; n <= nm1d2; n++) {
-      wt->data[n + w->size[0]] = w->data[(i6 + k * n) - 1];
-    }
-
-    //      w = [w; w(end:-1:1)];
-    if (1 > wt->size[0] - 1) {
-      nm1d2 = 0;
-    } else {
-      nm1d2 = wt->size[0] - 1;
-    }
-
-    i6 = w->size[0];
-    w->size[0] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = wt->data[i6];
-    }
-  } else {
-    //  Odd length window
-    half = (x + 1.0) / 2.0;
-
-    //      w = calc_window(half,x);
-    ndbl = (x + 1.0) / 2.0 - 1.0;
-    if (rtIsNaN(ndbl)) {
-      n = 1;
-      anew = rtNaN;
-      apnd = half - 1.0;
-    } else if (half - 1.0 < 0.0) {
-      n = 0;
-      anew = 0.0;
-      apnd = half - 1.0;
-    } else if (rtIsInf(ndbl)) {
-      n = 1;
-      anew = rtNaN;
-      apnd = half - 1.0;
-    } else {
-      anew = 0.0;
-      ndbl = std::floor(ndbl + 0.5);
-      apnd = ndbl;
-      cdiff = ndbl - (half - 1.0);
-      if (std::fabs(cdiff) < 4.4408920985006262E-16 * std::fabs(half - 1.0)) {
-        ndbl++;
-        apnd = half - 1.0;
-      } else if (cdiff > 0.0) {
-        apnd = ndbl - 1.0;
-      } else {
-        ndbl++;
-      }
-
-      if (ndbl >= 0.0) {
-        n = (int)ndbl;
-      } else {
-        n = 0;
-      }
-    }
-
-    i6 = y->size[0] * y->size[1];
-    y->size[0] = 1;
-    y->size[1] = n;
-    emxEnsureCapacity((emxArray__common *)y, i6, (int)sizeof(double));
-    if (n > 0) {
-      y->data[0] = anew;
-      if (n > 1) {
-        y->data[n - 1] = apnd;
-        nm1d2 = (n - 1) / 2;
-        for (k = 1; k < nm1d2; k++) {
-          y->data[k] = anew + (double)k;
-          y->data[(n - k) - 1] = apnd - (double)k;
-        }
-
-        if (nm1d2 << 1 == n - 1) {
-          y->data[nm1d2] = (anew + apnd) / 2.0;
-        } else {
-          y->data[nm1d2] = anew + (double)nm1d2;
-          y->data[nm1d2 + 1] = apnd - (double)nm1d2;
-        }
-      }
-    }
-
-    i6 = w->size[0];
-    w->size[0] = y->size[1];
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    nm1d2 = y->size[1];
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = 6.2831853071795862 * (y->data[y->size[0] * i6] / (x - 1.0));
-    }
-
-    b_cos(w);
-    i6 = w->size[0];
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    nm1d2 = w->size[0];
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = 0.54 - 0.46 * w->data[i6];
-    }
-
-    if (1.0 > (double)w->size[0] - 1.0) {
-      i6 = 1;
-      k = 1;
-      n = 0;
-    } else {
-      i6 = (int)((double)w->size[0] - 1.0);
-      k = -1;
-      n = 1;
-    }
-
-    i7 = wt->size[0];
-    wt->size[0] = (w->size[0] + div_s32_floor(n - i6, k)) + 1;
-    emxEnsureCapacity((emxArray__common *)wt, i7, (int)sizeof(double));
-    nm1d2 = w->size[0];
-    for (i7 = 0; i7 < nm1d2; i7++) {
-      wt->data[i7] = w->data[i7];
-    }
-
-    nm1d2 = div_s32_floor(n - i6, k);
-    for (n = 0; n <= nm1d2; n++) {
-      wt->data[n + w->size[0]] = w->data[(i6 + k * n) - 1];
-    }
-
-    //      w = [w; w(end-1:-1:1)];
-    //      w(end) = [];
-    if (1 > wt->size[0] - 1) {
-      nm1d2 = 0;
-    } else {
-      nm1d2 = wt->size[0] - 1;
-    }
-
-    i6 = w->size[0];
-    w->size[0] = nm1d2;
-    emxEnsureCapacity((emxArray__common *)w, i6, (int)sizeof(double));
-    for (i6 = 0; i6 < nm1d2; i6++) {
-      w->data[i6] = wt->data[i6];
-    }
-  }
-
-  emxFree_real_T(&y);
-  emxFree_real_T(&wt);
-
-  //  function w = calc_window(m,x)
-  //      c = (0:m-1)'/(x-1);
-  //      w = 0.54 - 0.46*cos(2*pi*c);
-  //  end
-}
-
-//
-// Calculate the generalized cosine window samples
-//  x is the length of the window
-// Arguments    : double x
-//                emxArray_real_T2 *w
-// Return Type  : void
-//
-static void hannWin(double x, emxArray_real_T2 *w)
-{
-  int n;
-  double anew;
-  double apnd;
-  double ndbl;
-  emxArray_real_T2 *y;
-  double cdiff;
-  int k;
-  int nm1d2;
-  if (rtIsNaN(x - 1.0)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = x - 1.0;
-  } else if (x - 1.0 < 0.0) {
-    n = 0;
-    anew = 0.0;
-    apnd = x - 1.0;
-  } else if (rtIsInf(x - 1.0)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = x - 1.0;
-  } else {
-    anew = 0.0;
-    ndbl = std::floor((x - 1.0) + 0.5);
-    apnd = ndbl;
-    cdiff = ndbl - (x - 1.0);
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * std::fabs(x - 1.0)) {
-      ndbl++;
-      apnd = x - 1.0;
-    } else if (cdiff > 0.0) {
-      apnd = ndbl - 1.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      n = (int)ndbl;
-    } else {
-      n = 0;
-    }
-  }
-
-  emxInit_real_T(&y, 2);
-  k = y->size[0] * y->size[1];
-  y->size[0] = 1;
-  y->size[1] = n;
-  emxEnsureCapacity((emxArray__common *)y, k, (int)sizeof(double));
-  if (n > 0) {
-    y->data[0] = anew;
-    if (n > 1) {
-      y->data[n - 1] = apnd;
-      nm1d2 = (n - 1) / 2;
-      for (k = 1; k < nm1d2; k++) {
-        y->data[k] = anew + (double)k;
-        y->data[(n - k) - 1] = apnd - (double)k;
-      }
-
-      if (nm1d2 << 1 == n - 1) {
-        y->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        y->data[nm1d2] = anew + (double)nm1d2;
-        y->data[nm1d2 + 1] = apnd - (double)nm1d2;
-      }
-    }
-  }
-
-  k = w->size[0];
-  w->size[0] = y->size[1];
-  emxEnsureCapacity((emxArray__common *)w, k, (int)sizeof(double));
-  nm1d2 = y->size[1];
-  for (k = 0; k < nm1d2; k++) {
-    w->data[k] = 6.2831853071795862 * y->data[y->size[0] * k] / (x - 1.0);
-  }
-
-  emxFree_real_T(&y);
-  b_cos(w);
-  k = w->size[0];
-  emxEnsureCapacity((emxArray__common *)w, k, (int)sizeof(double));
-  nm1d2 = w->size[0];
-  for (k = 0; k < nm1d2; k++) {
-    w->data[k] = 1.0 - w->data[k];
-  }
-
-  k = w->size[0];
-  emxEnsureCapacity((emxArray__common *)w, k, (int)sizeof(double));
-  nm1d2 = w->size[0];
-  for (k = 0; k < nm1d2; k++) {
-    w->data[k] *= 0.5;
-  }
-}
-
-//
-// Arguments    : emxArray_real_T2 *idx
-//                double Np
-// Return Type  : void
-//
-static void keepAtMostNpPeaks(emxArray_real_T2 *idx, double Np)
-{
-  int loop_ub;
-  emxArray_real_T2 *b_idx;
-  int i11;
-  if (idx->size[0] > Np) {
-    if (1.0 > Np) {
-      loop_ub = 0;
-    } else {
-      loop_ub = (int)Np;
-    }
-
-    emxInit_real_T1(&b_idx, 1);
-    i11 = b_idx->size[0];
-    b_idx->size[0] = loop_ub;
-    emxEnsureCapacity((emxArray__common *)b_idx, i11, (int)sizeof(double));
-    for (i11 = 0; i11 < loop_ub; i11++) {
-      b_idx->data[i11] = idx->data[i11];
-    }
-
-    i11 = idx->size[0];
-    idx->size[0] = b_idx->size[0];
-    emxEnsureCapacity((emxArray__common *)idx, i11, (int)sizeof(double));
-    loop_ub = b_idx->size[0];
-    for (i11 = 0; i11 < loop_ub; i11++) {
-      idx->data[i11] = b_idx->data[i11];
-    }
-
-    emxFree_real_T(&b_idx);
-  }
-}
-
-//
-// Arguments    : emxArray_int32_T *idx
-//                emxArray_real_T2 *x
-//                int offset
-//                int np
-//                int nq
-//                emxArray_int32_T *iwork
-//                emxArray_real_T2 *xwork
-// Return Type  : void
-//
-static void merge(emxArray_int32_T *idx, emxArray_real_T2 *x, int offset, int np,
-                  int nq, emxArray_int32_T *iwork, emxArray_real_T2 *xwork)
-{
-  int n;
-  int qend;
-  int p;
-  int iout;
-  int exitg1;
-  if ((np == 0) || (nq == 0)) {
-  } else {
-    n = np + nq;
-    for (qend = 0; qend + 1 <= n; qend++) {
-      iwork->data[qend] = idx->data[offset + qend];
-      xwork->data[qend] = x->data[offset + qend];
-    }
-
-    p = 0;
-    n = np;
-    qend = np + nq;
-    iout = offset - 1;
-    do {
-      exitg1 = 0;
-      iout++;
-      if (xwork->data[p] >= xwork->data[n]) {
-        idx->data[iout] = iwork->data[p];
-        x->data[iout] = xwork->data[p];
-        if (p + 1 < np) {
-          p++;
-        } else {
-          exitg1 = 1;
-        }
-      } else {
-        idx->data[iout] = iwork->data[n];
-        x->data[iout] = xwork->data[n];
-        if (n + 1 < qend) {
-          n++;
-        } else {
-          n = iout - p;
-          while (p + 1 <= np) {
-            idx->data[(n + p) + 1] = iwork->data[p];
-            x->data[(n + p) + 1] = xwork->data[p];
-            p++;
-          }
-
-          exitg1 = 1;
-        }
-      }
-    } while (exitg1 == 0);
-  }
-}
-
-//
-// Arguments    : emxArray_int32_T *idx
-//                emxArray_real_T2 *x
-//                int offset
-//                int n
-//                int preSortLevel
-//                emxArray_int32_T *iwork
-//                emxArray_real_T2 *xwork
-// Return Type  : void
-//
-static void merge_block(emxArray_int32_T *idx, emxArray_real_T2 *x, int offset,
-  int n, int preSortLevel, emxArray_int32_T *iwork, emxArray_real_T2 *xwork)
-{
-  int nPairs;
-  int bLen;
-  int tailOffset;
-  int nTail;
-  nPairs = n >> preSortLevel;
-  bLen = 1 << preSortLevel;
-  while (nPairs > 1) {
-    if ((nPairs & 1) != 0) {
-      nPairs--;
-      tailOffset = bLen * nPairs;
-      nTail = n - tailOffset;
-      if (nTail > bLen) {
-        merge(idx, x, offset + tailOffset, bLen, nTail - bLen, iwork, xwork);
-      }
-    }
-
-    tailOffset = bLen << 1;
-    nPairs >>= 1;
-    for (nTail = 1; nTail <= nPairs; nTail++) {
-      merge(idx, x, offset + (nTail - 1) * tailOffset, bLen, bLen, iwork, xwork);
-    }
-
-    bLen = tailOffset;
-  }
-
-  if (n > bLen) {
-    merge(idx, x, offset, bLen, n - bLen, iwork, xwork);
-  }
-}
-
-//
-// Arguments    : double n
-// Return Type  : double
-//
-static double nextpow2(double n)
-{
-  double p;
-  double f;
-  int eint;
-  p = std::fabs(n);
-  if ((!rtIsInf(p)) && (!rtIsNaN(p))) {
-    if ((!rtIsInf(p)) && (!rtIsNaN(p))) {
-      f = frexp(p, &eint);
-    } else {
-      f = p;
-      eint = 0;
-    }
-
-    p = eint;
-    if (f == 0.5) {
-      p = (double)eint - 1.0;
-    }
-  }
-
-  return p;
-}
-
-//
-// Arguments    : const emxArray_real_T2 *Y
-//                const emxArray_real_T2 *iPk
-//                emxArray_real_T2 *idx
-// Return Type  : void
-//
-static void orderPeaks(const emxArray_real_T2 *Y, const emxArray_real_T2 *iPk,
-  emxArray_real_T2 *idx)
-{
-  emxArray_real_T2 *x;
-  int i9;
-  int loop_ub;
-  emxArray_int32_T *iidx;
-  emxArray_real_T2 *b_idx;
-  if (idx->size[0] == 0) {
-  } else {
-    emxInit_real_T1(&x, 1);
-    i9 = x->size[0];
-    x->size[0] = idx->size[0];
-    emxEnsureCapacity((emxArray__common *)x, i9, (int)sizeof(double));
-    loop_ub = idx->size[0];
-    for (i9 = 0; i9 < loop_ub; i9++) {
-      x->data[i9] = Y->data[(int)iPk->data[(int)idx->data[i9] - 1] - 1];
-    }
-
-    emxInit_int32_T1(&iidx, 1);
-    emxInit_real_T1(&b_idx, 1);
-    sort(x, iidx);
-    i9 = b_idx->size[0];
-    b_idx->size[0] = iidx->size[0];
-    emxEnsureCapacity((emxArray__common *)b_idx, i9, (int)sizeof(double));
-    loop_ub = iidx->size[0];
-    emxFree_real_T(&x);
-    for (i9 = 0; i9 < loop_ub; i9++) {
-      b_idx->data[i9] = idx->data[iidx->data[i9] - 1];
-    }
-
-    emxFree_int32_T(&iidx);
-    i9 = idx->size[0];
-    idx->size[0] = b_idx->size[0];
-    emxEnsureCapacity((emxArray__common *)idx, i9, (int)sizeof(double));
-    loop_ub = b_idx->size[0];
-    for (i9 = 0; i9 < loop_ub; i9++) {
-      idx->data[i9] = b_idx->data[i9];
-    }
-
-    emxFree_real_T(&b_idx);
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *x
-//                int n1_unsigned
-//                const emxArray_real_T2 *costab
-//                const emxArray_real_T2 *sintab
-//                emxArray_creal_T *y
-// Return Type  : void
-//
-static void r2br_r2dit_trig(const emxArray_real_T2 *x, int n1_unsigned, const
-  emxArray_real_T2 *costab, const emxArray_real_T2 *sintab, emxArray_creal_T *y)
-{
-  int j;
-  int nRowsD2;
-  int nRowsD4;
-  int iy;
-  int iDelta;
-  int ix;
-  int ju;
-  int i;
-  boolean_T tst;
-  double temp_re;
-  double temp_im;
-  double twid_re;
-  double twid_im;
-  int ihi;
-  if (x->size[0] <= n1_unsigned) {
-    j = x->size[0];
-  } else {
-    j = n1_unsigned;
-  }
-
-  nRowsD2 = n1_unsigned / 2;
-  nRowsD4 = nRowsD2 / 2;
-  iy = y->size[0];
-  y->size[0] = n1_unsigned;
-  emxEnsureCapacity((emxArray__common *)y, iy, (int)sizeof(creal_T));
-  if (n1_unsigned > x->size[0]) {
-    iDelta = y->size[0];
-    iy = y->size[0];
-    y->size[0] = iDelta;
-    emxEnsureCapacity((emxArray__common *)y, iy, (int)sizeof(creal_T));
-    for (iy = 0; iy < iDelta; iy++) {
-      y->data[iy].re = 0.0;
-      y->data[iy].im = 0.0;
-    }
-  }
-
-  ix = 0;
-  ju = 0;
-  iy = 0;
-  for (i = 1; i < j; i++) {
-    y->data[iy].re = x->data[ix];
-    y->data[iy].im = 0.0;
-    iDelta = n1_unsigned;
-    tst = true;
-    while (tst) {
-      iDelta >>= 1;
-      ju ^= iDelta;
-      tst = ((ju & iDelta) == 0);
-    }
-
-    iy = ju;
-    ix++;
-  }
-
-  y->data[iy].re = x->data[ix];
-  y->data[iy].im = 0.0;
-  if (n1_unsigned > 1) {
-    for (i = 0; i <= n1_unsigned - 2; i += 2) {
-      temp_re = y->data[i + 1].re;
-      temp_im = y->data[i + 1].im;
-      y->data[i + 1].re = y->data[i].re - y->data[i + 1].re;
-      y->data[i + 1].im = y->data[i].im - y->data[i + 1].im;
-      y->data[i].re += temp_re;
-      y->data[i].im += temp_im;
-    }
-  }
-
-  iDelta = 2;
-  iy = 4;
-  ix = 1 + ((nRowsD4 - 1) << 2);
-  while (nRowsD4 > 0) {
-    for (i = 0; i < ix; i += iy) {
-      temp_re = y->data[i + iDelta].re;
-      temp_im = y->data[i + iDelta].im;
-      y->data[i + iDelta].re = y->data[i].re - temp_re;
-      y->data[i + iDelta].im = y->data[i].im - temp_im;
-      y->data[i].re += temp_re;
-      y->data[i].im += temp_im;
-    }
-
-    ju = 1;
-    for (j = nRowsD4; j < nRowsD2; j += nRowsD4) {
-      twid_re = costab->data[j];
-      twid_im = sintab->data[j];
-      i = ju;
-      ihi = ju + ix;
-      while (i < ihi) {
-        temp_re = twid_re * y->data[i + iDelta].re - twid_im * y->data[i +
-          iDelta].im;
-        temp_im = twid_re * y->data[i + iDelta].im + twid_im * y->data[i +
-          iDelta].re;
-        y->data[i + iDelta].re = y->data[i].re - temp_re;
-        y->data[i + iDelta].im = y->data[i].im - temp_im;
-        y->data[i].re += temp_re;
-        y->data[i].im += temp_im;
-        i += iy;
-      }
-
-      ju++;
-    }
-
-    nRowsD4 /= 2;
-    iDelta = iy;
-    iy <<= 1;
-    ix -= iDelta;
-  }
-}
-
-//
-// Arguments    : const emxArray_creal_T *x
-//                int xoffInit
-//                int unsigned_nRows
-//                const emxArray_real_T2 *costab
-//                const emxArray_real_T2 *sintab
-//                emxArray_creal_T *y
-// Return Type  : void
-//
-static void r2br_r2dit_trig_impl(const emxArray_creal_T *x, int xoffInit, int
-  unsigned_nRows, const emxArray_real_T2 *costab, const emxArray_real_T2 *sintab,
-  emxArray_creal_T *y)
-{
-  int j;
-  int nRowsD2;
-  int nRowsD4;
-  int iy;
-  int iDelta;
-  int ix;
-  int ju;
-  int i;
-  boolean_T tst;
-  double temp_re;
-  double temp_im;
-  double twid_re;
-  double twid_im;
-  int ihi;
-  if (x->size[0] <= unsigned_nRows) {
-    j = x->size[0];
-  } else {
-    j = unsigned_nRows;
-  }
-
-  nRowsD2 = unsigned_nRows / 2;
-  nRowsD4 = nRowsD2 / 2;
-  iy = y->size[0];
-  y->size[0] = unsigned_nRows;
-  emxEnsureCapacity((emxArray__common *)y, iy, (int)sizeof(creal_T));
-  iy = x->size[0];
-  if (unsigned_nRows > iy) {
-    iDelta = y->size[0];
-    iy = y->size[0];
-    y->size[0] = iDelta;
-    emxEnsureCapacity((emxArray__common *)y, iy, (int)sizeof(creal_T));
-    for (iy = 0; iy < iDelta; iy++) {
-      y->data[iy].re = 0.0;
-      y->data[iy].im = 0.0;
-    }
-  }
-
-  ix = xoffInit;
-  ju = 0;
-  iy = 0;
-  for (i = 1; i < j; i++) {
-    y->data[iy] = x->data[ix];
-    iDelta = unsigned_nRows;
-    tst = true;
-    while (tst) {
-      iDelta >>= 1;
-      ju ^= iDelta;
-      tst = ((ju & iDelta) == 0);
-    }
-
-    iy = ju;
-    ix++;
-  }
-
-  y->data[iy] = x->data[ix];
-  if (unsigned_nRows > 1) {
-    for (i = 0; i <= unsigned_nRows - 2; i += 2) {
-      temp_re = y->data[i + 1].re;
-      temp_im = y->data[i + 1].im;
-      y->data[i + 1].re = y->data[i].re - y->data[i + 1].re;
-      y->data[i + 1].im = y->data[i].im - y->data[i + 1].im;
-      y->data[i].re += temp_re;
-      y->data[i].im += temp_im;
-    }
-  }
-
-  iDelta = 2;
-  iy = 4;
-  ix = 1 + ((nRowsD4 - 1) << 2);
-  while (nRowsD4 > 0) {
-    for (i = 0; i < ix; i += iy) {
-      temp_re = y->data[i + iDelta].re;
-      temp_im = y->data[i + iDelta].im;
-      y->data[i + iDelta].re = y->data[i].re - temp_re;
-      y->data[i + iDelta].im = y->data[i].im - temp_im;
-      y->data[i].re += temp_re;
-      y->data[i].im += temp_im;
-    }
-
-    ju = 1;
-    for (j = nRowsD4; j < nRowsD2; j += nRowsD4) {
-      twid_re = costab->data[j];
-      twid_im = sintab->data[j];
-      i = ju;
-      ihi = ju + ix;
-      while (i < ihi) {
-        temp_re = twid_re * y->data[i + iDelta].re - twid_im * y->data[i +
-          iDelta].im;
-        temp_im = twid_re * y->data[i + iDelta].im + twid_im * y->data[i +
-          iDelta].re;
-        y->data[i + iDelta].re = y->data[i].re - temp_re;
-        y->data[i + iDelta].im = y->data[i].im - temp_im;
-        y->data[i].re += temp_re;
-        y->data[i].im += temp_im;
-        i += iy;
-      }
-
-      ju++;
-    }
-
-    nRowsD4 /= 2;
-    iDelta = iy;
-    iy <<= 1;
-    ix -= iDelta;
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *Y
-//                emxArray_real_T2 *iPk
-//                double Ph
-// Return Type  : void
-//
-static void removePeaksBelowMinPeakHeight(const emxArray_real_T2 *Y,
-  emxArray_real_T2 *iPk, double Ph)
-{
-  int end;
-  int trueCount;
-  int i;
-  int partialTrueCount;
-  if (!(iPk->size[0] == 0)) {
-    end = iPk->size[0] - 1;
-    trueCount = 0;
-    for (i = 0; i <= end; i++) {
-      if (Y->data[(int)iPk->data[i] - 1] > Ph) {
-        trueCount++;
-      }
-    }
-
-    partialTrueCount = 0;
-    for (i = 0; i <= end; i++) {
-      if (Y->data[(int)iPk->data[i] - 1] > Ph) {
-        iPk->data[partialTrueCount] = iPk->data[i];
-        partialTrueCount++;
-      }
-    }
-
-    end = iPk->size[0];
-    iPk->size[0] = trueCount;
-    emxEnsureCapacity((emxArray__common *)iPk, end, (int)sizeof(double));
-  }
-}
-
-//
-// Arguments    : const emxArray_real_T2 *Y
-//                emxArray_real_T2 *iPk
-//                double Th
-// Return Type  : void
-//
-static void removePeaksBelowThreshold(const emxArray_real_T2 *Y, emxArray_real_T2 *
-  iPk, double Th)
-{
-  int c;
-  emxArray_real_T2 *base;
-  int k;
-  int trueCount;
-  double extremum;
-  int partialTrueCount;
-  c = iPk->size[0];
-  emxInit_real_T1(&base, 1);
-  k = base->size[0];
-  base->size[0] = c;
-  emxEnsureCapacity((emxArray__common *)base, k, (int)sizeof(double));
-  for (k = 0; k + 1 <= c; k++) {
-    if ((Y->data[(int)(iPk->data[k] - 1.0) - 1] >= Y->data[(int)(iPk->data[k] +
-          1.0) - 1]) || rtIsNaN(Y->data[(int)(iPk->data[k] + 1.0) - 1])) {
-      extremum = Y->data[(int)(iPk->data[k] - 1.0) - 1];
-    } else {
-      extremum = Y->data[(int)(iPk->data[k] + 1.0) - 1];
-    }
-
-    base->data[k] = extremum;
-  }
-
-  k = iPk->size[0] - 1;
-  trueCount = 0;
-  for (c = 0; c <= k; c++) {
-    if (Y->data[(int)iPk->data[c] - 1] - base->data[c] >= Th) {
-      trueCount++;
-    }
-  }
-
-  partialTrueCount = 0;
-  for (c = 0; c <= k; c++) {
-    if (Y->data[(int)iPk->data[c] - 1] - base->data[c] >= Th) {
-      iPk->data[partialTrueCount] = iPk->data[c];
-      partialTrueCount++;
-    }
-  }
-
-  emxFree_real_T(&base);
-  k = iPk->size[0];
-  iPk->size[0] = trueCount;
-  emxEnsureCapacity((emxArray__common *)iPk, k, (int)sizeof(double));
-}
-
-//
-// Arguments    : double u0
-//                double u1
-// Return Type  : double
-//
-static double rt_hypotd_snf(double u0, double u1)
-{
-  double y;
-  double a;
-  double b;
-  a = std::fabs(u0);
-  b = std::fabs(u1);
-  if (a < b) {
-    a /= b;
-    y = b * std::sqrt(a * a + 1.0);
-  } else if (a > b) {
-    b /= a;
-    y = a * std::sqrt(b * b + 1.0);
-  } else if (rtIsNaN(b)) {
-    y = b;
-  } else {
-    y = a * 1.4142135623730951;
-  }
-
-  return y;
-}
-
-//
-// Arguments    : double u0
-//                double u1
-// Return Type  : double
-//
-static double rt_powd_snf(double u0, double u1)
-{
-  double y;
-  double d1;
-  double d2;
-  if (rtIsNaN(u0) || rtIsNaN(u1)) {
-    y = rtNaN;
-  } else {
-    d1 = std::fabs(u0);
-    d2 = std::fabs(u1);
-    if (rtIsInf(u1)) {
-      if (d1 == 1.0) {
-        y = rtNaN;
-      } else if (d1 > 1.0) {
-        if (u1 > 0.0) {
-          y = rtInf;
-        } else {
-          y = 0.0;
-        }
-      } else if (u1 > 0.0) {
-        y = 0.0;
-      } else {
-        y = rtInf;
-      }
-    } else if (d2 == 0.0) {
-      y = 1.0;
-    } else if (d2 == 1.0) {
-      if (u1 > 0.0) {
-        y = u0;
-      } else {
-        y = 1.0 / u0;
-      }
-    } else if (u1 == 2.0) {
-      y = u0 * u0;
-    } else if ((u1 == 0.5) && (u0 >= 0.0)) {
-      y = std::sqrt(u0);
-    } else if ((u0 < 0.0) && (u1 > std::floor(u1))) {
-      y = rtNaN;
-    } else {
-      y = pow(u0, u1);
-    }
-  }
-
-  return y;
-}
-
-//
-// Arguments    : double u0
-//                double u1
-// Return Type  : double
-//
-static double rt_remd_snf(double u0, double u1)
-{
-  double y;
-  double b_u1;
-  double tr;
-  if (!((!rtIsNaN(u0)) && (!rtIsInf(u0)) && ((!rtIsNaN(u1)) && (!rtIsInf(u1)))))
-  {
-    y = rtNaN;
-  } else {
-    if (u1 < 0.0) {
-      b_u1 = std::ceil(u1);
-    } else {
-      b_u1 = std::floor(u1);
-    }
-
-    if ((u1 != 0.0) && (u1 != b_u1)) {
-      tr = u0 / u1;
-      if (std::fabs(tr - rt_roundd_snf(tr)) <= DBL_EPSILON * std::fabs(tr)) {
-        y = 0.0;
-      } else {
-        y = std::fmod(u0, u1);
-      }
-    } else {
-      y = std::fmod(u0, u1);
-    }
-  }
-
-  return y;
-}
-
-//
-// Arguments    : double u
-// Return Type  : double
-//
-static double rt_roundd_snf(double u)
-{
-  double y;
-  if (std::fabs(u) < 4.503599627370496E+15) {
-    if (u >= 0.5) {
-      y = std::floor(u + 0.5);
-    } else if (u > -0.5) {
-      y = u * 0.0;
-    } else {
-      y = std::ceil(u - 0.5);
-    }
-  } else {
-    y = u;
-  }
-
-  return y;
-}
-
-//
-// Arguments    : int *k
-//                const emxArray_real_T2 *x
-// Return Type  : double
-//
-static double skip_to_last_equal_value(int *k, const emxArray_real_T2 *x)
-{
-  double xk;
-  boolean_T exitg1;
-  double absxk;
-  int exponent;
-  boolean_T p;
-  xk = x->data[*k - 1];
-  exitg1 = false;
-  while ((!exitg1) && (*k < x->size[0])) {
-    absxk = std::fabs(xk / 2.0);
-    if ((!rtIsInf(absxk)) && (!rtIsNaN(absxk))) {
-      if (absxk <= 2.2250738585072014E-308) {
-        absxk = 4.94065645841247E-324;
-      } else {
-        frexp(absxk, &exponent);
-        absxk = std::ldexp(1.0, exponent - 53);
-      }
-    } else {
-      absxk = rtNaN;
-    }
-
-    if ((std::fabs(xk - x->data[*k]) < absxk) || (rtIsInf(x->data[*k]) && rtIsInf
-         (xk) && ((x->data[*k] > 0.0) == (xk > 0.0)))) {
-      p = true;
-    } else {
-      p = false;
-    }
-
-    if (p) {
-      (*k)++;
-    } else {
-      exitg1 = true;
-    }
-  }
-
-  return xk;
-}
-
-//
-// Arguments    : emxArray_real_T2 *x
-//                emxArray_int32_T *idx
-// Return Type  : void
-//
-static void sort(emxArray_real_T2 *x, emxArray_int32_T *idx)
-{
-  int dim;
-  dim = 2;
-  if (x->size[0] != 1) {
-    dim = 1;
-  }
-
-  b_sort(x, dim, idx);
-}
-
-//
-// Arguments    : emxArray_real_T2 *x
-//                emxArray_int32_T *idx
-// Return Type  : void
-//
-static void sortIdx(emxArray_real_T2 *x, emxArray_int32_T *idx)
-{
-  emxArray_real_T2 *b_x;
-  unsigned int unnamed_idx_0;
-  int ib;
-  int m;
-  int n;
-  double x4[4];
-  int idx4[4];
-  emxArray_int32_T *iwork;
-  emxArray_real_T2 *xwork;
-  int nNaNs;
-  int k;
-  int wOffset;
-  signed char perm[4];
-  int nNonNaN;
-  int p;
-  int i4;
-  int nBlocks;
-  int b_iwork[256];
-  double b_xwork[256];
-  int b;
-  int bLen;
-  int bLen2;
-  int nPairs;
-  int exitg1;
-  emxInit_real_T1(&b_x, 1);
-  unnamed_idx_0 = (unsigned int)x->size[0];
-  ib = b_x->size[0];
-  b_x->size[0] = x->size[0];
-  emxEnsureCapacity((emxArray__common *)b_x, ib, (int)sizeof(double));
-  m = x->size[0];
-  for (ib = 0; ib < m; ib++) {
-    b_x->data[ib] = x->data[ib];
-  }
-
-  ib = idx->size[0];
-  idx->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)idx, ib, (int)sizeof(int));
-  m = (int)unnamed_idx_0;
-  for (ib = 0; ib < m; ib++) {
-    idx->data[ib] = 0;
-  }
-
-  n = x->size[0];
-  for (m = 0; m < 4; m++) {
-    x4[m] = 0.0;
-    idx4[m] = 0;
-  }
-
-  emxInit_int32_T1(&iwork, 1);
-  ib = iwork->size[0];
-  iwork->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)iwork, ib, (int)sizeof(int));
-  m = iwork->size[0];
-  ib = iwork->size[0];
-  iwork->size[0] = m;
-  emxEnsureCapacity((emxArray__common *)iwork, ib, (int)sizeof(int));
-  for (ib = 0; ib < m; ib++) {
-    iwork->data[ib] = 0;
-  }
-
-  emxInit_real_T1(&xwork, 1);
-  unnamed_idx_0 = (unsigned int)x->size[0];
-  ib = xwork->size[0];
-  xwork->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)xwork, ib, (int)sizeof(double));
-  m = xwork->size[0];
-  ib = xwork->size[0];
-  xwork->size[0] = m;
-  emxEnsureCapacity((emxArray__common *)xwork, ib, (int)sizeof(double));
-  for (ib = 0; ib < m; ib++) {
-    xwork->data[ib] = 0.0;
-  }
-
-  nNaNs = 0;
-  ib = 0;
-  for (k = 0; k + 1 <= n; k++) {
-    if (rtIsNaN(b_x->data[k])) {
-      idx->data[(n - nNaNs) - 1] = k + 1;
-      xwork->data[(n - nNaNs) - 1] = b_x->data[k];
-      nNaNs++;
-    } else {
-      ib++;
-      idx4[ib - 1] = k + 1;
-      x4[ib - 1] = b_x->data[k];
-      if (ib == 4) {
-        ib = k - nNaNs;
-        if (x4[0] >= x4[1]) {
-          m = 1;
-          wOffset = 2;
-        } else {
-          m = 2;
-          wOffset = 1;
-        }
-
-        if (x4[2] >= x4[3]) {
-          p = 3;
-          i4 = 4;
-        } else {
-          p = 4;
-          i4 = 3;
-        }
-
-        if (x4[m - 1] >= x4[p - 1]) {
-          if (x4[wOffset - 1] >= x4[p - 1]) {
-            perm[0] = (signed char)m;
-            perm[1] = (signed char)wOffset;
-            perm[2] = (signed char)p;
-            perm[3] = (signed char)i4;
-          } else if (x4[wOffset - 1] >= x4[i4 - 1]) {
-            perm[0] = (signed char)m;
-            perm[1] = (signed char)p;
-            perm[2] = (signed char)wOffset;
-            perm[3] = (signed char)i4;
-          } else {
-            perm[0] = (signed char)m;
-            perm[1] = (signed char)p;
-            perm[2] = (signed char)i4;
-            perm[3] = (signed char)wOffset;
-          }
-        } else if (x4[m - 1] >= x4[i4 - 1]) {
-          if (x4[wOffset - 1] >= x4[i4 - 1]) {
-            perm[0] = (signed char)p;
-            perm[1] = (signed char)m;
-            perm[2] = (signed char)wOffset;
-            perm[3] = (signed char)i4;
-          } else {
-            perm[0] = (signed char)p;
-            perm[1] = (signed char)m;
-            perm[2] = (signed char)i4;
-            perm[3] = (signed char)wOffset;
-          }
-        } else {
-          perm[0] = (signed char)p;
-          perm[1] = (signed char)i4;
-          perm[2] = (signed char)m;
-          perm[3] = (signed char)wOffset;
-        }
-
-        idx->data[ib - 3] = idx4[perm[0] - 1];
-        idx->data[ib - 2] = idx4[perm[1] - 1];
-        idx->data[ib - 1] = idx4[perm[2] - 1];
-        idx->data[ib] = idx4[perm[3] - 1];
-        b_x->data[ib - 3] = x4[perm[0] - 1];
-        b_x->data[ib - 2] = x4[perm[1] - 1];
-        b_x->data[ib - 1] = x4[perm[2] - 1];
-        b_x->data[ib] = x4[perm[3] - 1];
-        ib = 0;
-      }
-    }
-  }
-
-  wOffset = (x->size[0] - nNaNs) - 1;
-  if (ib > 0) {
-    for (m = 0; m < 4; m++) {
-      perm[m] = 0;
-    }
-
-    if (ib == 1) {
-      perm[0] = 1;
-    } else if (ib == 2) {
-      if (x4[0] >= x4[1]) {
-        perm[0] = 1;
-        perm[1] = 2;
-      } else {
-        perm[0] = 2;
-        perm[1] = 1;
-      }
-    } else if (x4[0] >= x4[1]) {
-      if (x4[1] >= x4[2]) {
-        perm[0] = 1;
-        perm[1] = 2;
-        perm[2] = 3;
-      } else if (x4[0] >= x4[2]) {
-        perm[0] = 1;
-        perm[1] = 3;
-        perm[2] = 2;
-      } else {
-        perm[0] = 3;
-        perm[1] = 1;
-        perm[2] = 2;
-      }
-    } else if (x4[0] >= x4[2]) {
-      perm[0] = 2;
-      perm[1] = 1;
-      perm[2] = 3;
-    } else if (x4[1] >= x4[2]) {
-      perm[0] = 2;
-      perm[1] = 3;
-      perm[2] = 1;
-    } else {
-      perm[0] = 3;
-      perm[1] = 2;
-      perm[2] = 1;
-    }
-
-    for (k = 1; k <= ib; k++) {
-      idx->data[(wOffset - ib) + k] = idx4[perm[k - 1] - 1];
-      b_x->data[(wOffset - ib) + k] = x4[perm[k - 1] - 1];
-    }
-  }
-
-  m = nNaNs >> 1;
-  for (k = 1; k <= m; k++) {
-    ib = idx->data[wOffset + k];
-    idx->data[wOffset + k] = idx->data[n - k];
-    idx->data[n - k] = ib;
-    b_x->data[wOffset + k] = xwork->data[n - k];
-    b_x->data[n - k] = xwork->data[wOffset + k];
-  }
-
-  if ((nNaNs & 1) != 0) {
-    b_x->data[(wOffset + m) + 1] = xwork->data[(wOffset + m) + 1];
-  }
-
-  nNonNaN = x->size[0] - nNaNs;
-  m = 2;
-  if (nNonNaN > 1) {
-    if (x->size[0] >= 256) {
-      nBlocks = nNonNaN >> 8;
-      if (nBlocks > 0) {
-        for (i4 = 1; i4 <= nBlocks; i4++) {
-          n = (i4 - 1) << 8;
-          for (b = 0; b < 6; b++) {
-            bLen = 1 << (b + 2);
-            bLen2 = bLen << 1;
-            nPairs = 256 >> (b + 3);
-            for (k = 1; k <= nPairs; k++) {
-              m = n + (k - 1) * bLen2;
-              for (ib = 0; ib + 1 <= bLen2; ib++) {
-                b_iwork[ib] = idx->data[m + ib];
-                b_xwork[ib] = b_x->data[m + ib];
-              }
-
-              p = 0;
-              wOffset = bLen;
-              ib = m - 1;
-              do {
-                exitg1 = 0;
-                ib++;
-                if (b_xwork[p] >= b_xwork[wOffset]) {
-                  idx->data[ib] = b_iwork[p];
-                  b_x->data[ib] = b_xwork[p];
-                  if (p + 1 < bLen) {
-                    p++;
-                  } else {
-                    exitg1 = 1;
-                  }
-                } else {
-                  idx->data[ib] = b_iwork[wOffset];
-                  b_x->data[ib] = b_xwork[wOffset];
-                  if (wOffset + 1 < bLen2) {
-                    wOffset++;
-                  } else {
-                    ib = (ib - p) + 1;
-                    while (p + 1 <= bLen) {
-                      idx->data[ib + p] = b_iwork[p];
-                      b_x->data[ib + p] = b_xwork[p];
-                      p++;
-                    }
-
-                    exitg1 = 1;
-                  }
-                }
-              } while (exitg1 == 0);
-            }
-          }
-        }
-
-        m = nBlocks << 8;
-        ib = nNonNaN - m;
-        if (ib > 0) {
-          merge_block(idx, b_x, m, ib, 2, iwork, xwork);
-        }
-
-        m = 8;
-      }
-    }
-
-    merge_block(idx, b_x, 0, nNonNaN, m, iwork, xwork);
-  }
-
-  if ((nNaNs > 0) && (nNonNaN > 0)) {
-    for (k = 0; k + 1 <= nNaNs; k++) {
-      xwork->data[k] = b_x->data[nNonNaN + k];
-      iwork->data[k] = idx->data[nNonNaN + k];
-    }
-
-    for (k = nNonNaN - 1; k + 1 > 0; k--) {
-      b_x->data[nNaNs + k] = b_x->data[k];
-      idx->data[nNaNs + k] = idx->data[k];
-    }
-
-    for (k = 0; k + 1 <= nNaNs; k++) {
-      b_x->data[k] = xwork->data[k];
-      idx->data[k] = iwork->data[k];
-    }
-  }
-
-  emxFree_real_T(&xwork);
-  emxFree_int32_T(&iwork);
-  ib = x->size[0];
-  x->size[0] = b_x->size[0];
-  emxEnsureCapacity((emxArray__common *)x, ib, (int)sizeof(double));
-  m = b_x->size[0];
-  for (ib = 0; ib < m; ib++) {
-    x->data[ib] = b_x->data[ib];
-  }
-
-  emxFree_real_T(&b_x);
-}
-
-//
-// [8 20] bandpass butterworth N=3
-// Arguments    : emxArray_real_T2 *X
-//                emxArray_real_T2 *Y
-// Return Type  : void
-//
-static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y)
-{
-  int m;
-  int i;
-  emxArray_real_T2 *x;
-  emxArray_real_T2 *y;
-  double xtmp;
-  double d0;
-  int md2;
-  double a[6];
-  emxArray_real_T2 *b_y;
-  static const double b_a[6] = { -0.0025918862424588094, -0.0025918862424471247,
-    0.0051837724848969383, 0.0051837724849273592, -0.0025918862424630829,
-    -0.0025918862424552862 };
-
-  emxArray_real_T2 *c_y;
-  emxArray_int32_T *r1;
-  m = X->size[0];
-  i = X->size[0];
-  X->size[0] = m;
-  emxEnsureCapacity((emxArray__common *)X, i, (int)sizeof(double));
-  emxInit_real_T1(&x, 1);
-  if (X->size[0] == 1) {
-    i = x->size[0];
-    x->size[0] = 1;
-    emxEnsureCapacity((emxArray__common *)x, i, (int)sizeof(double));
-    x->data[0] = X->data[0];
-  } else {
-    i = x->size[0];
-    x->size[0] = X->size[0];
-    emxEnsureCapacity((emxArray__common *)x, i, (int)sizeof(double));
-    m = X->size[0];
-    for (i = 0; i < m; i++) {
-      x->data[i] = X->data[i];
-    }
-  }
-
-  if (x->size[0] == 0) {
-    i = Y->size[0] * Y->size[1];
-    Y->size[0] = 0;
-    Y->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
-  } else {
-    emxInit_real_T1(&y, 1);
-    xtmp = 2.0 * x->data[0];
-    d0 = 2.0 * x->data[x->size[0] - 1];
-    md2 = x->size[0] - 2;
-    i = y->size[0];
-    y->size[0] = 36 + x->size[0];
-    emxEnsureCapacity((emxArray__common *)y, i, (int)sizeof(double));
-    for (i = 0; i < 18; i++) {
-      y->data[i] = xtmp - x->data[18 - i];
-    }
-
-    m = x->size[0];
-    for (i = 0; i < m; i++) {
-      y->data[i + 18] = x->data[i];
-    }
-
-    for (i = 0; i < 18; i++) {
-      y->data[(i + x->size[0]) + 18] = d0 - x->data[md2 - i];
-    }
-
-    xtmp = y->data[0];
-    for (i = 0; i < 6; i++) {
-      a[i] = b_a[i] * xtmp;
-    }
-
-    emxInit_real_T1(&b_y, 1);
-    i = b_y->size[0];
-    b_y->size[0] = y->size[0];
-    emxEnsureCapacity((emxArray__common *)b_y, i, (int)sizeof(double));
-    m = y->size[0];
-    for (i = 0; i < m; i++) {
-      b_y->data[i] = y->data[i];
-    }
-
-    filter(b_y, a, y);
-    m = y->size[0];
-    md2 = y->size[0] >> 1;
-    i = 1;
-    emxFree_real_T(&b_y);
-    while (i <= md2) {
-      xtmp = y->data[i - 1];
-      y->data[i - 1] = y->data[m - i];
-      y->data[m - i] = xtmp;
-      i++;
-    }
-
-    xtmp = y->data[0];
-    for (i = 0; i < 6; i++) {
-      a[i] = b_a[i] * xtmp;
-    }
-
-    emxInit_real_T1(&c_y, 1);
-    i = c_y->size[0];
-    c_y->size[0] = y->size[0];
-    emxEnsureCapacity((emxArray__common *)c_y, i, (int)sizeof(double));
-    m = y->size[0];
-    for (i = 0; i < m; i++) {
-      c_y->data[i] = y->data[i];
-    }
-
-    filter(c_y, a, y);
-    m = y->size[0];
-    md2 = y->size[0] >> 1;
-    i = 1;
-    emxFree_real_T(&c_y);
-    while (i <= md2) {
-      xtmp = y->data[i - 1];
-      y->data[i - 1] = y->data[m - i];
-      y->data[m - i] = xtmp;
-      i++;
-    }
-
-    if (X->size[0] == 1) {
-      m = x->size[0] - 1;
-      i = Y->size[0] * Y->size[1];
-      Y->size[0] = 1;
-      Y->size[1] = m + 1;
-      emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
-      for (i = 0; i <= m; i++) {
-        Y->data[Y->size[0] * i] = y->data[18 + i];
-      }
-    } else {
-      emxInit_int32_T1(&r1, 1);
-      m = x->size[0];
-      i = Y->size[0] * Y->size[1];
-      Y->size[0] = m;
-      Y->size[1] = 1;
-      emxEnsureCapacity((emxArray__common *)Y, i, (int)sizeof(double));
-      i = r1->size[0];
-      r1->size[0] = m;
-      emxEnsureCapacity((emxArray__common *)r1, i, (int)sizeof(int));
-      for (i = 0; i < m; i++) {
-        r1->data[i] = 19 + i;
-      }
-
-      for (i = 0; i < m; i++) {
-        Y->data[i] = y->data[r1->data[i] - 1];
-      }
-
-      emxFree_int32_T(&r1);
-    }
-
-    emxFree_real_T(&y);
-  }
-
-  emxFree_real_T(&x);
-}
-
-//
-// function: [S, F, T] = stft2(x, wlen, h, nfft, fs)
-//  x - signal in the time domain
-//  wlen - length of the hamming window
-//  h - hop size
-//  nfft - number of FFT points
-//  fs - sampling frequency, Hz
-//  F - frequency vector, Hz
-//  T - time vector, S
-//  S - STFT matrix (only unique points, time across columns, freq across rows)
-// Arguments    : const emxArray_real_T2 *x
-//                double wlen
-//                double nfft
-//                double fs
-//                emxArray_creal_T *S
-//                emxArray_real_T2 *F
-//                emxArray_real_T2 *T
-// Return Type  : void
-//
-static void stft2(const emxArray_real_T2 *x, double wlen, double nfft, double fs,
-                  emxArray_creal_T *S, emxArray_real_T2 *F, emxArray_real_T2 *T)
-{
-  emxArray_real_T2 *win;
-  double rown;
-  int nm1d2;
-  double absb;
-  int k;
-  double b;
-  int n;
-  double anew;
-  double apnd;
-  double ndbl;
-  emxArray_real_T2 *indx;
-  double cdiff;
-  int c;
-  emxArray_real_T2 *xw;
-  emxArray_creal_T *X;
-  emxArray_real_T2 *costab;
-  emxArray_real_T2 *sintab;
-  emxArray_real_T2 *sintabinv;
-  double kd;
-  boolean_T useRadix2;
-  emxInit_real_T1(&win, 1);
-
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  //               Short-Time Fourier Transform            %
-  //                with MATLAB Implementation             %
-  //                                                       %
-  //  Author: M.Sc. Eng. Hristo Zhivomirov       12/21/13  %
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  //  represent x as column-vector if it is not x = x(:);
-  //  if size(x, 2) > 1
-  //      x = x';
-  //  end
-  //  length of the signal
-  hammPeriodic(wlen, win);
-
-  //  form the stft matrix
-  rown = std::ceil((1.0 + nfft) / 2.0);
-
-  //  calculate the total number of rows
-  nm1d2 = x->size[1];
-  absb = ((double)nm1d2 - wlen) / 32.0;
-  b_fix(&absb);
-
-  //  calculate the total number of columns
-  k = S->size[0] * S->size[1];
-  S->size[0] = (int)rown;
-  S->size[1] = (int)(1.0 + absb);
-  emxEnsureCapacity((emxArray__common *)S, k, (int)sizeof(creal_T));
-  nm1d2 = (int)rown * (int)(1.0 + absb);
-  for (k = 0; k < nm1d2; k++) {
-    S->data[k].re = 0.0;
-    S->data[k].im = 0.0;
-  }
-
-  //  form the stft matrix
-  //  initialize the indexes
-  //  perform STFT
-  // {
-  // while indx + wlen <= xlen
-  //     % windowing
-  //     xw = x(indx+1:indx+wlen).*win;
-  //
-  //     % FFT
-  //     X = fft(xw, nfft);
-  //
-  //     % update the stft matrix
-  //     S(:, col) = X(1:rown);
-  //
-  //     % update the indexes
-  //     indx = indx + h;
-  //     col = col + 1;
-  // end
-  // }
-  // Correct way to perform STFT:
-  nm1d2 = x->size[1];
-  b = (double)nm1d2 - wlen;
-  if (rtIsNaN(b)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b;
-  } else if (b < 0.0) {
-    n = 0;
-    anew = 0.0;
-    apnd = b;
-  } else if (rtIsInf(b)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b;
-  } else {
-    anew = 0.0;
-    ndbl = std::floor(b / 32.0 + 0.5);
-    apnd = ndbl * 32.0;
-    cdiff = apnd - b;
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * b) {
-      ndbl++;
-      apnd = b;
-    } else if (cdiff > 0.0) {
-      apnd = (ndbl - 1.0) * 32.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      n = (int)ndbl;
-    } else {
-      n = 0;
-    }
-  }
-
-  emxInit_real_T(&indx, 2);
-  k = indx->size[0] * indx->size[1];
-  indx->size[0] = 1;
-  indx->size[1] = n;
-  emxEnsureCapacity((emxArray__common *)indx, k, (int)sizeof(double));
-  if (n > 0) {
-    indx->data[0] = anew;
-    if (n > 1) {
-      indx->data[n - 1] = apnd;
-      nm1d2 = (n - 1) / 2;
-      for (k = 1; k < nm1d2; k++) {
-        kd = (double)k * 32.0;
-        indx->data[k] = anew + kd;
-        indx->data[(n - k) - 1] = apnd - kd;
-      }
-
-      if (nm1d2 << 1 == n - 1) {
-        indx->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        kd = (double)nm1d2 * 32.0;
-        indx->data[nm1d2] = anew + kd;
-        indx->data[nm1d2 + 1] = apnd - kd;
-      }
-    }
-  }
-
-  c = 0;
-  emxInit_real_T1(&xw, 1);
-  emxInit_creal_T1(&X, 1);
-  emxInit_real_T(&costab, 2);
-  emxInit_real_T(&sintab, 2);
-  emxInit_real_T(&sintabinv, 2);
-  while (c <= indx->size[1] - 1) {
-    kd = indx->data[c];
-    k = costab->size[0] * costab->size[1];
-    costab->size[0] = 1;
-    costab->size[1] = (int)std::floor(wlen - 1.0) + 1;
-    emxEnsureCapacity((emxArray__common *)costab, k, (int)sizeof(double));
-    nm1d2 = (int)std::floor(wlen - 1.0);
-    for (k = 0; k <= nm1d2; k++) {
-      costab->data[costab->size[0] * k] = kd + (1.0 + (double)k);
-    }
-
-    k = xw->size[0];
-    xw->size[0] = costab->size[1];
-    emxEnsureCapacity((emxArray__common *)xw, k, (int)sizeof(double));
-    nm1d2 = costab->size[1];
-    for (k = 0; k < nm1d2; k++) {
-      xw->data[k] = x->data[(int)costab->data[costab->size[0] * k] - 1] *
-        win->data[k];
-    }
-
-    if ((xw->size[0] == 0) || ((int)nfft == 0)) {
-      k = X->size[0];
-      X->size[0] = (int)nfft;
-      emxEnsureCapacity((emxArray__common *)X, k, (int)sizeof(creal_T));
-      if ((int)nfft > xw->size[0]) {
-        nm1d2 = X->size[0];
-        k = X->size[0];
-        X->size[0] = nm1d2;
-        emxEnsureCapacity((emxArray__common *)X, k, (int)sizeof(creal_T));
-        for (k = 0; k < nm1d2; k++) {
-          X->data[k].re = 0.0;
-          X->data[k].im = 0.0;
-        }
-      }
-    } else {
-      useRadix2 = ((!((int)nfft <= 0)) && (((int)nfft & ((int)nfft - 1)) == 0));
-      get_algo_sizes((int)nfft, useRadix2, &nm1d2, &k);
-      generate_twiddle_tables(k, useRadix2, costab, sintab, sintabinv);
-      if (useRadix2) {
-        r2br_r2dit_trig(xw, (int)nfft, costab, sintab, X);
-      } else {
-        dobluesteinfft(xw, nm1d2, (int)nfft, costab, sintab, sintabinv, X);
-      }
-    }
-
-    if (1.0 > rown) {
-      nm1d2 = -1;
-    } else {
-      nm1d2 = (int)rown - 1;
-    }
-
-    for (k = 0; k <= nm1d2; k++) {
-      S->data[k + S->size[0] * c] = X->data[k];
-    }
-
-    c++;
-  }
-
-  emxFree_real_T(&sintabinv);
-  emxFree_real_T(&sintab);
-  emxFree_real_T(&costab);
-  emxFree_creal_T(&X);
-  emxFree_real_T(&xw);
-  emxFree_real_T(&indx);
-  emxFree_real_T(&win);
-
-  //  calculate the time and frequency vectors
-  anew = wlen / 2.0;
-  b = wlen / 2.0 + ((1.0 + absb) - 1.0) * 32.0;
-  if (rtIsNaN(anew) || rtIsNaN(b)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b;
-  } else if (b < anew) {
-    n = 0;
-    apnd = b;
-  } else if (rtIsInf(anew) || rtIsInf(b)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = b;
-  } else {
-    ndbl = std::floor((b - anew) / 32.0 + 0.5);
-    apnd = anew + ndbl * 32.0;
-    cdiff = apnd - b;
-    kd = std::fabs(anew);
-    absb = std::fabs(b);
-    if ((kd >= absb) || rtIsNaN(absb)) {
-      absb = kd;
-    }
-
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * absb) {
-      ndbl++;
-      apnd = b;
-    } else if (cdiff > 0.0) {
-      apnd = anew + (ndbl - 1.0) * 32.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      n = (int)ndbl;
-    } else {
-      n = 0;
-    }
-  }
-
-  k = T->size[0] * T->size[1];
-  T->size[0] = 1;
-  T->size[1] = n;
-  emxEnsureCapacity((emxArray__common *)T, k, (int)sizeof(double));
-  if (n > 0) {
-    T->data[0] = anew;
-    if (n > 1) {
-      T->data[n - 1] = apnd;
-      nm1d2 = (n - 1) / 2;
-      for (k = 1; k < nm1d2; k++) {
-        kd = (double)k * 32.0;
-        T->data[k] = anew + kd;
-        T->data[(n - k) - 1] = apnd - kd;
-      }
-
-      if (nm1d2 << 1 == n - 1) {
-        T->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        kd = (double)nm1d2 * 32.0;
-        T->data[nm1d2] = anew + kd;
-        T->data[nm1d2 + 1] = apnd - kd;
-      }
-    }
-  }
-
-  k = T->size[0] * T->size[1];
-  T->size[0] = 1;
-  emxEnsureCapacity((emxArray__common *)T, k, (int)sizeof(double));
-  nm1d2 = T->size[0];
-  k = T->size[1];
-  nm1d2 *= k;
-  for (k = 0; k < nm1d2; k++) {
-    T->data[k] /= fs;
-  }
-
-  if (rown - 1.0 < 0.0) {
-    n = 0;
-    anew = 0.0;
-    apnd = rown - 1.0;
-  } else if (rtIsInf(rown - 1.0)) {
-    n = 1;
-    anew = rtNaN;
-    apnd = rown - 1.0;
-  } else {
-    anew = 0.0;
-    ndbl = std::floor((rown - 1.0) + 0.5);
-    apnd = ndbl;
-    cdiff = ndbl - (rown - 1.0);
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * std::fabs(rown - 1.0)) {
-      ndbl++;
-      apnd = rown - 1.0;
-    } else if (cdiff > 0.0) {
-      apnd = ndbl - 1.0;
-    } else {
-      ndbl++;
-    }
-
-    if (ndbl >= 0.0) {
-      n = (int)ndbl;
-    } else {
-      n = 0;
-    }
-  }
-
-  k = F->size[0] * F->size[1];
-  F->size[0] = 1;
-  F->size[1] = n;
-  emxEnsureCapacity((emxArray__common *)F, k, (int)sizeof(double));
-  if (n > 0) {
-    F->data[0] = anew;
-    if (n > 1) {
-      F->data[n - 1] = apnd;
-      nm1d2 = (n - 1) / 2;
-      for (k = 1; k < nm1d2; k++) {
-        F->data[k] = anew + (double)k;
-        F->data[(n - k) - 1] = apnd - (double)k;
-      }
-
-      if (nm1d2 << 1 == n - 1) {
-        F->data[nm1d2] = (anew + apnd) / 2.0;
-      } else {
-        F->data[nm1d2] = anew + (double)nm1d2;
-        F->data[nm1d2 + 1] = apnd - (double)nm1d2;
-      }
-    }
-  }
-
-  k = F->size[0] * F->size[1];
-  F->size[0] = 1;
-  emxEnsureCapacity((emxArray__common *)F, k, (int)sizeof(double));
-  nm1d2 = F->size[0];
-  k = F->size[1];
-  nm1d2 *= k;
-  for (k = 0; k < nm1d2; k++) {
-    F->data[k] = F->data[k] * fs / nfft;
-  }
-
-  //  Select Relevant Part of Signal:
-}
-
-//
-// Arguments    : const emxArray_real_T2 *x
-// Return Type  : double
-//
-static double sum(const emxArray_real_T2 *x)
-{
-  double y;
-  int k;
-  if (x->size[0] == 0) {
-    y = 0.0;
-  } else {
-    y = x->data[0];
-    for (k = 2; k <= x->size[0]; k++) {
-      y += x->data[k - 1];
-    }
-  }
-
-  return y;
-}
-
-//
-// if size(signals,2) > size(signals,1)
-//      signals = signals.';
-//  end
-// Arguments    : const emxArray_real_T2 *signals
-//                double fs
-//                emxArray_real_T2 *window
-//                emxArray_real_T2 *CSM
-//                emxArray_real_T2 *frequencies
-// Return Type  : void
-//
-static void welch_psd(const emxArray_real_T2 *signals, double fs, emxArray_real_T2
-                      *window, emxArray_real_T2 *CSM, emxArray_real_T2
-                      *frequencies)
-{
-  int k;
-  int i2;
-  int varargin_1;
-  double y;
-  double cdiff;
-  int ndbl;
-  int apnd;
-  int loop_ub;
-  emxArray_real_T2 *data_taper;
-  double back_shift;
-  double number_of_blocks;
-  emxArray_real_T2 *S;
-  int a;
-  emxArray_real_T2 *Data_Block;
-  emxArray_real_T2 *P;
-  emxArray_creal_T *b_Data_Block;
-  emxArray_real_T2 *costab;
-  emxArray_real_T2 *sintab;
-  emxArray_real_T2 *sintabinv;
-  emxArray_creal_T *c_Data_Block;
-  unsigned int unnamed_idx_0;
-  int b_k;
-  int c_k;
-  boolean_T useRadix2;
-  emxArray_int32_T *r10;
-  emxArray_real_T2 *b_S;
-
-  // % Function for spectra estimation by Welch's method
-  //  Developed by Luiz A. Baccala, Fl?vio Caduda and Luciano Caldas, all from
-  //  Escola Polit?cnica - Poli-USP, with cooperation of Carlos Pagani and Felipe 
-  //  Amaral from Escola de Engenharia de S?o Carlos - EESC-USP.
-  //
-  //  Cross-spectra matrix are estimated by Welch's method with 50% overlap and
-  //  the window energy loss are compasated by a factor of 1/sum(Wi.^2) where
-  //  Wi are the elements of the window [1]. Then, the spectra becomes:
-  //  Sxy = fft(x)*conj(fft(y))/sum(Wi.^2)
-  //
-  //  Code was tested with a known- spectra signal from a white noise filtered
-  //  by a filter. The variance (power) of the signal checks with the integral
-  //  of the PSD estimated.
-  //
-  //  INPUT:
-  //  -- signals: matrix of signals to perform the spectra estimatino. Size is
-  //  [Samples x number of sensors];
-  //  -- fs: samplerate in Hertz;
-  //  -- window: data taper desired. Must be a vector. For best performance it
-  //  should be a power of 2. For general applications do: window=hanning(1024); 
-  //
-  //  OUTPUT:
-  //  -- CSM: Cross Spectral Matrix: Unilateral (0:fs/2) spectra. Welch's
-  //  method is used with 50% overlap. Matrix size: sensors x sensors x
-  //  windowsize/2
-  //  -- frequencies: vector with all frequencies corresponding to each layer
-  //  (3rd layer in depth) of CSM.
-  //
-  //  LAST REVISION: Aug - 18 - 2016
-  //  ADDED 'fs' missing term in line 82, for calibration factor
-  //  [1] Trobs,M.; Heinzel,G. "Improved spectrum estimation from digitized
-  //  time series on a logarithmic frequency axis"
-  //  doi:10.1016/j.measurement.2005.10.010
-  k = window->size[0];
-  i2 = window->size[0];
-  window->size[0] = k;
-  emxEnsureCapacity((emxArray__common *)window, i2, (int)sizeof(double));
-  varargin_1 = window->size[0];
-  y = (double)window->size[0] / 2.0;
-  cdiff = (double)window->size[0] / 2.0 - 1.0;
-  if (y - 1.0 < 0.0) {
-    apnd = 0;
-    cdiff = y - 1.0;
-  } else {
-    ndbl = (int)std::floor(cdiff + 0.5);
-    apnd = ndbl;
-    cdiff = (double)ndbl - (y - 1.0);
-    if (std::fabs(cdiff) < 4.4408920985006262E-16 * std::fabs(y - 1.0)) {
-      ndbl++;
-      cdiff = y - 1.0;
-    } else if (cdiff > 0.0) {
-      cdiff = (double)ndbl - 1.0;
-    } else {
-      ndbl++;
-      cdiff = apnd;
-    }
-
-    if (ndbl >= 0) {
-      apnd = ndbl;
-    } else {
-      apnd = 0;
-    }
-  }
-
-  i2 = frequencies->size[0] * frequencies->size[1];
-  frequencies->size[0] = 1;
-  frequencies->size[1] = apnd;
-  emxEnsureCapacity((emxArray__common *)frequencies, i2, (int)sizeof(double));
-  if (apnd > 0) {
-    frequencies->data[0] = 0.0;
-    if (apnd > 1) {
-      frequencies->data[apnd - 1] = cdiff;
-      ndbl = (apnd - 1) / 2;
-      for (k = 1; k < ndbl; k++) {
-        frequencies->data[k] = k;
-        frequencies->data[(apnd - k) - 1] = cdiff - (double)k;
-      }
-
-      if (ndbl << 1 == apnd - 1) {
-        frequencies->data[ndbl] = cdiff / 2.0;
-      } else {
-        frequencies->data[ndbl] = ndbl;
-        frequencies->data[ndbl + 1] = cdiff - (double)ndbl;
-      }
-    }
-  }
-
-  i2 = frequencies->size[0] * frequencies->size[1];
-  frequencies->size[0] = 1;
-  emxEnsureCapacity((emxArray__common *)frequencies, i2, (int)sizeof(double));
-  ndbl = frequencies->size[0];
-  apnd = frequencies->size[1];
-  k = window->size[0];
-  loop_ub = ndbl * apnd;
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    frequencies->data[i2] = frequencies->data[i2] * fs / (double)k;
-  }
-
-  emxInit_real_T1(&data_taper, 1);
-
-  // must be even, best if 2^n
-  back_shift = (double)window->size[0] / 2.0;
-
-  // ORIGINAL;
-  ndbl = signals->size[1];
-  number_of_blocks = std::floor(2.0 * (double)ndbl / (double)window->size[0]) -
-    1.0;
-  ndbl = window->size[0];
-  i2 = data_taper->size[0];
-  data_taper->size[0] = ndbl;
-  emxEnsureCapacity((emxArray__common *)data_taper, i2, (int)sizeof(double));
-  if ((!(window->size[0] == 0)) && (!(ndbl == 0))) {
-    for (k = 0; k + 1 <= window->size[0]; k++) {
-      data_taper->data[k] = window->data[k];
-    }
-  }
-
-  emxInit_real_T1(&S, 1);
-
-  //  Data segmentation into blocks of size block_samples:
-  y = (double)window->size[0] / 2.0;
-  i2 = S->size[0];
-  S->size[0] = (int)y;
-  emxEnsureCapacity((emxArray__common *)S, i2, (int)sizeof(double));
-  loop_ub = (int)y;
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    S->data[i2] = 0.0;
-  }
-
-  // ORIGINAL
-  //  S = zeros(ceil(block_samples/2),number_of_signals.^2);
-  a = 0;
-  emxInit_real_T1(&Data_Block, 1);
-  emxInit_real_T1(&P, 1);
-  emxInit_creal_T1(&b_Data_Block, 1);
-  emxInit_real_T(&costab, 2);
-  emxInit_real_T(&sintab, 2);
-  emxInit_real_T(&sintabinv, 2);
-  emxInit_creal_T1(&c_Data_Block, 1);
-  while (a <= (int)number_of_blocks - 1) {
-    //  Retrieve current data block
-    cdiff = ((1.0 + (double)a) - 1.0) * back_shift + 1.0;
-    y = (double)varargin_1 + ((1.0 + (double)a) - 1.0) * back_shift;
-    if (cdiff > y) {
-      i2 = 0;
-      ndbl = 1;
-    } else {
-      i2 = (int)cdiff - 1;
-      ndbl = (int)y + 1;
-    }
-
-    apnd = Data_Block->size[0];
-    Data_Block->size[0] = (ndbl - i2) - 1;
-    emxEnsureCapacity((emxArray__common *)Data_Block, apnd, (int)sizeof(double));
-    loop_ub = ndbl - i2;
-    for (apnd = 0; apnd <= loop_ub - 2; apnd++) {
-      Data_Block->data[apnd] = signals->data[i2 + apnd];
-    }
-
-    if ((ndbl - i2) - 1 == 0) {
-      y = 0.0;
-    } else {
-      y = signals->data[i2];
-      for (k = 2; k <= Data_Block->size[0]; k++) {
-        y += signals->data[(i2 + k) - 1];
-      }
-    }
-
-    y /= (double)Data_Block->size[0];
-    i2 = Data_Block->size[0];
-    emxEnsureCapacity((emxArray__common *)Data_Block, i2, (int)sizeof(double));
-    loop_ub = Data_Block->size[0];
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      Data_Block->data[i2] -= y;
-    }
-
-    i2 = Data_Block->size[0];
-    emxEnsureCapacity((emxArray__common *)Data_Block, i2, (int)sizeof(double));
-    loop_ub = Data_Block->size[0];
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      Data_Block->data[i2] *= data_taper->data[i2];
-    }
-
-    // Taper it
-    if (Data_Block->size[0] == 0) {
-      i2 = b_Data_Block->size[0];
-      b_Data_Block->size[0] = 0;
-      emxEnsureCapacity((emxArray__common *)b_Data_Block, i2, (int)sizeof
-                        (creal_T));
-    } else {
-      useRadix2 = ((Data_Block->size[0] & (Data_Block->size[0] - 1)) == 0);
-      get_algo_sizes(Data_Block->size[0], useRadix2, &ndbl, &apnd);
-      generate_twiddle_tables(apnd, useRadix2, costab, sintab, sintabinv);
-      if (useRadix2) {
-        r2br_r2dit_trig(Data_Block, Data_Block->size[0], costab, sintab,
-                        b_Data_Block);
-      } else {
-        dobluesteinfft(Data_Block, ndbl, Data_Block->size[0], costab, sintab,
-                       sintabinv, b_Data_Block);
-      }
-    }
-
-    // FFT it,
-    //  bilateral DFT
-    //  viii
-    cdiff = (double)varargin_1 / 2.0;
-    if (1.0 > cdiff) {
-      loop_ub = 0;
-    } else {
-      loop_ub = (int)cdiff;
-    }
-
-    i2 = c_Data_Block->size[0];
-    c_Data_Block->size[0] = loop_ub;
-    emxEnsureCapacity((emxArray__common *)c_Data_Block, i2, (int)sizeof(creal_T));
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      c_Data_Block->data[i2] = b_Data_Block->data[i2];
-    }
-
-    i2 = b_Data_Block->size[0];
-    b_Data_Block->size[0] = c_Data_Block->size[0];
-    emxEnsureCapacity((emxArray__common *)b_Data_Block, i2, (int)sizeof(creal_T));
-    loop_ub = c_Data_Block->size[0];
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      b_Data_Block->data[i2] = c_Data_Block->data[i2];
-    }
-
-    // ORIGINAL
-    //  Data_Block = Data_Block(1:ceil(block_samples/2),:);
-    // All spectral combinations:
-    y = (double)varargin_1 / 2.0;
-    i2 = P->size[0];
-    P->size[0] = (int)y;
-    emxEnsureCapacity((emxArray__common *)P, i2, (int)sizeof(double));
-    loop_ub = (int)y;
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      P->data[i2] = 0.0;
-    }
-
-    // ORIGINAL
-    //  P = zeros(ceil(block_samples/2)/2,number_of_signals.^2);
-    //  THIS IS FOR WIND TUNNEL EESC-USP BEAMFORMING CODE
-    //              P(:,c) = real(Data_Block(:,b).*conj(Data_Block(:,aa)));
-    //  P(:,c) = Data_Block(:,b).*conj(Data_Block(:,aa));
-    //  IS FOR FAN RIG BEAMFORMING CODE
-    loop_ub = b_Data_Block->size[0] - 1;
-    for (i2 = 0; i2 <= loop_ub; i2++) {
-      cdiff = b_Data_Block->data[i2].re;
-      y = -b_Data_Block->data[i2].im;
-      cdiff = b_Data_Block->data[i2].re * cdiff - b_Data_Block->data[i2].im * y;
-      P->data[i2] = cdiff;
-    }
-
-    //  P(:,c) = Data_Block(:,aa).*conj(Data_Block(:,b)); % THIS IS THE ORIGINAL LINE 
-    //  Sum the spectrums up ...
-    i2 = S->size[0];
-    emxEnsureCapacity((emxArray__common *)S, i2, (int)sizeof(double));
-    loop_ub = S->size[0];
-    for (i2 = 0; i2 < loop_ub; i2++) {
-      S->data[i2] += P->data[i2];
-    }
-
-    a++;
-  }
-
-  emxFree_creal_T(&c_Data_Block);
-  emxFree_real_T(&sintabinv);
-  emxFree_real_T(&sintab);
-  emxFree_real_T(&costab);
-  emxFree_creal_T(&b_Data_Block);
-  emxFree_real_T(&data_taper);
-  i2 = S->size[0];
-  emxEnsureCapacity((emxArray__common *)S, i2, (int)sizeof(double));
-  loop_ub = S->size[0];
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    S->data[i2] *= 2.0;
-  }
-
-  i2 = Data_Block->size[0];
-  Data_Block->size[0] = window->size[0];
-  emxEnsureCapacity((emxArray__common *)Data_Block, i2, (int)sizeof(double));
-  loop_ub = window->size[0];
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    Data_Block->data[i2] = window->data[i2];
-  }
-
-  unnamed_idx_0 = (unsigned int)window->size[0];
-  i2 = P->size[0];
-  P->size[0] = (int)unnamed_idx_0;
-  emxEnsureCapacity((emxArray__common *)P, i2, (int)sizeof(double));
-  ndbl = window->size[0];
-
-  for (b_k = 1; b_k <= ndbl; b_k++) {
-    c_k = b_k;
-    P->data[c_k - 1] = Data_Block->data[c_k - 1] * Data_Block->data[c_k - 1];
-  }
-
-  emxFree_real_T(&Data_Block);
-  cdiff = sum(P) * fs * number_of_blocks;
-  i2 = S->size[0];
-  emxEnsureCapacity((emxArray__common *)S, i2, (int)sizeof(double));
-  loop_ub = S->size[0];
-  emxFree_real_T(&P);
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    S->data[i2] /= cdiff;
-  }
-
-  //  Average them out
-  i2 = CSM->size[0] * CSM->size[1];
-  CSM->size[0] = 1;
-  CSM->size[1] = S->size[0];
-  emxEnsureCapacity((emxArray__common *)CSM, i2, (int)sizeof(double));
-  loop_ub = S->size[0];
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    CSM->data[i2] = 0.0;
-  }
-
-  emxInit_int32_T1(&r10, 1);
-
-  //  for a = 1:sensors
-  ndbl = S->size[0];
-  i2 = r10->size[0];
-  r10->size[0] = ndbl;
-  emxEnsureCapacity((emxArray__common *)r10, i2, (int)sizeof(int));
-  for (i2 = 0; i2 < ndbl; i2++) {
-    r10->data[i2] = i2;
-  }
-
-  emxInit_real_T1(&b_S, 1);
-  loop_ub = S->size[0];
-  i2 = b_S->size[0];
-  b_S->size[0] = loop_ub;
-  emxEnsureCapacity((emxArray__common *)b_S, i2, (int)sizeof(double));
-  for (i2 = 0; i2 < loop_ub; i2++) {
-    b_S->data[i2] = S->data[i2];
-  }
-
-  emxFree_real_T(&S);
-  ndbl = r10->size[0];
-  for (i2 = 0; i2 < ndbl; i2++) {
-    CSM->data[CSM->size[0] * r10->data[i2]] = b_S->data[i2];
-  }
-
-  emxFree_real_T(&b_S);
-  emxFree_int32_T(&r10);
-
-  //  end
-  //  clear S
-  CSM->data[0] = (CSM->data[0] + CSM->data[0]) - CSM->data[0];
-}
-
-//
 // CLASSIFYSSVEP - FINAL VERSION FOR MATLAB CODER
 //  INPUT VARS:
 //  X - input array (any size)
 //  start - where to start from in 'X'
 //  Fs - signal sampling frequency
-// Arguments    : const emxArray_real_T2 *X
+// Arguments    : const double X[1000]
 //                double start
-//                double Fs
-//                double FS[520]
-//                double *CLASS
-// Return Type  : void
+//                boolean_T plotData
+// Return Type  : double
 //
-void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
-                   [520], double *CLASS)
+double classifySSVEP(const double X[1000], double start)
 {
+  double CLASS;
   emxArray_real_T2 *fch;
   emxArray_real_T2 *b_X;
-  double P[728];
-  double F[520];
+  double P[224];
   int i;
   double fin;
   double M[4];
-  int ix;
-  int b_ix;
   int ixstart;
   double maxval[7];
+  int ix;
   double mtmp;
   int b_i;
+  int b_ix;
   int itmp;
   boolean_T exitg1;
   boolean_T exitg2;
   boolean_T exitg3;
   emxArray_real_T2 *b;
-  double b_F[40];
   double dv0[56];
   emxArray_int32_T *r0;
+  emxInit_real_T(&fch, 2);
 
   //  range - range of window sizes to view
   //  1-4 s at 60pt intervals
-  memset(&FS[0], 0, 520U * sizeof(double));
-  emxInit_real_T(&fch, 2);
   emxInit_real_T1(&b_X, 1);
-  for (i = 0; i < 13; i++) {
-    fin = start + ((250.0 + 60.0 * ((1.0 + (double)i) - 1.0)) - 1.0);
+  for (i = 0; i < 4; i++) {
+    fin = start + ((250.0 + 250.0 * ((1.0 + (double)i) - 1.0)) - 1.0);
 
     //      fprintf('Current index = [%d to %d]\r\n',start, fin);
     //      fprintf('length = %d\r\n',range(i));
@@ -8765,39 +2633,32 @@ void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
     emxEnsureCapacity((emxArray__common *)b_X, ixstart, (int)sizeof(double));
     ixstart = b_ix - ix;
     for (b_ix = 0; b_ix < ixstart; b_ix++) {
-      b_X->data[b_ix] = X->data[ix + b_ix];
+      b_X->data[b_ix] = X[ix + b_ix];
     }
 
     ssvepcfilt(b_X, fch);
 
     // %%Feature Extraction: (per channel)
-    fESSVEP(fch, Fs, b_F, dv0);
+    fESSVEP2(fch, dv0);
     for (ix = 0; ix < 56; ix++) {
-      P[i + 13 * ix] = dv0[ix];
-    }
-
-    for (ix = 0; ix < 40; ix++) {
-      F[i + 13 * ix] = b_F[ix];
+      P[i + (ix << 2)] = dv0[ix];
     }
   }
 
   emxFree_real_T(&b_X);
   emxFree_real_T(&fch);
-
-  //  f = P(1,1:28);
-  //  figure(13);hold on;xlim([8 20]);
   for (i = 0; i < 4; i++) {
     for (b_i = 0; b_i < 7; b_i++) {
-      ix = b_i * 13 + 13;
-      b_ix = b_i * 13 + 1;
-      mtmp = P[(ix - 13) % 13 + 13 * (((ix - 13) / 13 + i * 7) + 28)];
-      if (rtIsNaN(P[(ix - 13) % 13 + 13 * (((ix - 13) / 13 + i * 7) + 28)])) {
+      ix = (b_i << 2) + 4;
+      b_ix = (b_i << 2) + 1;
+      mtmp = P[(ix - 4) % 4 + ((((ix - 4) / 4 + i * 7) + 28) << 2)];
+      if (rtIsNaN(P[(ix - 4) % 4 + ((((ix - 4) / 4 + i * 7) + 28) << 2)])) {
         ixstart = b_ix;
         exitg3 = false;
         while ((!exitg3) && (ixstart + 1 <= ix)) {
           b_ix = ixstart + 1;
-          if (!rtIsNaN(P[ixstart % 13 + 13 * ((ixstart / 13 + i * 7) + 28)])) {
-            mtmp = P[ixstart % 13 + 13 * ((ixstart / 13 + i * 7) + 28)];
+          if (!rtIsNaN(P[ixstart % 4 + (((ixstart / 4 + i * 7) + 28) << 2)])) {
+            mtmp = P[ixstart % 4 + (((ixstart / 4 + i * 7) + 28) << 2)];
             exitg3 = true;
           } else {
             ixstart++;
@@ -8807,8 +2668,8 @@ void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
 
       if (b_ix < ix) {
         while (b_ix + 1 <= ix) {
-          if (P[b_ix % 13 + 13 * ((b_ix / 13 + i * 7) + 28)] > mtmp) {
-            mtmp = P[b_ix % 13 + 13 * ((b_ix / 13 + i * 7) + 28)];
+          if (P[b_ix % 4 + (((b_ix / 4 + i * 7) + 28) << 2)] > mtmp) {
+            mtmp = P[b_ix % 4 + (((b_ix / 4 + i * 7) + 28) << 2)];
           }
 
           b_ix++;
@@ -8845,8 +2706,6 @@ void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
     }
 
     M[i] = mtmp;
-
-    //      plot(f((i-1)*7+L(i)),M(i),'or');
   }
 
   ixstart = 1;
@@ -8927,6 +2786,11 @@ void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
     i++;
   }
 
+  emxFree_int32_T(&r0);
+
+  //  CLASS = [];
+  //  CLASS = input('Approve/continue?\n');
+  //  if isempty(CLASS)
   if (b->size[1] == 0) {
     mtmp = 0.0;
   } else {
@@ -8938,41 +2802,16 @@ void classifySSVEP(const emxArray_real_T2 *X, double start, double Fs, double FS
 
   emxFree_real_T(&b);
   if (mtmp == 0.0) {
-    *CLASS = itmp;
+    CLASS = itmp;
   } else {
-    *CLASS = 0.0;
+    CLASS = 0.0;
   }
 
-  for (i = 0; i < 13; i++) {
-    ix = 1 + 40 * i;
-    b_ix = 40 * (1 + i);
-    if (ix > b_ix) {
-      ix = 0;
-      b_ix = 0;
-    } else {
-      ix--;
-    }
-
-    ixstart = r0->size[0] * r0->size[1];
-    r0->size[0] = 1;
-    r0->size[1] = b_ix - ix;
-    emxEnsureCapacity((emxArray__common *)r0, ixstart, (int)sizeof(int));
-    ixstart = b_ix - ix;
-    for (b_ix = 0; b_ix < ixstart; b_ix++) {
-      r0->data[r0->size[0] * b_ix] = ix + b_ix;
-    }
-
-    for (ix = 0; ix < 40; ix++) {
-      b_F[ix] = F[i + 13 * ix];
-    }
-
-    ixstart = r0->size[1];
-    for (ix = 0; ix < ixstart; ix++) {
-      FS[r0->data[r0->size[0] * ix]] = b_F[(*(int (*)[2])r0->size)[0] * ix];
-    }
-  }
-
-  emxFree_int32_T(&r0);
+  //  end
+  //  for i = 1:size(F,1)
+  //      FS(1+size(F,2)*(i-1):size(F,2)*(i)) = F(i,:);
+  //  end
+  return CLASS;
 }
 
 //
@@ -8990,128 +2829,6 @@ void classifySSVEP_initialize()
 //
 void classifySSVEP_terminate()
 {
-}
-
-//
-// Arguments    : int numDimensions
-//                int *size
-// Return Type  : emxArray_real_T2 *
-//
-emxArray_real_T2 *emxCreateND_real_T(int numDimensions, int *size)
-{
-  emxArray_real_T2 *emx;
-  int numEl;
-  int i;
-  emxInit_real_T1(&emx, numDimensions);
-  numEl = 1;
-  for (i = 0; i < numDimensions; i++) {
-    numEl *= size[i];
-    emx->size[i] = size[i];
-  }
-
-  emx->data = (double *)calloc((unsigned int)numEl, sizeof(double));
-  emx->numDimensions = numDimensions;
-  emx->allocatedSize = numEl;
-  return emx;
-}
-
-//
-// Arguments    : double *data
-//                int numDimensions
-//                int *size
-// Return Type  : emxArray_real_T2 *
-//
-emxArray_real_T2 *emxCreateWrapperND_real_T(double *data, int numDimensions, int *
-  size)
-{
-  emxArray_real_T2 *emx;
-  int numEl;
-  int i;
-  emxInit_real_T1(&emx, numDimensions);
-  numEl = 1;
-  for (i = 0; i < numDimensions; i++) {
-    numEl *= size[i];
-    emx->size[i] = size[i];
-  }
-
-  emx->data = data;
-  emx->numDimensions = numDimensions;
-  emx->allocatedSize = numEl;
-  emx->canFreeData = false;
-  return emx;
-}
-
-//
-// Arguments    : double *data
-//                int rows
-//                int cols
-// Return Type  : emxArray_real_T2 *
-//
-emxArray_real_T2 *emxCreateWrapper_real_T(double *data, int rows, int cols)
-{
-  emxArray_real_T2 *emx;
-  int size[2];
-  int numEl;
-  int i;
-  size[0] = rows;
-  size[1] = cols;
-  emxInit_real_T1(&emx, 2);
-  numEl = 1;
-  for (i = 0; i < 2; i++) {
-    numEl *= size[i];
-    emx->size[i] = size[i];
-  }
-
-  emx->data = data;
-  emx->numDimensions = 2;
-  emx->allocatedSize = numEl;
-  emx->canFreeData = false;
-  return emx;
-}
-
-//
-// Arguments    : int rows
-//                int cols
-// Return Type  : emxArray_real_T2 *
-//
-emxArray_real_T2 *emxCreate_real_T(int rows, int cols)
-{
-  emxArray_real_T2 *emx;
-  int size[2];
-  int numEl;
-  int i;
-  size[0] = rows;
-  size[1] = cols;
-  emxInit_real_T1(&emx, 2);
-  numEl = 1;
-  for (i = 0; i < 2; i++) {
-    numEl *= size[i];
-    emx->size[i] = size[i];
-  }
-
-  emx->data = (double *)calloc((unsigned int)numEl, sizeof(double));
-  emx->numDimensions = 2;
-  emx->allocatedSize = numEl;
-  return emx;
-}
-
-//
-// Arguments    : emxArray_real_T2 *emxArray
-// Return Type  : void
-//
-void emxDestroyArray_real_T(emxArray_real_T2 *emxArray)
-{
-  emxFree_real_T(&emxArray);
-}
-
-//
-// Arguments    : emxArray_real_T2 **pEmxArray
-//                int numDimensions
-// Return Type  : void
-//
-void emxInitArray_real_T(emxArray_real_T2 **pEmxArray, int numDimensions)
-{
-  emxInit_real_T1(pEmxArray, numDimensions);
 }
 
 //

@@ -5,28 +5,13 @@
 // File: classifySSVEP_types.h
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 21-May-2017 20:05:43
+// C/C++ source code generated on  : 21-May-2017 21:51:40
 //
 #ifndef CLASSIFYSSVEP_TYPES_H
 #define CLASSIFYSSVEP_TYPES_H
 
 // Include Files
 #include "rtwtypes.h"
-
-// Type Definitions
-#ifndef struct_emxArray_real_T2
-#define struct_emxArray_real_T2
-
-struct emxArray_real_T2
-{
-  double *data;
-  int *size;
-  int allocatedSize;
-  int numDimensions;
-  boolean_T canFreeData;
-};
-
-#endif                                 //struct_emxArray_real_T2
 #endif
 
 //

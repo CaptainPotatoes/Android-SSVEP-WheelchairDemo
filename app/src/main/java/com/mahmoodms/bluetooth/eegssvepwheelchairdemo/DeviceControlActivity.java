@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -732,11 +733,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
                 mPlotAdapter.adjustPlot(mGraphAdapterCh2,max,min);
             }
-            if(packetNumber_2ch%20==0) {
-//                mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
-//                Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
-            }
-
         }
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
@@ -754,9 +750,15 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
+            if(packetNumber_2ch%42==0) {
+                ClassifyTask mCLASS = new ClassifyTask();
+                mCLASS.execute();
+//                mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
+//                Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
+            }
+            mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
 //                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
-                mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
+            mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
             }
         });
         // EOG Stuff: TODO: IF USING GET FROM PREVIOUS VERSION.
@@ -776,6 +778,19 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             return 0.0;
     }
 
+    private class ClassifyTask extends AsyncTask<Void,Void,Double> {
+        @Override
+        protected Double doInBackground(Void... voids) {
+            mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
+            return mEOGClass;
+        }
+
+        @Override
+        protected void onPostExecute(Double aDouble) {
+            Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
+            super.onPostExecute(aDouble);
+        }
+    }
 
     private double findGraphMin(SimpleXYSeries s) {
         if (s.size()>0) {

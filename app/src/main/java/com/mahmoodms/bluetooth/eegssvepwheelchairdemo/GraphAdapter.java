@@ -48,8 +48,8 @@ public class GraphAdapter {
         this.lineAndPointFormatter = new LineAndPointFormatter(lineAndPointFormatterColor, null, null, null);
         setPointWidth(5); //Def value:
         //Initialize arrays:
-        this.unfilteredSignal = new double[2500];
-        this.explicitXVals = new double[2500];
+        this.unfilteredSignal = new double[1000];
+        this.explicitXVals = new double[1000];
         // Initialize series
         this.series = new SimpleXYSeries(XYSeriesTitle);
         if(useImplicitXVals) this.series.useImplicitXVals();
