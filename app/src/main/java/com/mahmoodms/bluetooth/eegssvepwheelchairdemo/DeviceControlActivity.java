@@ -430,6 +430,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     @Override
     public void onResume() {
         makeFilterSwitchVisible(true);
+        jmainInitialization(true);
         String fileTimeStampConcat = "EEGSensorData_" + getTimeStamp();
         Log.d("onResume-timeStamp", fileTimeStampConcat);
         if(!fileSaveInitialized) {
@@ -718,6 +719,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             eeg_ch1_data_on = false;
             eeg_ch2_data_on = false;
             for (int i = 0; i < 6; i++) {
+                if(mGraphAdapterCh1.lastDataValues!=null&&mGraphAdapterCh2.lastDataValues!=null)
                 writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
             }
             //Adjust graph?
@@ -729,6 +731,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
                 double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
                 mPlotAdapter.adjustPlot(mGraphAdapterCh2,max,min);
+            }
+            if(packetNumber_2ch%20==0) {
+//                mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
+//                Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
             }
 
         }
@@ -1056,4 +1062,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     static {
         System.loadLibrary("android-jni");
     }
+
+    public native int jmainInitialization(boolean b);
+
+    public native double jssvepclassifier1(double[] array);
+
 }

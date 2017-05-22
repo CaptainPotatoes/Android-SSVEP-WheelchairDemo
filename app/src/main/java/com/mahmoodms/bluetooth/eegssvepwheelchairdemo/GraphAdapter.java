@@ -22,10 +22,9 @@ public class GraphAdapter {
     private boolean filterData;
     public double[] lastTimeValues;
     public double[] lastDataValues;
-    private double[] unfilteredSignal;
+    public double[] unfilteredSignal;
     public double[] explicitXVals;
     public int intArraySize;
-//    public int newValuesPlotted;
     public boolean plotData;
 
     // Set/Get Methods (Don't need yet)
@@ -38,7 +37,6 @@ public class GraphAdapter {
 
     // Constructor
     public GraphAdapter(int seriesHistoryDataPoints, String XYSeriesTitle, boolean useImplicitXVals, boolean filterData, int lineAndPointFormatterColor) {
-//        this.context = context;
         //default values
         this.filterData = filterData;
         this.seriesHistoryDataPoints = seriesHistoryDataPoints;
@@ -50,11 +48,10 @@ public class GraphAdapter {
         this.lineAndPointFormatter = new LineAndPointFormatter(lineAndPointFormatterColor, null, null, null);
         setPointWidth(5); //Def value:
         //Initialize arrays:
-        this.unfilteredSignal = new double[seriesHistoryDataPoints];
-        this.explicitXVals = new double[seriesHistoryDataPoints];
+        this.unfilteredSignal = new double[2500];
+        this.explicitXVals = new double[2500];
         // Initialize series
         this.series = new SimpleXYSeries(XYSeriesTitle);
-//        this.newValuesPlotted=0;
         if(useImplicitXVals) this.series.useImplicitXVals();
         //Don't plot data until explicitly told to do so:
         this.plotData = false;
@@ -72,10 +69,10 @@ public class GraphAdapter {
         int[] dataArrInts = new int[byteLength/bytesPerInt];
         lastTimeValues = new double[byteLength/bytesPerInt];
         lastDataValues = new double[byteLength/bytesPerInt];
-        int startIndex = seriesHistoryDataPoints-intArraySize;
+        int startIndex = this.unfilteredSignal.length-intArraySize;
         //shift old data backwards:
         System.arraycopy(unfilteredSignal, intArraySize, unfilteredSignal, 0, startIndex);
-        System.arraycopy(explicitXVals, intArraySize, explicitXVals, 0, startIndex);
+//        System.arraycopy(explicitXVals, intArraySize, explicitXVals, 0, startIndex);
         // Parse new data to ints:
         switch (bytesPerInt) {
             case 2: //16-bit
@@ -126,12 +123,6 @@ public class GraphAdapter {
             series.removeFirst();
         }
         series.addLast(x,y);
-        /*newValuesPlotted++;
-        if(newValuesPlotted>=seriesHistoryDataPoints-1 && newValuesPlotted%60==0){
-            //Adjust Graph
-            newValuesPlotted = 0;
-            DeviceControlActivity.mPlotAdapter.adjustPlot(this);
-        }*/
     }
 
     //Blah:
