@@ -87,6 +87,7 @@ public class GraphAdapter {
                     //Last Values (for plotting):
                     lastTimeValues[i] = packetNumber*(0.024) + i*0.004;
                     lastDataValues[i] = convert24bitInt(dataArrInts[i]);
+                    unfilteredSignal[994+i] = lastDataValues[i];
                 }
                 //Call Plot:
                 if(this.plotData) updateGraph();

@@ -734,6 +734,17 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mPlotAdapter.adjustPlot(mGraphAdapterCh2,max,min);
             }
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(packetNumber_2ch%42==0) {
+                    ClassifyTask mCLASS = new ClassifyTask();
+                    mCLASS.execute();
+                }
+//            mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
+//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
+            }
+        });
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
 //            mEEGConnected = true;
@@ -747,20 +758,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 ////                resetClass();
 //            }
 //        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-            if(packetNumber_2ch%42==0) {
-                ClassifyTask mCLASS = new ClassifyTask();
-                mCLASS.execute();
-//                mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
-//                Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
-            }
-            mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
-//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
-            mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(mEOGClass));
-            }
-        });
         // EOG Stuff: TODO: IF USING GET FROM PREVIOUS VERSION.
     }
 
@@ -781,13 +778,15 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private class ClassifyTask extends AsyncTask<Void,Void,Double> {
         @Override
         protected Double doInBackground(Void... voids) {
-            mEOGClass = jssvepclassifier1(mGraphAdapterCh1.unfilteredSignal);
+            double[] getInstance = mGraphAdapterCh1.unfilteredSignal;
+            mEOGClass = jssvepclassifier1(getInstance);
             return mEOGClass;
         }
 
         @Override
         protected void onPostExecute(Double aDouble) {
-            Log.e(TAG,"CLASS: ["+String.valueOf(mEOGClass)+"]");
+            Log.e(TAG,"CLASS: ["+String.valueOf(aDouble)+"]");
+            mEOGClassTextView.setText("EOG Class\n:"+String.valueOf(aDouble));
             super.onPostExecute(aDouble);
         }
     }

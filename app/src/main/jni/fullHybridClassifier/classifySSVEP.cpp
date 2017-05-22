@@ -5,7 +5,7 @@
 // File: classifySSVEP.cpp
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 21-May-2017 21:51:40
+// C/C++ source code generated on  : 22-May-2017 11:55:35
 //
 
 // Include Files
@@ -44,7 +44,7 @@ struct emxArray_int32_T
 #ifndef struct_emxArray_real_T
 #define struct_emxArray_real_T
 
-struct emxArray_real_T2
+struct emxArray_real_T
 {
   double *data;
   int *size;
@@ -55,22 +55,25 @@ struct emxArray_real_T2
 
 #endif                                 //struct_emxArray_real_T
 
+// Variable Definitions
+//omp_nest_lock_t emlrtNestLockGlobal;
+
 // Function Declarations
 static void b_sin(const double x[2000], double b_x[2000]);
 static void c_sin(double x[2000]);
 static void emxEnsureCapacity(emxArray__common *emxArray, int oldNumel, int
   elementSize);
 static void emxFree_int32_T(emxArray_int32_T **pEmxArray);
-static void emxFree_real_T(emxArray_real_T2 **pEmxArray);
+static void emxFree_real_T(emxArray_real_T **pEmxArray);
 static void emxInit_int32_T(emxArray_int32_T **pEmxArray, int numDimensions);
 static void emxInit_int32_T1(emxArray_int32_T **pEmxArray, int numDimensions);
-static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions);
-static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions);
-static void fESSVEP2(const emxArray_real_T2 *X0, double P[56]);
-static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_T2
+static void emxInit_real_T(emxArray_real_T **pEmxArray, int numDimensions);
+static void emxInit_real_T1(emxArray_real_T **pEmxArray, int numDimensions);
+static void fESSVEP2(const emxArray_real_T *X0, double P[56]);
+static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T
                    *y);
-static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y);
-static void welch_psd(const emxArray_real_T2 *signals, double fs, const double
+static void ssvepcfilt(emxArray_real_T *X, emxArray_real_T *Y);
+static void welch_psd(const emxArray_real_T *signals, double fs, const double
                       window[2048], double CSM[1024], double frequencies[1024]);
 
 // Function Definitions
@@ -161,19 +164,19 @@ static void emxFree_int32_T(emxArray_int32_T **pEmxArray)
 }
 
 //
-// Arguments    : emxArray_real_T2 **pEmxArray
+// Arguments    : emxArray_real_T **pEmxArray
 // Return Type  : void
 //
-static void emxFree_real_T(emxArray_real_T2 **pEmxArray)
+static void emxFree_real_T(emxArray_real_T **pEmxArray)
 {
-  if (*pEmxArray != (emxArray_real_T2 *)NULL) {
+  if (*pEmxArray != (emxArray_real_T *)NULL) {
     if (((*pEmxArray)->data != (double *)NULL) && (*pEmxArray)->canFreeData) {
       free((void *)(*pEmxArray)->data);
     }
 
     free((void *)(*pEmxArray)->size);
     free((void *)*pEmxArray);
-    *pEmxArray = (emxArray_real_T2 *)NULL;
+    *pEmxArray = (emxArray_real_T *)NULL;
   }
 }
 
@@ -220,15 +223,15 @@ static void emxInit_int32_T1(emxArray_int32_T **pEmxArray, int numDimensions)
 }
 
 //
-// Arguments    : emxArray_real_T2 **pEmxArray
+// Arguments    : emxArray_real_T **pEmxArray
 //                int numDimensions
 // Return Type  : void
 //
-static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions)
+static void emxInit_real_T(emxArray_real_T **pEmxArray, int numDimensions)
 {
-  emxArray_real_T2 *emxArray;
+  emxArray_real_T *emxArray;
   int i;
-  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
+  *pEmxArray = (emxArray_real_T *)malloc(sizeof(emxArray_real_T));
   emxArray = *pEmxArray;
   emxArray->data = (double *)NULL;
   emxArray->numDimensions = numDimensions;
@@ -241,15 +244,15 @@ static void emxInit_real_T(emxArray_real_T2 **pEmxArray, int numDimensions)
 }
 
 //
-// Arguments    : emxArray_real_T2 **pEmxArray
+// Arguments    : emxArray_real_T **pEmxArray
 //                int numDimensions
 // Return Type  : void
 //
-static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions)
+static void emxInit_real_T1(emxArray_real_T **pEmxArray, int numDimensions)
 {
-  emxArray_real_T2 *emxArray;
+  emxArray_real_T *emxArray;
   int i;
-  *pEmxArray = (emxArray_real_T2 *)malloc(sizeof(emxArray_real_T2));
+  *pEmxArray = (emxArray_real_T *)malloc(sizeof(emxArray_real_T));
   emxArray = *pEmxArray;
   emxArray->data = (double *)NULL;
   emxArray->numDimensions = numDimensions;
@@ -265,23 +268,23 @@ static void emxInit_real_T1(emxArray_real_T2 **pEmxArray, int numDimensions)
 // FESSVEP Feature Extraction for single (m x 1) SSVEP EEG Data Vector
 //    X (m x 1) vectorize input:
 //  Fix X size:
-// Arguments    : const emxArray_real_T2 *X0
+// Arguments    : const emxArray_real_T *X0
 //                double P[56]
 // Return Type  : void
 //
-static void fESSVEP2(const emxArray_real_T2 *X0, double P[56])
+static void fESSVEP2(const emxArray_real_T *X0, double P[56])
 {
-  emxArray_real_T2 *X;
+  emxArray_real_T *X;
   int ixstart;
   int jA2;
-  emxArray_real_T2 *convconv;
+  emxArray_real_T *convconv;
   static double sigs[56000];
   int i;
   double wfreqs[1024];
   double Mconv[28];
   short Lconv[28];
-  emxArray_real_T2 *r2;
-  emxArray_real_T2 *b_convconv;
+  emxArray_real_T *r2;
+  emxArray_real_T *b_convconv;
   int nA;
   int nC;
   double s;
@@ -1463,12 +1466,12 @@ static void fESSVEP2(const emxArray_real_T2 *X0, double P[56])
 }
 
 //
-// Arguments    : const emxArray_real_T2 *x
+// Arguments    : const emxArray_real_T *x
 //                const double zi[6]
-//                emxArray_real_T2 *y
+//                emxArray_real_T *y
 // Return Type  : void
 //
-static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_T2
+static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T
                    *y)
 {
   unsigned int unnamed_idx_0;
@@ -1511,26 +1514,26 @@ static void filter(const emxArray_real_T2 *x, const double zi[6], emxArray_real_
 
 //
 // [8 20] bandpass butterworth N=3
-// Arguments    : emxArray_real_T2 *X
-//                emxArray_real_T2 *Y
+// Arguments    : emxArray_real_T *X
+//                emxArray_real_T *Y
 // Return Type  : void
 //
-static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y)
+static void ssvepcfilt(emxArray_real_T *X, emxArray_real_T *Y)
 {
   int m;
   int i;
-  emxArray_real_T2 *x;
-  emxArray_real_T2 *y;
+  emxArray_real_T *x;
+  emxArray_real_T *y;
   double xtmp;
   double d0;
   int md2;
   double a[6];
-  emxArray_real_T2 *b_y;
+  emxArray_real_T *b_y;
   static const double b_a[6] = { -0.0025918862424588094, -0.0025918862424471247,
     0.0051837724848969383, 0.0051837724849273592, -0.0025918862424630829,
     -0.0025918862424552862 };
 
-  emxArray_real_T2 *c_y;
+  emxArray_real_T *c_y;
   emxArray_int32_T *r1;
   m = X->size[0];
   i = X->size[0];
@@ -1670,14 +1673,14 @@ static void ssvepcfilt(emxArray_real_T2 *X, emxArray_real_T2 *Y)
 // if size(signals,2) > size(signals,1)
 //      signals = signals.';
 //  end
-// Arguments    : const emxArray_real_T2 *signals
+// Arguments    : const emxArray_real_T *signals
 //                double fs
 //                const double window[2048]
 //                double CSM[1024]
 //                double frequencies[1024]
 // Return Type  : void
 //
-static void welch_psd(const emxArray_real_T2 *signals, double fs, const double
+static void welch_psd(const emxArray_real_T *signals, double fs, const double
                       window[2048], double CSM[1024], double frequencies[1024])
 {
   int iy;
@@ -2583,31 +2586,28 @@ static void welch_psd(const emxArray_real_T2 *signals, double fs, const double
 //  start - where to start from in 'X'
 //  Fs - signal sampling frequency
 // Arguments    : const double X[1000]
-//                double start
-//                boolean_T plotData
 // Return Type  : double
 //
-double classifySSVEP(const double X[1000], double start)
+double classifySSVEP(const double X[1000])
 {
   double CLASS;
-  emxArray_real_T2 *fch;
-  emxArray_real_T2 *b_X;
+  emxArray_real_T *fch;
+  emxArray_real_T *b_X;
   double P[224];
   int i;
-  double fin;
-  double M[4];
   int ixstart;
-  double maxval[7];
+  double M[4];
   int ix;
+  double maxval[7];
   double mtmp;
   int b_i;
-  int b_ix;
   int itmp;
+  int b_ix;
   boolean_T exitg1;
+  double dv0[56];
   boolean_T exitg2;
   boolean_T exitg3;
-  emxArray_real_T2 *b;
-  double dv0[56];
+  emxArray_real_T *b;
   emxArray_int32_T *r0;
   emxInit_real_T(&fch, 2);
 
@@ -2615,30 +2615,19 @@ double classifySSVEP(const double X[1000], double start)
   //  1-4 s at 60pt intervals
   emxInit_real_T1(&b_X, 1);
   for (i = 0; i < 4; i++) {
-    fin = start + ((250.0 + 250.0 * ((1.0 + (double)i) - 1.0)) - 1.0);
-
-    //      fprintf('Current index = [%d to %d]\r\n',start, fin);
-    //      fprintf('length = %d\r\n',range(i));
-    //      fch = customFilt(X(start:fin),Fs,filtRange,3);
-    if (start > fin) {
-      ix = 0;
-      b_ix = 0;
-    } else {
-      ix = (int)start - 1;
-      b_ix = (int)fin;
-    }
-
-    ixstart = b_X->size[0];
-    b_X->size[0] = b_ix - ix;
-    emxEnsureCapacity((emxArray__common *)b_X, ixstart, (int)sizeof(double));
-    ixstart = b_ix - ix;
-    for (b_ix = 0; b_ix < ixstart; b_ix++) {
-      b_X->data[b_ix] = X[ix + b_ix];
+    ixstart = 250 * i + 250;
+    ix = b_X->size[0];
+    b_X->size[0] = ixstart;
+    emxEnsureCapacity((emxArray__common *)b_X, ix, (int)sizeof(double));
+    for (ix = 0; ix < ixstart; ix++) {
+      b_X->data[ix] = X[ix];
     }
 
     ssvepcfilt(b_X, fch);
 
     // %%Feature Extraction: (per channel)
+    //      fprintf('Current index = [%d to %d]\r\n',start, fin);
+    //      fprintf('length = %d\r\n',range(i));
     fESSVEP2(fch, dv0);
     for (ix = 0; ix < 56; ix++) {
       P[i + (ix << 2)] = dv0[ix];
@@ -2649,14 +2638,14 @@ double classifySSVEP(const double X[1000], double start)
   emxFree_real_T(&fch);
   for (i = 0; i < 4; i++) {
     for (b_i = 0; b_i < 7; b_i++) {
-      ix = (b_i << 2) + 4;
-      b_ix = (b_i << 2) + 1;
-      mtmp = P[(ix - 4) % 4 + ((((ix - 4) / 4 + i * 7) + 28) << 2)];
-      if (rtIsNaN(P[(ix - 4) % 4 + ((((ix - 4) / 4 + i * 7) + 28) << 2)])) {
-        ixstart = b_ix;
+      b_ix = (b_i << 2) + 4;
+      ix = (b_i << 2) + 1;
+      mtmp = P[(b_ix - 4) % 4 + ((((b_ix - 4) / 4 + i * 7) + 28) << 2)];
+      if (rtIsNaN(P[(b_ix - 4) % 4 + ((((b_ix - 4) / 4 + i * 7) + 28) << 2)])) {
+        ixstart = ix;
         exitg3 = false;
-        while ((!exitg3) && (ixstart + 1 <= ix)) {
-          b_ix = ixstart + 1;
+        while ((!exitg3) && (ixstart + 1 <= b_ix)) {
+          ix = ixstart + 1;
           if (!rtIsNaN(P[ixstart % 4 + (((ixstart / 4 + i * 7) + 28) << 2)])) {
             mtmp = P[ixstart % 4 + (((ixstart / 4 + i * 7) + 28) << 2)];
             exitg3 = true;
@@ -2666,13 +2655,13 @@ double classifySSVEP(const double X[1000], double start)
         }
       }
 
-      if (b_ix < ix) {
-        while (b_ix + 1 <= ix) {
-          if (P[b_ix % 4 + (((b_ix / 4 + i * 7) + 28) << 2)] > mtmp) {
-            mtmp = P[b_ix % 4 + (((b_ix / 4 + i * 7) + 28) << 2)];
+      if (ix < b_ix) {
+        while (ix + 1 <= b_ix) {
+          if (P[ix % 4 + (((ix / 4 + i * 7) + 28) << 2)] > mtmp) {
+            mtmp = P[ix % 4 + (((ix / 4 + i * 7) + 28) << 2)];
           }
 
-          b_ix++;
+          ix++;
         }
       }
 
@@ -2682,15 +2671,15 @@ double classifySSVEP(const double X[1000], double start)
     ixstart = 1;
     mtmp = maxval[0];
     if (rtIsNaN(maxval[0])) {
-      ix = 2;
+      b_ix = 2;
       exitg2 = false;
-      while ((!exitg2) && (ix < 8)) {
-        ixstart = ix;
-        if (!rtIsNaN(maxval[ix - 1])) {
-          mtmp = maxval[ix - 1];
+      while ((!exitg2) && (b_ix < 8)) {
+        ixstart = b_ix;
+        if (!rtIsNaN(maxval[b_ix - 1])) {
+          mtmp = maxval[b_ix - 1];
           exitg2 = true;
         } else {
-          ix++;
+          b_ix++;
         }
       }
     }
@@ -2712,16 +2701,16 @@ double classifySSVEP(const double X[1000], double start)
   mtmp = M[0];
   itmp = 1;
   if (rtIsNaN(M[0])) {
-    ix = 2;
+    b_ix = 2;
     exitg1 = false;
-    while ((!exitg1) && (ix < 5)) {
-      ixstart = ix;
-      if (!rtIsNaN(M[ix - 1])) {
-        mtmp = M[ix - 1];
-        itmp = ix;
+    while ((!exitg1) && (b_ix < 5)) {
+      ixstart = b_ix;
+      if (!rtIsNaN(M[b_ix - 1])) {
+        mtmp = M[b_ix - 1];
+        itmp = b_ix;
         exitg1 = true;
       } else {
-        ix++;
+        b_ix++;
       }
     }
   }
@@ -2821,6 +2810,7 @@ double classifySSVEP(const double X[1000], double start)
 void classifySSVEP_initialize()
 {
   rt_InitInfAndNaN(8U);
+//  omp_init_nest_lock(&emlrtNestLockGlobal);
 }
 
 //
@@ -2829,6 +2819,7 @@ void classifySSVEP_initialize()
 //
 void classifySSVEP_terminate()
 {
+//  omp_destroy_nest_lock(&emlrtNestLockGlobal);
 }
 
 //
