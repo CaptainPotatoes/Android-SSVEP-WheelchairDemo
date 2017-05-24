@@ -90,7 +90,7 @@ public class GraphAdapter {
             while(this.series.size()>0) {
                 this.series.removeFirst();
             }
-            DeviceControlActivity.mPlotAdapter.adjustPlot(this);
+//            DeviceControlActivity.mPlotAdapter.adjustPlot(this);
             DeviceControlActivity.redrawer.start();
         }
     }

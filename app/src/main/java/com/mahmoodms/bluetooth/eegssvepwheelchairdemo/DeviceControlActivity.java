@@ -56,7 +56,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private GraphAdapter mGraphAdapterCh2;
     private GraphAdapter mGraphAdapterCh3;
     private GraphAdapter mGraphAdapterCh4;
-    public static XYPlotAdapter mPlotAdapter;
+    public XYPlotAdapter mPlotAdapter;
     public static Redrawer redrawer;
     private boolean plotImplicitXVals = false;
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
@@ -721,17 +721,18 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 if(mGraphAdapterCh1.lastDataValues!=null&&mGraphAdapterCh2.lastDataValues!=null)
                 writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
             }
-            //Adjust graph?
-            if(packetNumber_2ch%10==0) {
+            // TODO: 5/24/2017 ADJUST FOR 2-CH
+            if(packetNumber_2ch%5==0) {
                 double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
                 double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
-                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
-                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
-                double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
-                double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
-                mPlotAdapter.adjustPlot(mGraphAdapterCh2,max,min);
+//                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
+//                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
+//                double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
+//                double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
+                mPlotAdapter.adjustPlot(max_ch1,min_ch1);
             }
         }
+        /*
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -743,6 +744,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
             }
         });
+        */
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
 //            mEEGConnected = true;
