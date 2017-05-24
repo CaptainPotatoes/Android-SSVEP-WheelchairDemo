@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -217,8 +216,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     if(mLedService!=null)
                         mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL),bytes);
                 }
-                mEOGClass = 3;
-                mLastButtonPress = 3;
+                mEOGClass = 1;
+                mLastButtonPress = 1;
                 mClassTime = System.currentTimeMillis();
             }
         });
@@ -231,8 +230,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     if(mLedService!=null)
                         mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL),bytes);
                 }
-                mEOGClass = 6;
-                mLastButtonPress = 6;
+                mEOGClass = 4;
+                mLastButtonPress = 4;
                 mClassTime = System.currentTimeMillis();
             }
         });
@@ -245,8 +244,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     if(mLedService!=null)
                         mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL),bytes);
                 }
-                mEOGClass = 4;
-                mLastButtonPress = 4;
+                mEOGClass = 3;
+                mLastButtonPress = 3;
                 mClassTime = System.currentTimeMillis();
             }
         });
@@ -259,8 +258,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     if(mLedService!=null)
                         mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL),bytes);
                 }
-                mEOGClass = 5;
-                mLastButtonPress = 5;
+                mEOGClass = 2;
+                mLastButtonPress = 2;
                 mClassTime = System.currentTimeMillis();
             }
         });

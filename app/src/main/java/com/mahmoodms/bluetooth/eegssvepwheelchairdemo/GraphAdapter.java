@@ -1,7 +1,5 @@
 package com.mahmoodms.bluetooth.eegssvepwheelchairdemo;
 
-import android.content.Context;
-
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 
@@ -11,20 +9,14 @@ import com.androidplot.xy.SimpleXYSeries;
 
 public class GraphAdapter {
     // Variables
-
+    private boolean filterData;
+    public int intArraySize;
     public SimpleXYSeries series;
     public LineAndPointFormatter lineAndPointFormatter;
     private int seriesHistoryDataPoints;
-    private int seriesHistorySeconds;
-    private int numberDataPoints = 0;
-    private double currentTimeStamp = 0;
-    private boolean plotImplicitXvals;
-    private boolean filterData;
     public double[] lastTimeValues;
     public double[] lastDataValues;
     public double[] unfilteredSignal;
-    public double[] explicitXVals;
-    public int intArraySize;
     public boolean plotData;
 
     // Set/Get Methods (Don't need yet)
@@ -40,16 +32,11 @@ public class GraphAdapter {
         //default values
         this.filterData = filterData;
         this.seriesHistoryDataPoints = seriesHistoryDataPoints;
-        this.seriesHistorySeconds = seriesHistoryDataPoints/250;
-        this.numberDataPoints = 0;
-        this.currentTimeStamp = 0.0;
         this.intArraySize = 6; //24-bit default
-        this.plotImplicitXvals = false;
         this.lineAndPointFormatter = new LineAndPointFormatter(lineAndPointFormatterColor, null, null, null);
         setPointWidth(5); //Def value:
         //Initialize arrays:
-        this.unfilteredSignal = new double[1000];
-        this.explicitXVals = new double[1000];
+        this.unfilteredSignal = new double[seriesHistoryDataPoints];
         // Initialize series
         this.series = new SimpleXYSeries(XYSeriesTitle);
         if(useImplicitXVals) this.series.useImplicitXVals();
@@ -72,7 +59,6 @@ public class GraphAdapter {
         int startIndex = this.unfilteredSignal.length-intArraySize;
         //shift old data backwards:
         System.arraycopy(unfilteredSignal, intArraySize, unfilteredSignal, 0, startIndex);
-//        System.arraycopy(explicitXVals, intArraySize, explicitXVals, 0, startIndex);
         // Parse new data to ints:
         switch (bytesPerInt) {
             case 2: //16-bit
