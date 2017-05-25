@@ -72,6 +72,9 @@ public class XYPlotAdapter {
     public void adjustPlot(double max, double min) {
         if((max-min)!=0) {
             this.xyPlot.setRangeStepValue((max-min)/5);
+        } else {
+            this.xyPlot.setRangeBoundaries(min-0.01,max+0.01,BoundaryMode.AUTO);
+            this.xyPlot.setRangeStepValue((0.02)/5);
         }
         this.currentXBoundaryMode = BoundaryMode.AUTO;
     }

@@ -273,24 +273,25 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                         mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL),bytes);
                     }
                 }
-                switch (mLastButtonPress) {
-                    case 3:
-                        mEOGClass = 6;
-                        break;
-                    case 4:
-                        mEOGClass = 5;
-                        break;
-                    case 5:
-                        mEOGClass = 4;
-                        break;
-                    case 6:
-                        mEOGClass = 3;
-                        break;
-                    default:
-                        mEOGClass = 0;
-                        break;
-                }
-                mLastButtonPress = 0;
+//                switch (mLastButtonPress) {
+//                    case 3:
+//                        mEOGClass = 6;
+//                        break;
+//                    case 4:
+//                        mEOGClass = 5;
+//                        break;
+//                    case 5:
+//                        mEOGClass = 4;
+//                        break;
+//                    case 6:
+//                        mEOGClass = 3;
+//                        break;
+//                    default:
+//                        mEOGClass = 0;
+//                        break;
+//                }
+//                mLastButtonPress = 0;
+                mEOGClass = 0;
                 mClassTime = System.currentTimeMillis();
             }
         });
@@ -442,6 +443,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     @Override
     protected void onPause() {
         redrawer.pause();
+
+
         makeFilterSwitchVisible(false);
         super.onPause();
     }
@@ -725,26 +728,26 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             if(packetNumber_2ch%5==0) {
                 double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
                 double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
-//                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
-//                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
-//                double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
-//                double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
-                mPlotAdapter.adjustPlot(max_ch1,min_ch1);
+                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
+                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
+                double max = (max_ch1>max_ch2)?max_ch1:max_ch2;
+                double min = (min_ch1<min_ch2)?min_ch1:min_ch2;
+                mPlotAdapter.adjustPlot(max,min);
             }
         }
-        /*
+        if(packetNumber_2ch%41==0) {
+            ClassifyTask classifyTask1 = new ClassifyTask();
+            classifyTask1.execute();
+            ClassifyTask classifyTask2 = new ClassifyTask();
+            classifyTask2.execute();
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(packetNumber_2ch%41==0) {
-                    ClassifyTask mCLASS = new ClassifyTask();
-                    mCLASS.execute();
-                }
-//            mAllChannelsReadyTextView.setText(" 2-ch Differential EOG Ready.");
-//                    mBatteryLevel.setText("YFITEOG: "+ "{PLACEHOLDER}");
+                mSSVEPClassTextView.setText("C:["+mEOGClass+"]");
             }
         });
-        */
+
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
 //            mEEGConnected = true;
@@ -775,19 +778,32 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             return 0.0;
     }
 
+    private int mNumberOfClassifierCalls = 0;
     private class ClassifyTask extends AsyncTask<Void,Void,Double> {
         @Override
         protected Double doInBackground(Void... voids) {
             double[] getInstance = mGraphAdapterCh1.unfilteredSignal;
-            return jssvepclassifier1(getInstance);
+//            double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
+            double ch1 = jssvepclassifier1(getInstance);
+//            double ch2 = jssvepclassifier1(getInstance2);
+            Log.e(TAG,"Classifier Output: ["+String.valueOf(ch1)+"]");
+//            Log.e(TAG,"Classifier Output: ["+String.valueOf(ch1)+","+String.valueOf(ch2)+"]");
+            mNumberOfClassifierCalls++;
+            Log.e(TAG,"NumberOfClassifierCalls:["+String.valueOf(mNumberOfClassifierCalls)+"]");
+            return ch1;
         }
 
         @Override
         protected void onPostExecute(Double aDouble) {
             mClassifiedSSVEPClass = aDouble;
-            Log.e(TAG,"CLASS: ["+String.valueOf(aDouble)+"]");
-            String s = "SSVEP\n: ["+String.valueOf(aDouble)+"]";
-            mSSVEPClassTextView.setText(s);
+            final String s = "SSVEP\n: ["+String.valueOf(aDouble)+"]";
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mYfitTextView.setText(s);
+                }
+            });
+
             super.onPostExecute(aDouble);
         }
     }

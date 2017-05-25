@@ -5,7 +5,7 @@
 // File: classifySSVEP.h
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 22-May-2017 11:55:35
+// C/C++ source code generated on  : 25-May-2017 13:10:49
 //
 #ifndef CLASSIFYSSVEP_H
 #define CLASSIFYSSVEP_H
@@ -20,11 +20,8 @@
 #include "omp.h"
 #include "classifySSVEP_types.h"
 
-// Variable Declarations
-//extern omp_nest_lock_t emlrtNestLockGlobal;
-
 // Function Declarations
-extern double classifySSVEP(const double X[1000]);
+extern double classifySSVEP(const double X[1000], double thresholdFraction);
 extern void classifySSVEP_initialize();
 extern void classifySSVEP_terminate();
 

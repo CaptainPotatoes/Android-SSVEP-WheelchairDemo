@@ -32,8 +32,7 @@ extern "C" {
             JNIEnv *env, jobject jobject1, jdoubleArray array1) {
         jdouble  *X = env->GetDoubleArrayElements(array1, NULL);
         if (X==NULL) LOGE("ERROR - C_ARRAY IS NULL");
-//        int len = env->GetArrayLength(array1);
-        return classifySSVEP(X);
+        return classifySSVEP(X,(double)3);
     }
 }
 
