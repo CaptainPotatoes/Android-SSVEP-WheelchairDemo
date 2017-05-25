@@ -735,11 +735,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mPlotAdapter.adjustPlot(max,min);
             }
         }
-        if(packetNumber_2ch%41==0) {
+        if(packetNumber_2ch%80==0) {
             ClassifyTask classifyTask1 = new ClassifyTask();
             classifyTask1.execute();
-            ClassifyTask classifyTask2 = new ClassifyTask();
-            classifyTask2.execute();
         }
         runOnUiThread(new Runnable() {
             @Override

@@ -37350,6 +37350,7 @@ static void fESSVEP2(const emxArray_real_T *X0, double P[56]) {
     // }
     emxInit_real_T(&C, 2);
     for (i = 0; i < 28; i++) {
+
         for (jA2 = 0; jA2 < 2000; jA2++) {
             B[jA2] = sigs[i + 28 * jA2];
         }
@@ -37447,8 +37448,7 @@ static void fESSVEP2(const emxArray_real_T *X0, double P[56]) {
 //                emxArray_real_T *y
 // Return Type  : void
 //
-static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T
-*y) {
+static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T *y) {
     unsigned int unnamed_idx_0;
     int k;
     double dbuffer[7];
