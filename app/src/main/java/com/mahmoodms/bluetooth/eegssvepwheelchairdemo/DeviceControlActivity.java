@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -116,7 +115,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     //Play Sound:
     MediaPlayer mMediaBeep;
-    EditText mEditDelayText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -128,6 +126,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         Intent intent = getIntent();
         deviceMacAddresses = intent.getStringArrayExtra(MainActivity.INTENT_DEVICES_KEY);
         String[] deviceDisplayNames = intent.getStringArrayExtra(MainActivity.INTENT_DEVICES_NAMES);
+        String[] intentDelayLength = intent.getStringArrayExtra(MainActivity.INTENT_DELAY_LENGTH);
+        mSecondsBetweenStimulus = Integer.valueOf(intentDelayLength[0]);
         mDeviceName = deviceDisplayNames[0];
         mDeviceAddress = deviceMacAddresses[0];
         Log.d(TAG, "Device Names: " + Arrays.toString(deviceDisplayNames));
@@ -147,7 +147,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         mFilterSwitch = (Switch) findViewById(R.id.filterSwitch);
         mBatteryLevel = (TextView) findViewById(R.id.batteryText);
         mDataRate = (TextView) findViewById(R.id.dataRate);
-        mEditDelayText = (EditText) findViewById(R.id.editDelayText);
         mAllChannelsReadyTextView = (TextView) findViewById(R.id.allChannelsEnabledText);
         mAllChannelsReadyTextView.setText("  Waiting For EOG Device.");
         mDataRate.setText("...");
@@ -516,10 +515,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (menu != null) {
-                    menu.findItem(R.id.menu_connect).setVisible(true);
-                    menu.findItem(R.id.menu_disconnect).setVisible(false);
-                }
+            if (menu != null) {
+                menu.findItem(R.id.menu_connect).setVisible(true);
+                menu.findItem(R.id.menu_disconnect).setVisible(false);
+            }
             }
         });
     }
@@ -748,9 +747,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mPlotAdapter.adjustPlot(max, min);
             }
         }
-        mSecondsBetweenStimulus = Integer.valueOf(mEditDelayText.getText().toString());
-        if(mSecondsBetweenStimulus!=0) {
-            if(Math.floor(mGraphAdapterCh1.lastTimeValues[5])==(mSecondsBetweenStimulus* mAlertBeepCounter)) {
+//        mSecondsBetweenStimulus = Integer.valueOf(mEditDelayText.getText().toString());
+        if (mSecondsBetweenStimulus != 0 && mGraphAdapterCh1.lastTimeValues != null) {
+            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (mSecondsBetweenStimulus * mAlertBeepCounter)) {
                 mAlertBeepCounter++;
                 //Play Sound:
                 mMediaBeep.start();

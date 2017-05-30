@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -53,6 +54,9 @@ public class MainActivity extends Activity {
 
     public final static String INTENT_DEVICES_KEY = "DEVICES_TO_PARSE";
     public final static String INTENT_DEVICES_NAMES = "DEVICE_NAMES_TO_PARSE";
+    public final static String INTENT_DELAY_LENGTH = "DELAY_VALUE_SECONDS";
+
+    EditText mEditDelayText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,7 @@ public class MainActivity extends Activity {
         selectedDeviceAdapter = new ScannedDeviceAdapter(this, R.layout.scanning_item, new ArrayList<ScannedDevice>());
         scanningDeviceListView.setAdapter(scannedDeviceAdapter);
         selectedDeviceListView.setAdapter(selectedDeviceAdapter);
+        mEditDelayText = (EditText) findViewById(R.id.editDelayText);
         // Click Item Listener:
         scanningDeviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -126,10 +131,12 @@ public class MainActivity extends Activity {
                     if(mDeviceAddressesMAC != null) {
                         String[] selectedDeviceArray = mDeviceAddressesMAC.toArray(new String[0]);
                         String[] selectedDeviceNames = mDeviceNames.toArray(new String[0]);
-//                                new String[mDeviceNames.size()];
+                        String[] selectedStimulusDelay = new String[1];
+                        selectedStimulusDelay[0] = mEditDelayText.getText().toString();
                         final Intent intent = new Intent(MainActivity.this, DeviceControlActivity.class);
                         intent.putExtra(INTENT_DEVICES_KEY,selectedDeviceArray);
                         intent.putExtra(INTENT_DEVICES_NAMES,selectedDeviceNames);
+                        intent.putExtra(INTENT_DELAY_LENGTH,selectedStimulusDelay);
                         startActivity(intent);
                     } else {
                         Toast.makeText(MainActivity.this, "No Devices Selected!", Toast.LENGTH_SHORT).show();
