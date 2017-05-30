@@ -39170,6 +39170,7 @@ void classifySSVEP_initialize() {
 // Return Type  : void
 //
 void classifySSVEP_terminate() {
+
 }
 
 //

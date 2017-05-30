@@ -19,11 +19,11 @@ public class XYPlotAdapter {
     private final static String TAG = XYPlotAdapter.class.getSimpleName();
     public int historySize;
     public int historySeconds;
-    public XYPlot xyPlot = null;
+    XYPlot xyPlot = null;
     public BoundaryMode currentXBoundaryMode;
     public BoundaryMode currentYBoundaryMode;
 
-    public XYPlotAdapter(View findViewByID, boolean plotImplicitXVals, int historySize) {
+    XYPlotAdapter(View findViewByID, boolean plotImplicitXVals, int historySize) {
         this.xyPlot = (XYPlot) findViewByID;
         this.historySize = historySize;
         this.historySeconds = historySize/250;
@@ -95,9 +95,6 @@ public class XYPlotAdapter {
             }
             this.xyPlot.setRangeStepValue(2.0/5.0);
         }
-//        Number newMinX = Math.floor(graphAdapter.explicitXVals[0]);
-//        Number newMaxX = Math.floor(graphAdapter.explicitXVals[graphAdapter.explicitXVals.length-1]);
-//        this.xyPlot.setDomainBoundaries(newMinX,newMaxX,BoundaryMode.AUTO);
         this.currentXBoundaryMode = BoundaryMode.AUTO;
     }
 

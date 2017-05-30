@@ -11,13 +11,13 @@ public class GraphAdapter {
     // Variables
     private boolean filterData;
     public int intArraySize;
-    public SimpleXYSeries series;
-    public LineAndPointFormatter lineAndPointFormatter;
+    SimpleXYSeries series;
+    LineAndPointFormatter lineAndPointFormatter;
     private int seriesHistoryDataPoints;
-    public double[] lastTimeValues;
-    public double[] lastDataValues;
-    public double[] unfilteredSignal;
-    public boolean plotData;
+    double[] lastTimeValues;
+    double[] lastDataValues;
+    double[] unfilteredSignal;
+    boolean plotData;
 
     // Set/Get Methods (Don't need yet)
     public void setPlotData(boolean plotData) {

@@ -11,6 +11,15 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="5"
+            android:inputType="number"
+            android:text="5" />
+
         <Button
             android:id="@+id/connectButton"
             android:layout_width="match_parent"
@@ -43,6 +52,7 @@
                 android:textAlignment="center"
                 android:textSize="17sp"
                 android:textStyle="bold|italic" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -71,6 +81,7 @@
                 android:fadeScrollbars="false"
                 android:layout_weight="0.5"
                 android:listSelector="@android:color/transparent"/>
+
         </LinearLayout>
 
     </LinearLayout>

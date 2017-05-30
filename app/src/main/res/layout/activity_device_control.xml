@@ -8,9 +8,9 @@
 
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <ToggleButton
             android:id="@+id/toggleButtonCh1"
@@ -19,18 +19,21 @@
             android:layout_weight="0.1"
             android:checked="true"
             android:text="ToggleButton" />
+
         <ToggleButton
             android:id="@+id/toggleButtonCh2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:text="ToggleButton" />
+
         <ToggleButton
             android:id="@+id/toggleButtonCh3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:text="ToggleButton" />
+
         <ToggleButton
             android:id="@+id/toggleButtonCh4"
             android:layout_width="wrap_content"
@@ -38,12 +41,21 @@
             android:layout_weight="0.1"
             android:text="ToggleButton" />
 
+        <EditText
+            android:id="@+id/editDelayText"
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="5"
+            android:inputType="number"
+            android:text="5" />
+
         <TextView
-            android:text="TextView"
+            android:id="@+id/dataRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dataRate"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="TextView" />
 
         <TextView
             android:id="@+id/batteryText"
