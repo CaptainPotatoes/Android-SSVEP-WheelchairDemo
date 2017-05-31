@@ -158,13 +158,13 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         initializeBluetoothArray();
         // Initialize our XYPlot reference:
         mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, false, Color.BLUE); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, false, Color.BLACK); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh3 = new GraphAdapter(1000, "EEG Data Ch 3", false, false, Color.RED); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, false, Color.RED); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh3 = new GraphAdapter(1000, "EEG Data Ch 3", false, false, Color.DKGRAY); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         mGraphAdapterCh4 = new GraphAdapter(1000, "EEG Data Ch 4", false, false, Color.GREEN); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         //PLOT CH1 By default
         mGraphAdapterCh1.plotData = true;
         mGraphAdapterCh1.setPointWidth((float) 2);
-        mGraphAdapterCh2.setPointWidth((float) 3);
+        mGraphAdapterCh2.setPointWidth((float) 2);
         mGraphAdapterCh3.setPointWidth((float) 3);
         mGraphAdapterCh4.setPointWidth((float) 3);
         if (plotImplicitXVals) mGraphAdapterCh1.series.useImplicitXVals();
@@ -751,7 +751,22 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         if (mSecondsBetweenStimulus != 0 && mGraphAdapterCh1.lastTimeValues != null) {
             if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (mSecondsBetweenStimulus * mAlertBeepCounter)) {
                 mAlertBeepCounter++;
+                int temp = mAlertBeepCounter-1;
+                if(temp==0) {
+                    mEOGClass = 0;
+                } else if(temp==1) {
+                    mEOGClass = 1;
+                } else if(temp==2) {
+                    mEOGClass = 2;
+                } else if(temp==3) {
+                    mEOGClass = 3;
+                } else if (temp==4) {
+                    mEOGClass = 4;
+                } else {
+                    mEOGClass = 0;
+                }
                 //Play Sound:
+                Log.e(TAG,"Notify: Switching Signal!!!");
                 mMediaBeep.start();
             }
         }
@@ -761,12 +776,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //            classifyTask.execute();
 //        }
 
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                mSSVEPClassTextView.setText("C:[" + mEOGClass + "]");
-//            }
-//        });
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSSVEPClassTextView.setText("C:[" + mEOGClass + "]");
+            }
+        });
 
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
