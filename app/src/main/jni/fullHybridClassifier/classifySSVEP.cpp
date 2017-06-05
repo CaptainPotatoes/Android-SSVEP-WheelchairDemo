@@ -37448,7 +37448,8 @@ static void fESSVEP2(const emxArray_real_T *X0, double P[56]) {
 //                emxArray_real_T *y
 // Return Type  : void
 //
-static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T *y) {
+static void filter(const emxArray_real_T *x, const double zi[6], emxArray_real_T *y)
+{
     unsigned int unnamed_idx_0;
     int k;
     double dbuffer[7];
@@ -39150,10 +39151,6 @@ double classifySSVEP(const double X[1000], double thresholdFraction) {
         CLASS = 0.0;
     }
 
-    //  end
-    //  for i = 1:size(F,1)
-    //      FS(1+size(F,2)*(i-1):size(F,2)*(i)) = F(i,:);
-    //  end
     return CLASS;
 }
 

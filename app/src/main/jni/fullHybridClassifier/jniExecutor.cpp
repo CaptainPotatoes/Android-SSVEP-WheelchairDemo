@@ -36,6 +36,16 @@ extern "C" {
     }
 }
 
+extern "C" {
+JNIEXPORT jdouble JNICALL
+Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jssvepclassifier2(
+        JNIEnv *env, jobject jobject1, jdoubleArray array1, jdouble thresholdFraction) {
+    jdouble  *X = env->GetDoubleArrayElements(array1, NULL);
+    if (X==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    return classifySSVEP(X,thresholdFraction);
+}
+}
+
 
 extern "C" {
 JNIEXPORT jint JNICALL
