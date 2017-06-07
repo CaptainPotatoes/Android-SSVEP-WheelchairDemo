@@ -676,11 +676,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private int packetNumber_2ch = -1;
     //Count of How Many Alerts Given To Subject
     private int mAlertBeepCounter = 1;
+    private int mClassifierCounter = 1;
     private int mSecondsBetweenStimulus = 0;
     //EOG:
     // Classification
     private double[] yfitarray = new double[5];
-
+    private double[] mSigs = new double[56000];
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         //TODO: ADD BATTERY MEASURE CAPABILITY IN FIRMWARE: (ble_ADC)
@@ -737,15 +738,15 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
             }
             // TODO: 5/24/2017 ADJUST FOR 2-CH
-            if (packetNumber_2ch % 5 == 0) {
-                double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
-                double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
-                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
-                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
-                double max = (max_ch1 > max_ch2) ? max_ch1 : max_ch2;
-                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
-                mPlotAdapter.adjustPlot(max, min);
-            }
+//            if (packetNumber_2ch % 5 == 0) {
+//                double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
+//                double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
+//                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
+//                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
+//                double max = (max_ch1 > max_ch2) ? max_ch1 : max_ch2;
+//                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
+//                mPlotAdapter.adjustPlot(max, min);
+//            }
         }
 //        mSecondsBetweenStimulus = Integer.valueOf(mEditDelayText.getText().toString());
         if (mSecondsBetweenStimulus !=0 && mGraphAdapterCh1.lastTimeValues != null) {
@@ -800,11 +801,14 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 Log.e(TAG,"Notify: Switching Signal!!!");
                 mMediaBeep.start();
             }
-        }
-
-        if (packetNumber_2ch % 63 == 0) {
-            ClassifyTask classifyTask = new ClassifyTask();
-            classifyTask.execute();
+            //Number of seconds!:
+            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (1.0 * mClassifierCounter)) {
+                mClassifierCounter++;
+//                Log.e(TAG,"CALLING CLASSIFIER FUNCTION!");
+                ClassifyTask classifyTask = new ClassifyTask();
+                classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                classifyTask.execute();
+            }
         }
 
         runOnUiThread(new Runnable() {
@@ -813,6 +817,18 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mSSVEPClassTextView.setText("C:[" + mEOGClass + "]");
             }
         });
+
+//        if(packetNumber_2ch%42 == 0) {
+//            double[] convolutedSignals = jConvoluteSignals(mGraphAdapterCh1.unfilteredSignal, mGraphAdapterCh2.unfilteredSignal);
+//            Log.e(TAG,"Convoluted Signals: "+Arrays.toString(convolutedSignals));
+//        }
+        //ERROR! Calling too many times!
+//        if (eeg_ch1_data_on && eeg_ch2_data_on) {
+//            if (packetNumber_2ch % 63 == 0) {
+//                ClassifyTask classifyTask = new ClassifyTask();
+//                classifyTask.execute();
+//            }
+//        }
 
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
@@ -848,13 +864,14 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private class ClassifyTask extends AsyncTask<Void, Void, Double> {
         @Override
         protected Double doInBackground(Void... voids) {
-            double[] getInstance = mGraphAdapterCh1.unfilteredSignal;
-//            double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-            double ch1 = jssvepclassifier1(getInstance);
+            double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
+            double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
+            double yclass = jClassifySSVEP3(getInstance1, getInstance2);
+//            double ch1 = jssvepclassifier1(getInstance);
 //            double ch1 = jssvepclassifier2(getInstance, 3.34);
-            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(ch1) + "]");
             mNumberOfClassifierCalls++;
-            return ch1;
+            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
+            return yclass;
         }
 
         @Override
@@ -867,7 +884,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     mYfitTextView.setText(s);
                 }
             });
-
             super.onPostExecute(aDouble);
         }
     }
@@ -1159,6 +1175,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     }
 
     public native int jmainInitialization(boolean b);
+
+    public native double[] jConvoluteSignals(double[] a, double[] b);
+
+    public native double jClassifySSVEP3(double[] a, double[] b);
 
     public native double jssvepclassifier1(double[] array);
 

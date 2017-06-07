@@ -4,6 +4,8 @@
 #include "rt_nonfinite.h"
 #include "classifySSVEP_types.h"
 #include "classifySSVEP.h"
+#include "convoluteSignals.h"
+#include "classifySSVEP3.h"
 /*Additional Includes*/
 #include <jni.h>
 #include <android/log.h>
@@ -24,6 +26,34 @@
 static double argInit_real_T()
 {
     return 0.0;
+}
+
+extern "C" {
+JNIEXPORT jdouble JNICALL
+Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jClassifySSVEP3(
+        JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2) {
+    jdouble  *X1 = env->GetDoubleArrayElements(ch1, NULL);
+    jdouble  *X2 = env->GetDoubleArrayElements(ch2, NULL);
+    if (X1==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    if (X2==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    return classifySSVEP3(X1,X2,3.15);
+}
+}
+
+extern "C" {
+JNIEXPORT jdoubleArray JNICALL
+Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jConvoluteSignals(
+        JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2) {
+    jdouble  *X1 = env->GetDoubleArrayElements(ch1, NULL);
+    jdouble  *X2 = env->GetDoubleArrayElements(ch2, NULL);
+    if (X1==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    if (X2==NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    double Y[1998];
+    jdoubleArray m_result = env->NewDoubleArray(1998);
+    convoluteSignals(X1,X2,Y);
+    env->SetDoubleArrayRegion(m_result, 0, 1998, Y);
+    return m_result;
+}
 }
 
 extern "C" {
