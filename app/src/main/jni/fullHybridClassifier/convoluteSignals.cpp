@@ -27,8 +27,7 @@ static void ssvepcfilt2(const double X[1000], double Y[1000]);
 //                double C[1999]
 // Return Type  : void
 //
-static void conv(const double A[1000], const double B[1000], double C[1999])
-{
+static void conv(const double A[1000], const double B[1000], double C[1999]) {
   int jC;
   int jA2;
   double s;

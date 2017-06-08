@@ -434,7 +434,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     @Override
     public void onResume() {
         makeFilterSwitchVisible(true);
-        jmainInitialization(true);
+        jmainInitialization(false);
         String fileTimeStampConcat = "EEGSensorData_" + getTimeStamp();
         Log.d("onResume-timeStamp", fileTimeStampConcat);
         if (!fileSaveInitialized) {
@@ -802,10 +802,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mMediaBeep.start();
             }
             //Number of seconds!:
-            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (1.0 * mClassifierCounter)) {
+            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (2 * mClassifierCounter)) {
                 mClassifierCounter++;
-//                Log.e(TAG,"CALLING CLASSIFIER FUNCTION!");
                 ClassifyTask classifyTask = new ClassifyTask();
+                Log.e(TAG,"CALLING CLASSIFIER FUNCTION!");
                 classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //                classifyTask.execute();
             }
@@ -817,18 +817,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mSSVEPClassTextView.setText("C:[" + mEOGClass + "]");
             }
         });
-
-//        if(packetNumber_2ch%42 == 0) {
-//            double[] convolutedSignals = jConvoluteSignals(mGraphAdapterCh1.unfilteredSignal, mGraphAdapterCh2.unfilteredSignal);
-//            Log.e(TAG,"Convoluted Signals: "+Arrays.toString(convolutedSignals));
-//        }
-        //ERROR! Calling too many times!
-//        if (eeg_ch1_data_on && eeg_ch2_data_on) {
-//            if (packetNumber_2ch % 63 == 0) {
-//                ClassifyTask classifyTask = new ClassifyTask();
-//                classifyTask.execute();
-//            }
-//        }
 
 //        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
 //            packetNumber++;
@@ -866,9 +854,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         protected Double doInBackground(Void... voids) {
             double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
             double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-            double yclass = jClassifySSVEP3(getInstance1, getInstance2);
-//            double ch1 = jssvepclassifier1(getInstance);
-//            double ch1 = jssvepclassifier2(getInstance, 3.34);
+//            double yclass = jClassifySSVEP3(getInstance1, getInstance2);
+            double yclass = jClassifySSVEP4(getInstance1, getInstance2, 6.5);
             mNumberOfClassifierCalls++;
             Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
             return yclass;
@@ -1179,6 +1166,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public native double[] jConvoluteSignals(double[] a, double[] b);
 
     public native double jClassifySSVEP3(double[] a, double[] b);
+
+    public native double jClassifySSVEP4(double[] a, double[] b, double c);
 
     public native double jssvepclassifier1(double[] array);
 
