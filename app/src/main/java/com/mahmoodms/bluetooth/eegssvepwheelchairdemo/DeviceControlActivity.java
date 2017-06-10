@@ -854,8 +854,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         protected Double doInBackground(Void... voids) {
             double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
             double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-//            double yclass = jClassifySSVEP3(getInstance1, getInstance2);
-            double yclass = jClassifySSVEP4(getInstance1, getInstance2, 6.5);
+//            double yclass = jClassifySSVEP4(getInstance1, getInstance2, 6.5);
+            double yclass = jClassifySSVEP5(getInstance1, getInstance2, 3);
             mNumberOfClassifierCalls++;
             Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
             return yclass;
@@ -1169,8 +1169,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     public native double jClassifySSVEP4(double[] a, double[] b, double c);
 
-    public native double jssvepclassifier1(double[] array);
-
-    public native double jssvepclassifier2(double[] array, double threshold);
+    public native double jClassifySSVEP5(double[] a, double[] b, double c);
 
 }

@@ -2,33 +2,33 @@
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
 // government, commercial, or other organizational use.
-// File: classifySSVEP.h
+// File: classifySSVEP5.h
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 25-May-2017 13:10:49
+// C/C++ source code generated on  : 10-Jun-2017 00:27:00
 //
-#ifndef CLASSIFYSSVEP_H
-#define CLASSIFYSSVEP_H
+#ifndef CLASSIFYSSVEP5_H
+#define CLASSIFYSSVEP5_H
 
 // Include Files
-#include <cmath>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "omp.h"
-#include "classifySSVEP_types.h"
+#include "classifySSVEP5_types.h"
 
 // Function Declarations
-extern double classifySSVEP(const double X[1000], double thresholdFraction);
-extern void classifySSVEP_initialize();
-extern void classifySSVEP_terminate();
+extern double classifySSVEP5(const double X1[1000], const double X2[1000],
+  double thresholdFraction);
+extern void classifySSVEP5_initialize();
+extern void classifySSVEP5_terminate();
 
 #endif
 
 //
-// File trailer for classifySSVEP.h
+// File trailer for classifySSVEP5.h
 //
 // [EOF]
 //
