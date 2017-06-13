@@ -747,6 +747,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
 //                mPlotAdapter.adjustPlot(max, min);
 //            }
+            if(packetNumber_2ch%10==0) {
+                ClassifyTask classifyTask = new ClassifyTask();
+                Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
+                classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }
 //        mSecondsBetweenStimulus = Integer.valueOf(mEditDelayText.getText().toString());
         if (mSecondsBetweenStimulus !=0 && mGraphAdapterCh1.lastTimeValues != null) {
@@ -802,13 +807,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mMediaBeep.start();
             }
             //Number of seconds!:
-            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (2 * mClassifierCounter)) {
+            /*if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (1 * mClassifierCounter)) {
                 mClassifierCounter++;
                 ClassifyTask classifyTask = new ClassifyTask();
-                Log.e(TAG,"CALLING CLASSIFIER FUNCTION!");
+                Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
                 classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                classifyTask.execute();
-            }
+            }*/
         }
 
         runOnUiThread(new Runnable() {
@@ -854,8 +858,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         protected Double doInBackground(Void... voids) {
             double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
             double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-//            double yclass = jClassifySSVEP4(getInstance1, getInstance2, 6.5);
-            double yclass = jClassifySSVEP5(getInstance1, getInstance2, 3);
+            double yclass = jClassifySSVEP2(getInstance1, getInstance2, 2.5);
             mNumberOfClassifierCalls++;
             Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
             return yclass;
@@ -1163,12 +1166,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     public native int jmainInitialization(boolean b);
 
-    public native double[] jConvoluteSignals(double[] a, double[] b);
+//    public native double[] jConvoluteSignals(double[] a, double[] b);
 
-    public native double jClassifySSVEP3(double[] a, double[] b);
-
-    public native double jClassifySSVEP4(double[] a, double[] b, double c);
-
-    public native double jClassifySSVEP5(double[] a, double[] b, double c);
+    public native double jClassifySSVEP2(double[] a, double[] b, double c);
 
 }
