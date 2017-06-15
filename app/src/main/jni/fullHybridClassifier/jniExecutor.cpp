@@ -10,17 +10,22 @@
 #define  LOG_TAG "jniExecutor-cpp"
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-//TODO: Will need to pass all data (4 arrays), and length of array.
-// How do I get array length in C++?
-
 // Function Definitions
 
-//
-// Arguments    : void
-// Return Type  : double
-//
-static double argInit_real_T() {
-    return 0.0;
+extern "C" {
+JNIEXPORT jdoubleArray JNICALL
+Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jClassifySSVEP3(
+        JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2, jdouble threshold) {
+    jdouble *X1 = env->GetDoubleArrayElements(ch1, NULL);
+    jdouble *X2 = env->GetDoubleArrayElements(ch2, NULL);
+    double Y[2];
+    if (X1 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    if (X2 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
+    jdoubleArray m_result = env->NewDoubleArray(2);
+    classifySSVEP2(X1,X2,threshold,&Y[0],&Y[1]);
+    env->SetDoubleArrayRegion(m_result, 0, 2, Y);
+    return m_result;
+}
 }
 
 extern "C" {

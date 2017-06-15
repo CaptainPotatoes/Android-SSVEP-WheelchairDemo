@@ -1335,11 +1335,11 @@ static void fESSVEP(const double X0[1998], double Ppsd[5])
   //  plotData  = Plot Data
   // %%%% - Thresholds: - %%%%% - Original Frequencies
   for (i0 = 0; i0 < 2; i0++) {
-    threshPSD[5 * i0] = 9.0 + 3.0 * (double)i0;
-    threshPSD[1 + 5 * i0] = 14.0 + 1.5 * (double)i0;
-    threshPSD[2 + 5 * i0] = 16.1 + 1.0999999999999979 * (double)i0;
-    threshPSD[3 + 5 * i0] = 18.2 + 0.60000000000000142 * (double)i0;
-    threshPSD[4 + 5 * i0] = 19.7 + 0.5 * (double)i0;
+    threshPSD[5 * i0] = 9.0 + 3.0 * (double) i0;
+    threshPSD[1 + 5 * i0] = 14.0 + 1.5 * (double) i0;
+    threshPSD[2 + 5 * i0] = 16.1 + 1.0999999999999979 * (double) i0;
+    threshPSD[3 + 5 * i0] = 18.0 + 0.80000000000000071 * (double) i0;
+    threshPSD[4 + 5 * i0] = 19.6 + 0.59999999999999787 * (double) i0;
   }
 
   // %% - Constants - %%%
@@ -3591,8 +3591,7 @@ static void filter(double b[7], double a[7], const double x[1036], const double
   double dbuffer[7];
   int j;
   a1 = a[0];
-  if ((!((!rtIsInf(a[0])) && (!rtIsNaN(a[0])))) || (a[0] == 0.0) || (!(a[0] !=
-        1.0))) {
+  if ((!((!rtIsInf(a[0])) && (!rtIsNaN(a[0])))) || (a[0] == 0.0) || a[0] == 1.0) {
   } else {
     for (k = 0; k < 7; k++) {
       b[k] /= a1;

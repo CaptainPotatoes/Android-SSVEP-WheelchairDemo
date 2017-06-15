@@ -747,7 +747,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
 //                mPlotAdapter.adjustPlot(max, min);
 //            }
-            if(packetNumber_2ch%10==0) {
+            if(packetNumber_2ch%40==0) {
                 ClassifyTask classifyTask = new ClassifyTask();
                 Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
                 classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -858,9 +858,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         protected Double doInBackground(Void... voids) {
             double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
             double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-            double yclass = jClassifySSVEP2(getInstance1, getInstance2, 2.5);
+//            double yclass = jClassifySSVEP2(getInstance1, getInstance2, 2.5);
+            double Y[] = jClassifySSVEP3(getInstance1,getInstance2,2.0);
+            double yclass = Y[1];
             mNumberOfClassifierCalls++;
-            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
+            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + Arrays.toString(Y) + "]");
+//            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
             return yclass;
         }
 
@@ -1166,7 +1169,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     public native int jmainInitialization(boolean b);
 
-//    public native double[] jConvoluteSignals(double[] a, double[] b);
+    public native double[] jClassifySSVEP3(double[] a, double[] b, double c);
 
     public native double jClassifySSVEP2(double[] a, double[] b, double c);
 
