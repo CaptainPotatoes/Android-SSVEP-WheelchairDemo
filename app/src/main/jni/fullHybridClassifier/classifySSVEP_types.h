@@ -5,7 +5,7 @@
 // File: classifySSVEP_types.h
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 15-Jun-2017 12:44:14
+// C/C++ source code generated on  : 17-Jun-2017 14:03:52
 //
 #ifndef CLASSIFYSSVEP_TYPES_H
 #define CLASSIFYSSVEP_TYPES_H

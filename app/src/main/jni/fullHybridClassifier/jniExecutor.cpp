@@ -16,7 +16,7 @@
 extern "C" {
 JNIEXPORT jdoubleArray JNICALL
 Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jClassifySSVEP(
-        JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2, jdouble threshold) {
+        JNIEnv *env, jdoubleArray ch1, jdoubleArray ch2, jdouble threshold) {
     jdouble *X1 = env->GetDoubleArrayElements(ch1, NULL);
     jdouble *X2 = env->GetDoubleArrayElements(ch2, NULL);
     double Y[2];

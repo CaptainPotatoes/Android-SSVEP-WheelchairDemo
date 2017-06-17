@@ -5,7 +5,7 @@
 // File: classifySSVEP.cpp
 //
 // MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 15-Jun-2017 12:44:14
+// C/C++ source code generated on  : 17-Jun-2017 14:03:52
 //
 
 // Include Files
@@ -65,14 +65,11 @@ static void emxFree_int32_T(emxArray_int32_T **pEmxArray);
 static void emxFree_real_T(emxArray_real_T **pEmxArray);
 static void emxInit_int32_T(emxArray_int32_T **pEmxArray, int numDimensions);
 static void emxInit_real_T(emxArray_real_T **pEmxArray, int numDimensions);
-static void fESSVEP(const double X0[998], double Ppsd[5]);
+static void fPowerSpectrum(const double X0[998], double Ppsd[5]);
 static void fft(const double x[998], creal_T y[998]);
 static void filter(double b[7], double a[7], const double x[536], const double
                    zi[6], double y[536]);
 static void flipud(double x[536]);
-static void get_psd_features(const double f[499], const double PSD[499], const
-  double tH[2], emxArray_real_T *fselect, emxArray_real_T *PSDselect, double *L,
-  double *P);
 static double mean(const double x[998]);
 static void power(const double a[998], double y[998]);
 static void r2br_r2dit_trig(const creal_T x[1995], const double costab[1025],
@@ -344,10 +341,10 @@ static void emxInit_real_T(emxArray_real_T **pEmxArray, int numDimensions)
 //                double Ppsd[5]
 // Return Type  : void
 //
-static void fESSVEP(const double X0[998], double Ppsd[5])
+static void fPowerSpectrum(const double X0[998], double Ppsd[5])
 {
   double threshPSD[10];
-  int i0;
+  int ixstart;
   static const double window[998] = { 0.0, 9.9290567145415842E-6,
     3.9715832513387284E-5, 8.9359144378298172E-5, 0.00015885702066414931,
     0.00024820670117753352, 0.00035740463728634042, 0.0004864464920605327,
@@ -683,15 +680,19 @@ static void fESSVEP(const double X0[998], double Ppsd[5])
     9.9290567145415842E-6, 0.0 };
 
   double data_taper[998];
-  double a;
+  double mtmp;
   double b_X0[998];
   int i;
   creal_T Data_Block[998];
   double dv6[998];
   double Sf[499];
-  emxArray_real_T *fselect;
-  emxArray_real_T *psdselect;
-  double b_threshPSD[2];
+  emxArray_real_T *P1;
+  emxArray_int32_T *r1;
+  int n;
+  boolean_T bv0[499];
+  boolean_T bv1[499];
+  int ix;
+  boolean_T b0;
   static const double fPSD[499] = { 0.0, 0.250501002004008, 0.501002004008016,
     0.751503006012024, 1.002004008016032, 1.25250501002004, 1.503006012024048,
     1.7535070140280562, 2.0040080160320639, 2.2545090180360723, 2.50501002004008,
@@ -847,37 +848,23 @@ static void fESSVEP(const double X0[998], double Ppsd[5])
     123.74749498997996, 123.99799599198397, 124.24849699398797,
     124.49899799599199, 124.74949899799599 };
 
-  double d1;
+  boolean_T b1;
+  boolean_T exitg1;
 
   //  Fs        = Sampling Frequency;
   //  plotData  = Plot Data
   // %%%% - Thresholds: - %%%%%
-  for (i0 = 0; i0 < 2; i0++) {
-    threshPSD[5 * i0] = 9.0 + 3.0 * (double)i0;
-    threshPSD[1 + 5 * i0] = 14.0 + 1.5 * (double)i0;
-    threshPSD[2 + 5 * i0] = 16.1 + 1.0999999999999979 * (double)i0;
-    threshPSD[3 + 5 * i0] = 18.0 + 0.80000000000000071 * (double)i0;
-    threshPSD[4 + 5 * i0] = 19.4 + 0.80000000000000071 * (double)i0;
+  for (ixstart = 0; ixstart < 2; ixstart++) {
+    threshPSD[5 * ixstart] = 9.0 + 3.0 * (double)ixstart;
+    threshPSD[1 + 5 * ixstart] = 14.0 + 1.5 * (double)ixstart;
+    threshPSD[2 + 5 * ixstart] = 16.1 + 1.0999999999999979 * (double)ixstart;
+    threshPSD[3 + 5 * ixstart] = 18.0 + 0.80000000000000071 * (double)ixstart;
+    threshPSD[4 + 5 * ixstart] = 19.4 + (double)ixstart;
   }
 
   // %% - Constants - %%%
   // select dot color;
   //  - Variables - %
-  // get_fft_data:
-  //  X is filtered data
-  //  L = size(X,1);
-  //  L = number of FFT points
-  // % TEMP : ONLY FOR EVEN SIZED ARRAYS:
-  //  C = zeros(1,(L/2+1));
-  // {
-  // if mod(L,2) == 0
-  //     C = B(1:(L/2+1));
-  //     C(2:end-1) = 2*C(2:end-1);
-  // elseif mod(L,2) == 1
-  //     C = B(1:(L/2+0.5));
-  //     C(2:end-1) = 2*C(2:end-1);
-  // end
-  // }
   //  if size(signals,2) > size(signals,1)
   //      signals = signals.';
   //  end
@@ -922,11 +909,11 @@ static void fESSVEP(const double X0[998], double Ppsd[5])
   // ORIGINAL
   //  S = zeros(ceil(block_samples/2),number_of_signals.^2);
   //  Retrieve current data block
-  a = mean(X0);
+  mtmp = mean(X0);
 
   // Taper it
   for (i = 0; i < 998; i++) {
-    b_X0[i] = (X0[i] - a) * data_taper[i];
+    b_X0[i] = (X0[i] - mtmp) * data_taper[i];
   }
 
   fft(b_X0, Data_Block);
@@ -946,64 +933,113 @@ static void fESSVEP(const double X0[998], double Ppsd[5])
   //  P(:,c) = Data_Block(:,aa).*conj(Data_Block(:,b)); % THIS IS THE ORIGINAL LINE 
   //  Sum the spectrums up ...
   power(window, dv6);
-  a = sum(dv6) * 250.0;
+  mtmp = sum(dv6) * 250.0;
 
   //  Average them out
   //  for a = 1:sensors
   for (i = 0; i < 499; i++) {
     Sf[i] = (Data_Block[i].re * Data_Block[i].re - Data_Block[i].im *
-             -Data_Block[i].im) * 2.0 / a;
+             -Data_Block[i].im) * 2.0 / mtmp;
   }
 
   //  end
   //  clear S
   Sf[0] = (Sf[0] + Sf[0]) - Sf[0];
-  emxInit_real_T(&fselect, 2);
-  emxInit_real_T(&psdselect, 2);
+  emxInit_real_T(&P1, 2);
+  emxInit_int32_T(&r1, 2);
   for (i = 0; i < 5; i++) {
-    for (i0 = 0; i0 < 2; i0++) {
-      b_threshPSD[i0] = threshPSD[i + 5 * i0];
+    //
+    // selectPSD
+    n = 0;
+    for (ix = 0; ix < 499; ix++) {
+      b0 = (fPSD[ix] >= threshPSD[i]);
+      b1 = (fPSD[ix] <= threshPSD[5 + i]);
+      if (b0 && b1) {
+        n++;
+      }
+
+      bv0[ix] = b0;
+      bv1[ix] = b1;
     }
 
-    get_psd_features(fPSD, Sf, b_threshPSD, fselect, psdselect, &a, &d1);
-    Ppsd[i] = d1;
+    if (n > 2) {
+      n = 0;
+      for (ix = 0; ix < 499; ix++) {
+        if (bv0[ix] && bv1[ix]) {
+          n++;
+        }
+      }
+
+      ixstart = r1->size[0] * r1->size[1];
+      r1->size[0] = 1;
+      r1->size[1] = n;
+      emxEnsureCapacity((emxArray__common *)r1, ixstart, (int)sizeof(int));
+      ixstart = 0;
+      for (ix = 0; ix < 499; ix++) {
+        if (bv0[ix] && bv1[ix]) {
+          r1->data[ixstart] = ix + 1;
+          ixstart++;
+        }
+      }
+
+      ixstart = 1;
+      n = r1->size[1];
+      mtmp = Sf[r1->data[0] - 1];
+      if (r1->size[1] > 1) {
+        if (rtIsNaN(mtmp)) {
+          ix = 2;
+          exitg1 = false;
+          while ((!exitg1) && (ix <= n)) {
+            ixstart = ix;
+            if (!rtIsNaN(Sf[r1->data[r1->size[0] * (ix - 1)] - 1])) {
+              mtmp = Sf[r1->data[r1->size[0] * (ix - 1)] - 1];
+              exitg1 = true;
+            } else {
+              ix++;
+            }
+          }
+        }
+
+        if (ixstart < r1->size[1]) {
+          while (ixstart + 1 <= n) {
+            if (Sf[r1->data[r1->size[0] * ixstart] - 1] > mtmp) {
+              mtmp = Sf[r1->data[r1->size[0] * ixstart] - 1];
+            }
+
+            ixstart++;
+          }
+        }
+      }
+
+      ixstart = P1->size[0] * P1->size[1];
+      P1->size[0] = 1;
+      P1->size[1] = 1;
+      emxEnsureCapacity((emxArray__common *)P1, ixstart, (int)sizeof(double));
+      P1->data[0] = mtmp;
+
+      //      [P1,L1] = findpeaks(PSDselect,'SortStr','descend');
+    } else {
+      ixstart = P1->size[0] * P1->size[1];
+      P1->size[0] = 0;
+      P1->size[1] = 0;
+      emxEnsureCapacity((emxArray__common *)P1, ixstart, (int)sizeof(double));
+    }
+
+    if (!((P1->size[0] == 0) || (P1->size[1] == 0))) {
+      mtmp = P1->data[0];
+    } else {
+      mtmp = 0.0;
+    }
+
+    Ppsd[i] = mtmp;
   }
 
-  emxFree_real_T(&psdselect);
-  emxFree_real_T(&fselect);
+  emxFree_int32_T(&r1);
+  emxFree_real_T(&P1);
 
-  //  STFT:
-  //  function: [S, F, T] = stft(x, wlen, h, nfft, fs)
-  //  x - signal in the time domain
-  //  wlen - length of the hamming window
-  //  h - hop size
-  //  nfft - number of FFT points
-  //  fs - sampling frequency, Hz
-  //  F - frequency vector, Hz
-  //  T - time vector, S
-  //  S - STFT matrix (only unique points, time across columns, freq across rows) 
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  //               Short-Time Fourier Transform            %
-  //                with MATLAB Implementation             %
-  //                                                       %
-  //  Author: M.Sc. Eng. Hristo Zhivomirov       12/21/13  %
-  //  Edited by: Musa Mahmood                    02/17/17  %
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  //  represent x as column-vector if it is not x = x(:);
-  //  if size(x, 2) > 1
-  //      x = x';
+  //  if plotData
+  //      figure(13); hold on; plot(Lpsd, Ppsd, '*');
   //  end
-  //  length of the signal
-  //  form the stft matrix
-  //  calculate the total number of rows
-  //  calculate the total number of columns
-  //  form the stft matrix
-  // Correct way to perform STFT:
-  //  calculate the time and frequency vectors
-  //  Select Relevant Part of Signal:
-  // %Convolution Amplification:
-  //  P = zeros(1,70);
-  //  SSVEP_FEATURES = [Pfft,Ppsd,Pstft];
 }
 
 //
@@ -2140,195 +2176,6 @@ static void flipud(double x[536])
 }
 
 //
-// Arguments    : const double f[499]
-//                const double PSD[499]
-//                const double tH[2]
-//                emxArray_real_T *fselect
-//                emxArray_real_T *PSDselect
-//                double *L
-//                double *P
-// Return Type  : void
-//
-static void get_psd_features(const double f[499], const double PSD[499], const
-  double tH[2], emxArray_real_T *fselect, emxArray_real_T *PSDselect, double *L,
-  double *P)
-{
-  int ixstart;
-  boolean_T bv0[499];
-  boolean_T bv1[499];
-  int n;
-  boolean_T b0;
-  boolean_T b1;
-  emxArray_real_T *P1;
-  emxArray_real_T *L1;
-  emxArray_int32_T *r1;
-  double mtmp;
-  int itmp;
-  int ix;
-  boolean_T exitg1;
-
-  // selectPSD
-  ixstart = 0;
-  for (n = 0; n < 499; n++) {
-    b0 = (f[n] >= tH[0]);
-    b1 = (f[n] <= tH[1]);
-    if (b0 && b1) {
-      ixstart++;
-    }
-
-    bv0[n] = b0;
-    bv1[n] = b1;
-  }
-
-  n = fselect->size[0] * fselect->size[1];
-  fselect->size[0] = 1;
-  fselect->size[1] = ixstart;
-  emxEnsureCapacity((emxArray__common *)fselect, n, (int)sizeof(double));
-  ixstart = 0;
-  for (n = 0; n < 499; n++) {
-    if (bv0[n] && bv1[n]) {
-      fselect->data[ixstart] = f[n];
-      ixstart++;
-    }
-  }
-
-  ixstart = 0;
-  for (n = 0; n < 499; n++) {
-    if (bv0[n] && bv1[n]) {
-      ixstart++;
-    }
-  }
-
-  n = PSDselect->size[0] * PSDselect->size[1];
-  PSDselect->size[0] = 1;
-  PSDselect->size[1] = ixstart;
-  emxEnsureCapacity((emxArray__common *)PSDselect, n, (int)sizeof(double));
-  ixstart = 0;
-  for (n = 0; n < 499; n++) {
-    if (bv0[n] && bv1[n]) {
-      PSDselect->data[ixstart] = PSD[n];
-      ixstart++;
-    }
-  }
-
-  ixstart = 0;
-  for (n = 0; n < 499; n++) {
-    if (bv0[n] && bv1[n]) {
-      ixstart++;
-    }
-  }
-
-  emxInit_real_T(&P1, 2);
-  emxInit_real_T(&L1, 2);
-  emxInit_int32_T(&r1, 2);
-  if (ixstart > 2) {
-    ixstart = 0;
-    for (n = 0; n < 499; n++) {
-      if (bv0[n] && bv1[n]) {
-        ixstart++;
-      }
-    }
-
-    n = r1->size[0] * r1->size[1];
-    r1->size[0] = 1;
-    r1->size[1] = ixstart;
-    emxEnsureCapacity((emxArray__common *)r1, n, (int)sizeof(int));
-    ixstart = 0;
-    for (n = 0; n < 499; n++) {
-      if (bv0[n] && bv1[n]) {
-        r1->data[ixstart] = n + 1;
-        ixstart++;
-      }
-    }
-
-    ixstart = 1;
-    n = r1->size[1];
-    mtmp = PSD[r1->data[0] - 1];
-    itmp = 1;
-    if (r1->size[1] > 1) {
-      if (rtIsNaN(mtmp)) {
-        ix = 2;
-        exitg1 = false;
-        while ((!exitg1) && (ix <= n)) {
-          ixstart = ix;
-          if (!rtIsNaN(PSD[r1->data[r1->size[0] * (ix - 1)] - 1])) {
-            mtmp = PSD[r1->data[r1->size[0] * (ix - 1)] - 1];
-            itmp = ix;
-            exitg1 = true;
-          } else {
-            ix++;
-          }
-        }
-      }
-
-      if (ixstart < r1->size[1]) {
-        while (ixstart + 1 <= n) {
-          if (PSD[r1->data[r1->size[0] * ixstart] - 1] > mtmp) {
-            mtmp = PSD[r1->data[r1->size[0] * ixstart] - 1];
-            itmp = ixstart + 1;
-          }
-
-          ixstart++;
-        }
-      }
-    }
-
-    n = P1->size[0] * P1->size[1];
-    P1->size[0] = 1;
-    P1->size[1] = 1;
-    emxEnsureCapacity((emxArray__common *)P1, n, (int)sizeof(double));
-    P1->data[0] = mtmp;
-    n = L1->size[0] * L1->size[1];
-    L1->size[0] = 1;
-    L1->size[1] = 1;
-    emxEnsureCapacity((emxArray__common *)L1, n, (int)sizeof(double));
-    L1->data[0] = itmp;
-
-    //      [P1,L1] = findpeaks(PSDselect,'SortStr','descend');
-  } else {
-    n = P1->size[0] * P1->size[1];
-    P1->size[0] = 0;
-    P1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)P1, n, (int)sizeof(double));
-    n = L1->size[0] * L1->size[1];
-    L1->size[0] = 0;
-    L1->size[1] = 0;
-    emxEnsureCapacity((emxArray__common *)L1, n, (int)sizeof(double));
-  }
-
-  if (!((P1->size[0] == 0) || (P1->size[1] == 0))) {
-    ixstart = 0;
-    for (n = 0; n < 499; n++) {
-      if (bv0[n] && bv1[n]) {
-        ixstart++;
-      }
-    }
-
-    n = r1->size[0] * r1->size[1];
-    r1->size[0] = 1;
-    r1->size[1] = ixstart;
-    emxEnsureCapacity((emxArray__common *)r1, n, (int)sizeof(int));
-    ixstart = 0;
-    for (n = 0; n < 499; n++) {
-      if (bv0[n] && bv1[n]) {
-        r1->data[ixstart] = n + 1;
-        ixstart++;
-      }
-    }
-
-    *L = f[r1->data[r1->size[0] * ((int)L1->data[0] - 1)] - 1];
-    *P = P1->data[0];
-  } else {
-    *L = 0.0;
-    *P = 0.0;
-  }
-
-  emxFree_int32_T(&r1);
-  emxFree_real_T(&L1);
-  emxFree_real_T(&P1);
-}
-
-//
 // Arguments    : const double x[998]
 // Return Type  : double
 //
@@ -2612,10 +2459,10 @@ void classifySSVEP(const double X1[1000], const double X2[1000], double
   double e_y[536];
   double f_y[536];
   double conv2ch[999];
-  double Ppsd[5];
   int jA2;
-  int itmp;
+  double Ppsd[5];
   int k;
+  int itmp;
   boolean_T exitg1;
   int trueCount;
   emxArray_real_T *b;
@@ -2720,7 +2567,7 @@ void classifySSVEP(const double X1[1000], const double X2[1000], double
     conv2ch[ixstart] = s;
   }
 
-  fESSVEP(*(double (*)[998])&conv2ch[0], Ppsd);
+  fPowerSpectrum(*(double (*)[998])&conv2ch[0], Ppsd);
   ixstart = 1;
   s = Ppsd[0];
   itmp = 1;
