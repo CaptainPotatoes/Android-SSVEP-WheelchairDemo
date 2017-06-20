@@ -806,13 +806,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 Log.e(TAG,"Notify: Switching Signal!!!");
                 mMediaBeep.start();
             }
-            //Number of seconds!:
-            /*if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (1 * mClassifierCounter)) {
-                mClassifierCounter++;
-                ClassifyTask classifyTask = new ClassifyTask();
-                Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
-                classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }*/
         }
 
         runOnUiThread(new Runnable() {
@@ -859,11 +852,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
             double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
             double Y[] = jClassifySSVEP(getInstance1,getInstance2,1.5);
-//            double Y2[] = jClassifySSVEP3(getInstance1,getInstance2,1.5);
             double yclass = Y[1];
             mNumberOfClassifierCalls++;
             Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + Arrays.toString(Y) + "]");
-//            Log.e(TAG, "Classifier Output: [#" + String.valueOf(mNumberOfClassifierCalls) + "::" + String.valueOf(yclass) + "]");
             return yclass;
         }
 
@@ -1170,9 +1161,5 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public native int jmainInitialization(boolean b);
 
     public native double[] jClassifySSVEP(double[] a, double[] b, double c);
-
-    public native double jClassifySSVEP2(double[] a, double[] b, double c);
-
-    public native double[] jClassifySSVEP3(double[] a, double[] b, double c);
 
 }
