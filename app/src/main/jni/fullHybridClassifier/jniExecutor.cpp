@@ -1,6 +1,7 @@
 //
 // Created by mahmoodms on 4/3/2017.
 //
+
 #include "rt_nonfinite.h"
 #include "classifySSVEP.h"
 /*Additional Includes*/

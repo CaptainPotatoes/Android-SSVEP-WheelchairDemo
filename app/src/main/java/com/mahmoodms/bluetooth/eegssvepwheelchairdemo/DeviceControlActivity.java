@@ -103,7 +103,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private boolean mTimerEnabled = false;
 
     //Data Variables:
-    private int batteryWarning = 20;//%
+    private int batteryWarning = 20;//
     private String fileTimeStamp = "";
     private double dataRate;
     private double mEOGClass = 0;
@@ -747,7 +747,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
 //                mPlotAdapter.adjustPlot(max, min);
 //            }
-            if(packetNumber_2ch%10==0) {
+            if(packetNumber_2ch%10==0) { //Every x * 6 data points
                 ClassifyTask classifyTask = new ClassifyTask();
                 Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
                 classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -815,19 +815,18 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             }
         });
 
-//        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
-//            packetNumber++;
-//            mEEGConnected = true;
-//            eeg_ch1_data_on = false;
-//            eeg_ch2_data_on = false;
-//            eeg_ch3_data_on = false;
-//            eeg_ch4_data_on = false;
-//            for (int i = 0; i < 6; i++) {
-//                writeToDisk24(mGraphAdapterCh1.lastDataValues[i],mGraphAdapterCh2.lastDataValues[i],
-//                        mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
-////                resetClass();
-//            }
-//        }
+        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
+            packetNumber++;
+            mEEGConnected = true;
+            eeg_ch1_data_on = false;
+            eeg_ch2_data_on = false;
+            eeg_ch3_data_on = false;
+            eeg_ch4_data_on = false;
+            for (int i = 0; i < 6; i++) {
+                writeToDisk24(mGraphAdapterCh1.lastDataValues[i],mGraphAdapterCh2.lastDataValues[i],
+                        mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
+            }
+        }
     }
 
     private double findGraphMax(SimpleXYSeries s) {
@@ -859,16 +858,17 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
 
         @Override
-        protected void onPostExecute(Double aDouble) {
-            mClassifiedSSVEPClass = aDouble;
-            final String s = "SSVEP\n: [" + String.valueOf(aDouble) + "]";
+        protected void onPostExecute(Double predictedClass) {
+            mClassifiedSSVEPClass = predictedClass;
+            final String s = "SSVEP\n: [" + String.valueOf(predictedClass) + "]";
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mYfitTextView.setText(s);
                 }
             });
-            super.onPostExecute(aDouble);
+            executeWheelchairCommand((int)mClassifiedSSVEPClass);
+            super.onPostExecute(predictedClass);
         }
     }
 
@@ -887,6 +887,33 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
+    private void executeWheelchairCommand(int command) {
+        byte[] bytes = new byte[1];
+        switch (command) {
+            case 0:
+                bytes[0] = (byte) 0x00;
+                break;
+            case 1:
+                bytes[0] = (byte) 0x01; //Stop
+                break;
+            case 2:
+                bytes[0] = (byte) 0xF0; //?
+                break;
+            case 3:
+                bytes[0] = (byte) 0x0F;
+                break;
+            case 4:
+                bytes[0] = (byte) 0xFF;
+                // TODO: 6/27/2017 Disconnect instead of reverse?
+                break;
+            default:
+                break;
+        }
+        if (mLedService != null) {
+            mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
+        }
+    }
+
     private void processClassifiedData(final double Y, final int classifier) {
         //Add to end;
         yfitarray[4] = Y;
@@ -901,47 +928,18 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 executeWheelchairCommand((int) yfitarray[4]);
             }
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.e(TAG, "EOGClassifier, Y: " + String.valueOf(Y));
-                if (checkLastThreeMatches)
-                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
-                double sum = yfitarray[0] + yfitarray[1] + yfitarray[2] + yfitarray[3] + yfitarray[4];
-                if (sum == 0) {
-                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
-                }
-            }
-        });
-    }
-
-    private void executeWheelchairCommand(int command) {
-        byte[] bytes = new byte[1];
-        switch (command) {
-            case 1:
-                bytes[0] = (byte) 0x00;
-                break;
-            case 2:
-                bytes[0] = (byte) 0x00;
-                break;
-            case 3:
-                bytes[0] = (byte) 0x01;
-                break;
-            case 4:
-                bytes[0] = (byte) 0x0F;
-                break;
-            case 5:
-                bytes[0] = (byte) 0xF0;
-                break;
-            case 6:
-                bytes[0] = (byte) 0xF0;
-                break;
-            default:
-                break;
-        }
-        if (mLedService != null) {
-            mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-        }
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.e(TAG, "EOGClassifier, Y: " + String.valueOf(Y));
+//                if (checkLastThreeMatches)
+//                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
+//                double sum = yfitarray[0] + yfitarray[1] + yfitarray[2] + yfitarray[3] + yfitarray[4];
+//                if (sum == 0) {
+//                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
+//                }
+//            }
+//        });
     }
 
     private void writeToDisk24(final double ch1, final double ch2, final double ch3, final double ch4) {
