@@ -43,6 +43,7 @@ public final class AppConstant {
      * For EEG:
      */
     public static final UUID SERVICE_EEG_SIGNAL = UUID.fromString("228beef0-35fd-875f-39fe-b2a394d28057");
+    public static final UUID SERVICE_EEG_GENERIC = UUID.fromString("0000eef0-0000-1000-8000-00805f9b34fb");
     //Characteristic:
     public static final UUID CHAR_EEG_CH1_SIGNAL = UUID.fromString("0000eef1-0000-1000-8000-00805f9b34fb");
     public static final UUID CHAR_EEG_CH2_SIGNAL = UUID.fromString("0000eef2-0000-1000-8000-00805f9b34fb");

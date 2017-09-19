@@ -60,6 +60,7 @@ public class XYPlotAdapter {
         this.xyPlot.getTitleWidget().getLabelPaint().setTextSize(20);
         this.xyPlot.getTitleWidget().getLabelPaint().setColor(Color.BLACK);
         this.xyPlot.setRangeBoundaries(-0.004, 0.004, BoundaryMode.AUTO);
+        this.xyPlot.setRangeStep(XYStepMode.SUBDIVIDE, 5.0);
         this.currentYBoundaryMode = BoundaryMode.AUTO;
     }
     

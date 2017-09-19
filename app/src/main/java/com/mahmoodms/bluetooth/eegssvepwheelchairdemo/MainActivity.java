@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 
     public final static String INTENT_DEVICES_KEY = "DEVICES_TO_PARSE";
     public final static String INTENT_DEVICES_NAMES = "DEVICE_NAMES_TO_PARSE";
-    public final static String INTENT_DELAY_LENGTH = "DELAY_VALUE_SECONDS";
+    public final static String INTENT_TRAINING_STIMULUS = "DELAY_VALUE_SECONDS";
 
     EditText mEditDelayText;
 
@@ -131,12 +131,12 @@ public class MainActivity extends Activity {
                     if(mDeviceAddressesMAC != null) {
                         String[] selectedDeviceArray = mDeviceAddressesMAC.toArray(new String[0]);
                         String[] selectedDeviceNames = mDeviceNames.toArray(new String[0]);
-                        String[] selectedStimulusDelay = new String[1];
-                        selectedStimulusDelay[0] = mEditDelayText.getText().toString();
+                        String[] selectedStimulus = new String[1];
+                        selectedStimulus[0] = mEditDelayText.getText().toString();
                         final Intent intent = new Intent(MainActivity.this, DeviceControlActivity.class);
                         intent.putExtra(INTENT_DEVICES_KEY,selectedDeviceArray);
                         intent.putExtra(INTENT_DEVICES_NAMES,selectedDeviceNames);
-                        intent.putExtra(INTENT_DELAY_LENGTH,selectedStimulusDelay);
+                        intent.putExtra(INTENT_TRAINING_STIMULUS,selectedStimulus);
                         startActivity(intent);
                     } else {
                         Toast.makeText(MainActivity.this, "No Devices Selected!", Toast.LENGTH_SHORT).show();

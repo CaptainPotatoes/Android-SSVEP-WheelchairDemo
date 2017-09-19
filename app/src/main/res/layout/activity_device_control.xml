@@ -48,6 +48,13 @@
             android:layout_weight="1"
             android:text="TextView" />
 
+        <Button
+            android:id="@+id/resetActivityButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:text="Reset Activity" />
+
         <TextView
             android:id="@+id/batteryText"
             android:layout_width="wrap_content"
