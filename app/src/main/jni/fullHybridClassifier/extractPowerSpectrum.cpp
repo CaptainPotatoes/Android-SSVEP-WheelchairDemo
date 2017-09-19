@@ -31,7 +31,7 @@ static void repmat(const double a[998], double b[998]);
 static void ssvepcfilt2(const double X[500], double Y[500]);
 static double sum(const double x[998]);
 static void welch_psd(const double signals[998], double fs, const double window
-                      [998], double CSM[499], double frequencies[499]);
+                      [998], double CSM[499]);
 
 // Function Definitions
 
@@ -1653,9 +1653,7 @@ static double sum(const double x[998])
 //                double frequencies[499]
 // Return Type  : void
 //
-static void welch_psd(const double signals[998], double fs, const double window
-                      [998], double CSM[499], double frequencies[499])
-{
+static void welch_psd(const double signals[998], double fs, const double window [998], double CSM[499]) {
   int i;
   double data_taper[998];
   double a;
@@ -1696,10 +1694,6 @@ static void welch_psd(const double signals[998], double fs, const double window
   //  [1] Trobs,M.; Heinzel,G. "Improved spectrum estimation from digitized
   //  time series on a logarithmic frequency axis"
   //  doi:10.1016/j.measurement.2005.10.010
-  for (i = 0; i < 499; i++) {
-    frequencies[i] = (double)i * fs / 998.0;
-  }
-
   // must be even, best if 2^n
   // ORIGINAL;
   repmat(window, data_taper);
@@ -2092,13 +2086,13 @@ void extractPowerSpectrum(const double X1[500], const double X2[500], double
     0.00015885702066414931, 8.9359144378298172E-5, 3.9715832513387284E-5,
     9.9290567145415842E-6, 0.0 };
 
-  double fPSD[499];
+//  double fPSD[499];
   ssvepcfilt2(X1, fch1);
 
   // [5 40]
   ssvepcfilt2(X2, fch2);
   conv(fch1, fch2, conv2ch);
-  welch_psd(*(double (*)[998])&conv2ch[0], 250.0, dv0, PSD, fPSD);
+  welch_psd(*(double (*)[998])&conv2ch[0], 250.0, dv0, PSD);
 }
 
 //

@@ -32,13 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
-            android:text="ToggleButton" />
-
-        <ToggleButton
-            android:id="@+id/toggleButtonCh4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
+            android:checked="true"
             android:text="ToggleButton" />
 
         <TextView
@@ -75,7 +69,37 @@
         >
 
         <com.androidplot.xy.XYPlot
-            android:id="@+id/eegPlot"
+            android:id="@+id/eegTimeDomainXYPlot"
+            style="@style/APDefacto.Dark"
+            androidPlot.backgroundPaint.color="#FFFFFF"
+            androidPlot.borderPaint.color="#FFFFFF"
+            androidPlot.domainLabel="Domain"
+            androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
+            androidPlot.graphWidget.backgroundPaint.color="#FFFFFF"
+            androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+            androidPlot.graphWidget.gridBackgroundPaint.color="#fafafa"
+            androidPlot.graphWidget.marginBottom="14dp"
+            androidPlot.graphWidget.marginLeft="10dp"
+            androidPlot.graphWidget.marginRight="0dp"
+            androidPlot.graphWidget.marginTop="12dp"
+            androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
+            androidPlot.rangeLabel="Range"
+            androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
+            androidPlot.title="EEG Data Plot"
+            androidPlot.titleWidget.labelPaint.textSize="@dimen/title_font_size"
+            androidplot.renderMode="use_background_thread"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="0.4"
+            ap:domainLabel="domain"
+            ap:label="EMG Data"
+            ap:rangeLabel="range" />
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/frequencyAnalysisXYPlot"
             style="@style/APDefacto.Dark"
             androidPlot.backgroundPaint.color="#FFFFFF"
             androidPlot.borderPaint.color="#FFFFFF"
@@ -105,92 +129,6 @@
             ap:rangeLabel="range" />
 
 
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6">
-
-            <Button
-                android:id="@+id/buttonDB"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="2"
-                android:layout_row="0"
-                android:text="2x Blink"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-            <Button
-                android:id="@+id/buttonUp"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="1"
-                android:layout_row="0"
-                android:text="↑\nFwd"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <TextView
-                android:id="@+id/eegClassTextView"
-                android:layout_width="72dp"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_row="2"
-                android:text="TextView" />
-
-            <Button
-                android:id="@+id/buttonMiddle"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="1"
-                android:layout_row="1"
-                android:text="Middle"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <Button
-                android:id="@+id/buttonDown"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="1"
-                android:layout_row="2"
-                android:text="Down\n↓"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <Button
-                android:id="@+id/buttonLeft"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="0"
-                android:layout_row="1"
-                android:text="←Left"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <Button
-                android:id="@+id/buttonRight"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="2"
-                android:layout_row="1"
-                android:text="Right→"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <Button
-                android:id="@+id/buttonSB"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_column="0"
-                android:layout_row="0"
-                android:text="\nBlink"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-            <TextView
-                android:id="@+id/textViewYfit"
-                android:layout_width="72dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_row="2"
-                android:text="Yfit:" />
-
-
-        </GridLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -207,24 +145,18 @@
             android:textColor="#000000" />
 
         <Switch
-            android:id="@+id/filterSwitch"
+            android:id="@+id/domainSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:text="Filter:" />
+            android:text="Time Domain:" />
 
         <TextView
-            android:id="@+id/eegValue"
-            android:layout_width="wrap_content"
+            android:id="@+id/eegClassTextView"
+            android:layout_width="72dp"
             android:layout_height="wrap_content"
-            android:text="Current Value"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/allChannelsEnabledText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="2"
             android:layout_weight="1"
             android:text="TextView" />
 
@@ -234,6 +166,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="ToggleButton" />
+
+        <TextView
+            android:id="@+id/textViewYfit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:layout_row="2"
+            android:layout_weight="1"
+            android:text="Yfit:" />
 
     </LinearLayout>
 

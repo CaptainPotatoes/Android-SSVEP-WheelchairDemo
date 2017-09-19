@@ -36,7 +36,6 @@ import android.widget.ToggleButton;
 
 import com.androidplot.Plot;
 import com.androidplot.util.Redrawer;
-import com.androidplot.xy.SimpleXYSeries;
 import com.beele.BluetoothLe;
 import com.opencsv.CSVWriter;
 
@@ -46,55 +45,53 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by mahmoodms on 5/31/2016.
+ * Android Activity for Controlling Bluetooth LE Device Connectivity
  */
 
 public class DeviceControlActivity extends Activity implements BluetoothLe.BluetoothLeListener {
+    public static final String HZ = "0 Hz";
     // Graphing Variables:
     private GraphAdapter mGraphAdapterCh1;
     private GraphAdapter mGraphAdapterCh2;
-    private GraphAdapter mGraphAdapterCh3;
-    private GraphAdapter mGraphAdapterCh4;
-    public XYPlotAdapter mPlotAdapter;
+    private GraphAdapter mGraphAdaptercPSDA;
+    public XYPlotAdapter mTimeDomainPlotAdapter;
+    public XYPlotAdapter mFreqDomainPlotAdapter;
     public static Redrawer redrawer;
-    private boolean plotImplicitXVals = false;
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
-
+    //Refactored Data Channel Classes
+    DataChannel mCh1;// = new DataChannel(false, mMSBFirst);
+    DataChannel mCh2;// = new DataChannel(false, mMSBFirst);
+    boolean mMSBFirst = false;
     //LocalVars
     private String mDeviceName;
     private String mDeviceAddress;
     private boolean mConnected;
     //Class instance variable
     private BluetoothLe mBluetoothLe;
-    private BluetoothManager mBluetoothManager = null;
     //Connecting to Multiple Devices
     private String[] deviceMacAddresses = null;
-    private BluetoothDevice[] mBluetoothDeviceArray = null;
     private BluetoothGatt[] mBluetoothGattArray = null;
     private BluetoothGattService mLedWheelchairControlService = null;
     private int mWheelchairGattIndex;
 
-    //    private boolean mEOGConnected = false;
-    private boolean mEEGConnected = false;
     private boolean mEEGConnected_2ch = false;
 
     //Layout - TextViews and Buttons
-    private TextView mEegValsTextView;
     private TextView mBatteryLevel;
     private TextView mDataRate;
-    private TextView mAllChannelsReadyTextView;
     private TextView mSSVEPClassTextView;
     private TextView mYfitTextView;
     private Button mExportButton;
-    private Switch mFilterSwitch;
+    private Switch mDomainSwitch;
     private long mLastTime;
-    private long mCurrentTime;
     private long mClassTime; //DON'T DELETE!!!
+    private double[] fPSD; //DON'T DELETE!!!
 
-
-    private boolean filterData = false;
+    private boolean mFrequencyDomain = false;
     private int points = 0;
     private Menu menu;
 
@@ -105,11 +102,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     //Data Variables:
     private int batteryWarning = 20;//
-    private String fileTimeStamp = "";
     private double dataRate;
     private double mSSVEPClass = 0;
-    private double mClassifiedSSVEPClass = 0;
-    private int mLastButtonPress = 0;
 
     //Classification
     private boolean mWheelchairControl = false; //Default classifier.
@@ -143,13 +137,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         //Flag to keep screen on (stay-awake):
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Set up TextViews
-        mEegValsTextView = (TextView) findViewById(R.id.eegValue);
         mExportButton = (Button) findViewById(R.id.button_export);
-        mFilterSwitch = (Switch) findViewById(R.id.filterSwitch);
+        mDomainSwitch = (Switch) findViewById(R.id.domainSwitch);
         mBatteryLevel = (TextView) findViewById(R.id.batteryText);
         mDataRate = (TextView) findViewById(R.id.dataRate);
-        mAllChannelsReadyTextView = (TextView) findViewById(R.id.allChannelsEnabledText);
-        mAllChannelsReadyTextView.setText("  Waiting For EOG Device.");
+//        mAllChannelsReadyTextView = (TextView) findViewById(R.id.allChannelsEnabledText);
+//        mAllChannelsReadyTextView.setText("  Waiting For EOG Device.");
         mDataRate.setText("...");
         mYfitTextView = (TextView) findViewById(R.id.textViewYfit);
         //Initialize Bluetooth
@@ -158,27 +151,24 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         ab.setSubtitle(mDeviceAddress);
         initializeBluetoothArray();
         // Initialize our XYPlot reference:
-        mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, false, Color.BLUE); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, false, Color.RED); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh3 = new GraphAdapter(1000, "EEG Data Ch 3", false, false, Color.DKGRAY); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdapterCh4 = new GraphAdapter(1000, "EEG Data Ch 4", false, false, Color.GREEN); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, Color.BLUE, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, Color.RED, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
+        mGraphAdaptercPSDA = new GraphAdapter(1000, "EEG Power Spectrum", false, Color.BLACK, 1000);
         //PLOT CH1 By default
         mGraphAdapterCh1.plotData = true;
+        mGraphAdaptercPSDA.plotData = true;
         mGraphAdapterCh1.setPointWidth((float) 2);
         mGraphAdapterCh2.setPointWidth((float) 2);
-        mGraphAdapterCh3.setPointWidth((float) 3);
-        mGraphAdapterCh4.setPointWidth((float) 3);
-        if (plotImplicitXVals) mGraphAdapterCh1.series.useImplicitXVals();
-        if (filterData) mPlotAdapter.filterData();
-        mPlotAdapter = new XYPlotAdapter(findViewById(R.id.eegPlot), plotImplicitXVals, 1000);
-        mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1.series, mGraphAdapterCh1.lineAndPointFormatter);
-        mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2.series, mGraphAdapterCh2.lineAndPointFormatter);
-        mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh3.series, mGraphAdapterCh3.lineAndPointFormatter);
-        mPlotAdapter.xyPlot.addSeries(mGraphAdapterCh4.series, mGraphAdapterCh4.lineAndPointFormatter);
+        mGraphAdaptercPSDA.setPointWidth((float) 2);
+        mTimeDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.eegTimeDomainXYPlot), false, 1000);
+        mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1.series, mGraphAdapterCh1.lineAndPointFormatter);
+        mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2.series, mGraphAdapterCh2.lineAndPointFormatter);
+        mFreqDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.frequencyAnalysisXYPlot), false, 1000);
+        mFreqDomainPlotAdapter.xyPlot.addSeries(mGraphAdaptercPSDA.series, mGraphAdaptercPSDA.lineAndPointFormatter);
 
         redrawer = new Redrawer(
-                Arrays.asList(new Plot[]{mPlotAdapter.xyPlot}),
-                100, false);
+                Arrays.asList(new Plot[]{mTimeDomainPlotAdapter.xyPlot, mFreqDomainPlotAdapter.xyPlot}), 60, false);
+
         mExportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,124 +188,30 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             }
         });
         makeFilterSwitchVisible(false);
-        mFilterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mDomainSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filterData = isChecked;
+                mFrequencyDomain = isChecked;
+                // TODO: 9/19/2017 FIX THIS
             }
         });
         mLastTime = System.currentTimeMillis();
         mClassTime = System.currentTimeMillis();
-        Button upButton = (Button) findViewById(R.id.buttonUp);
-        Button downButton = (Button) findViewById(R.id.buttonDown);
-        Button leftButton = (Button) findViewById(R.id.buttonLeft);
-        Button rightButton = (Button) findViewById(R.id.buttonRight);
-        Button centerButton = (Button) findViewById(R.id.buttonMiddle);
-        Button blinkButton = (Button) findViewById(R.id.buttonSB);
-        Button doubleBlinkButton = (Button) findViewById(R.id.buttonDB);
         mSSVEPClassTextView = (TextView) findViewById(R.id.eegClassTextView);
-        upButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mConnected) {
-                    byte[] bytes = new byte[1];
-                    bytes[0] = (byte) 0x01;
-                    if (mLedWheelchairControlService != null)
-                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-                }
-                mSSVEPClass = 1;
-                mLastButtonPress = 1;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        downButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mConnected) {
-                    byte[] bytes = new byte[1];
-                    bytes[0] = (byte) 0xFF;
-                    if (mLedWheelchairControlService != null)
-                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-                }
-                mSSVEPClass = 4;
-                mLastButtonPress = 4;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        leftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mConnected) {
-                    byte[] bytes = new byte[1];
-                    bytes[0] = (byte) 0x0F;
-                    if (mLedWheelchairControlService != null)
-                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-                }
-                mSSVEPClass = 3;
-                mLastButtonPress = 3;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        rightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mConnected) {
-                    byte[] bytes = new byte[1];
-                    bytes[0] = (byte) 0xF0;
-                    if (mLedWheelchairControlService != null)
-                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-                }
-                mSSVEPClass = 2;
-                mLastButtonPress = 2;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        centerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mConnected) {
-                    byte[] bytes = new byte[1];
-                    bytes[0] = (byte) 0x00;
-                    if (mLedWheelchairControlService != null) {
-                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
-                    }
-                }
-//                switch (mLastButtonPress) {
-//                    case 3:
-//                        mSSVEPClass = 6;
-//                        break;
-//                    case 4:
-//                        mSSVEPClass = 5;
-//                        break;
-//                    case 5:
-//                        mSSVEPClass = 4;
-//                        break;
-//                    case 6:
-//                        mSSVEPClass = 3;
-//                        break;
-//                    default:
-//                        mSSVEPClass = 0;
-//                        break;
+//        upButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (mConnected) {
+//                    byte[] bytes = new byte[1];
+//                    bytes[0] = (byte) 0x01;
+//                    if (mLedWheelchairControlService != null)
+//                        mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
 //                }
-//                mLastButtonPress = 0;
-                mSSVEPClass = 0;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        blinkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSSVEPClass = 1;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
-        doubleBlinkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSSVEPClass = 2;
-                mClassTime = System.currentTimeMillis();
-            }
-        });
+//                mSSVEPClass = 1;
+//                mLastButtonPress = 1;
+//                mClassTime = System.currentTimeMillis();
+//            }
+//        });
         ToggleButton toggleButton1 = (ToggleButton) findViewById(R.id.toggleButtonWheelchairControl);
         toggleButton1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -342,14 +238,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mGraphAdapterCh3.setPlotData(b);
-            }
-        });
-        ToggleButton ch4 = (ToggleButton) findViewById(R.id.toggleButtonCh4);
-        ch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mGraphAdapterCh4.setPlotData(b);
+                mGraphAdaptercPSDA.setPlotData(b);
             }
         });
         Button resetButton = (Button) findViewById(R.id.resetActivityButton);
@@ -367,17 +256,16 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     }
 
     public String getTimeStamp() {
-        return new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(new Date());
+        return new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss", Locale.US).format(new Date());
     }
 
     private boolean fileSaveInitialized = false;
     private CSVWriter csvWriter;
     private File file;
-    private File root;
 
     /**
      * @param terminate - if True, terminates CSVWriter Instance
-     * @throws IOException
+     * @throws IOException some IO Error
      */
     public void saveDataFile(boolean terminate) throws IOException {
         if (terminate && fileSaveInitialized) {
@@ -393,11 +281,14 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
      * @throws IOException bc
      */
     public void saveDataFile() throws IOException {
-        root = Environment.getExternalStorageDirectory();
-        fileTimeStamp = "EEG_SSVEPData_" + getTimeStamp();
+        File root = Environment.getExternalStorageDirectory();
+        String fileTimeStamp = "EEG_SSVEPData_" + getTimeStamp();
         if (root.canWrite()) {
             File dir = new File(root.getAbsolutePath() + "/EEGData");
-            dir.mkdirs();
+            boolean resultMkdir = dir.mkdirs();
+            if (!resultMkdir) {
+                Log.e(TAG, "MKDIRS FAILED");
+            }
             file = new File(dir, fileTimeStamp + ".csv");
             if (file.exists() && !file.isDirectory()) {
                 Log.d(TAG, "File " + file.toString() + " already exists - appending data");
@@ -407,29 +298,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 csvWriter = new CSVWriter(new FileWriter(file));
             }
             fileSaveInitialized = true;
-        }
-    }
-
-    public void exportFileWithClass(double eegData1, double eegData2, double eegData3, double eegData4) throws IOException {
-        if (fileSaveInitialized) {
-            String[] valueCsvWrite = new String[5];
-            valueCsvWrite[0] = eegData1 + "";
-            valueCsvWrite[1] = eegData2 + "";
-            valueCsvWrite[2] = eegData3 + "";
-            valueCsvWrite[3] = eegData4 + "";
-            valueCsvWrite[4] = mSSVEPClass + "";
-            csvWriter.writeNext(valueCsvWrite, false);
-        }
-    }
-
-    public void exportFileWithClass(double eegData1, double eegData2, double eegData3) throws IOException {
-        if (fileSaveInitialized) {
-            String[] valueCsvWrite = new String[4];
-            valueCsvWrite[0] = eegData1 + "";
-            valueCsvWrite[1] = eegData2 + "";
-            valueCsvWrite[2] = eegData3 + "";
-            valueCsvWrite[3] = mSSVEPClass + "";
-            csvWriter.writeNext(valueCsvWrite, false);
         }
     }
 
@@ -447,6 +315,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public void onResume() {
         makeFilterSwitchVisible(true);
         jmainInitialization(false);
+        fPSD = jLoadfPSD();
         String fileTimeStampConcat = "EEGSensorData_" + getTimeStamp();
         Log.d("onResume-timeStamp", fileTimeStampConcat);
         if (!fileSaveInitialized) {
@@ -468,8 +337,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     }
 
     private void initializeBluetoothArray() {
-        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothDeviceArray = new BluetoothDevice[deviceMacAddresses.length];
+        BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothDevice[] mBluetoothDeviceArray = new BluetoothDevice[deviceMacAddresses.length];
         mBluetoothGattArray = new BluetoothGatt[deviceMacAddresses.length];
         Log.d(TAG, "Device Addresses: " + Arrays.toString(deviceMacAddresses));
         if (deviceMacAddresses != null) {
@@ -487,6 +356,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             if ("WheelchairControl".equals(mBluetoothDeviceArray[i].getName())) {
                 mWheelchairGattIndex = i;
                 Log.e(TAG, "mWheelchairGattIndex: " + mWheelchairGattIndex);
+            }
+            if("EMG 250Hz".equals(mBluetoothDeviceArray[i].getName())) {
+                mMSBFirst = false;
+            } else if ("EMG 3CH 250Hz".equals(mBluetoothDeviceArray[i].getName())) {
+                mMSBFirst = true;
             }
         }
     }
@@ -624,12 +498,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     }
                 }
 
-                if (AppConstant.SERVICE_EEG_GENERIC.equals(service.getUuid())) {
-                    makeFilterSwitchVisible(true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH1_SIGNAL), true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH2_SIGNAL), true);
-                }
-
                 if (AppConstant.SERVICE_EOG_SIGNAL.equals(service.getUuid())) {
                     makeFilterSwitchVisible(true);
                     mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EOG_CH1_SIGNAL), true);
@@ -641,14 +509,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     }
                 }
 
-                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) { //Read the device battery percentage
+//                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) { //Read the device battery percentage
 //                    mBluetoothLe.readCharacteristic(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL));
 //                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL), true);
-                }
-
-                if (AppConstant.SERVICE_MPU.equals(service.getUuid())) {
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_MPU_COMBINED), true);
-                }
+//                }
             }
         }
     }
@@ -658,22 +522,19 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             @Override
             public void run() {
                 if (visible) {
-                    mFilterSwitch.setVisibility(View.VISIBLE);
+                    mDomainSwitch.setVisibility(View.VISIBLE);
                     mExportButton.setVisibility(View.VISIBLE);
-                    mEegValsTextView.setVisibility(View.VISIBLE);
                 } else {
                     mExportButton.setVisibility(View.INVISIBLE);
-                    mFilterSwitch.setVisibility(View.INVISIBLE);
-                    mEegValsTextView.setVisibility(View.INVISIBLE);
+                    mDomainSwitch.setVisibility(View.INVISIBLE);
                 }
             }
         });
     }
 
-    private int batteryLevel = -1;
-
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        int batteryLevel;
         Log.i(TAG, "onCharacteristicRead");
         if (status == BluetoothGatt.GATT_SUCCESS) {
             if (AppConstant.CHAR_BATTERY_LEVEL.equals(characteristic.getUuid())) {
@@ -686,146 +547,63 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
-    private boolean eeg_ch1_data_on = false;
-    private boolean eeg_ch2_data_on = false;
-    private boolean eeg_ch3_data_on = false;
-    private boolean eeg_ch4_data_on = false;
-    private int packetNumber = -1;
     private int packetNumber_2ch = -1;
     //Count of How Many Alerts Given To Subject
-    private int mAlertBeepCounter = 1;
-    private int mClassifierCounter = 1;
-//    private int mSecondsBetweenStimulus = 0;
-    //EOG:
+//    private int mAlertBeepCounter = 1;
     // Classification
-    private double[] yfitarray = new double[5];
-    private double[] mSigs = new double[56000];
+
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        //TODO: ADD BATTERY MEASURE CAPABILITY IN FIRMWARE: (ble_ADC)
+        if((mCh1==null || mCh2==null)) {
+            mCh1 = new DataChannel(false, mMSBFirst);
+            mCh2 = new DataChannel(false, mMSBFirst);
+        }
+
+        //TODO: ADD BATTERY MEASURE CAPABILITY IN FIRMWARE: (ble_ADC); Copy from onCharacteristicRead
         if (AppConstant.CHAR_EEG_CH1_SIGNAL.equals(characteristic.getUuid())) {
-            byte[] dataEEGBytes = characteristic.getValue();
-            if (!eeg_ch1_data_on) {
-                eeg_ch1_data_on = true;
+            byte[] mNewEEGdataBytes = characteristic.getValue();
+            if (!mCh1.chEnabled) {
+                mCh1.chEnabled = true;
             }
-            getDataRateBytes(dataEEGBytes.length);
-//            if(mEEGConnected) mGraphAdapterCh1.addDataPoints(dataEEGBytes,3,packetNumber);
-            if (mEEGConnected_2ch)
-                mGraphAdapterCh1.addDataPoints(dataEEGBytes, 3, packetNumber_2ch);
+            getDataRateBytes(mNewEEGdataBytes.length);
+            if (mEEGConnected_2ch) {
+                mCh1.handleNewData(mNewEEGdataBytes);
+                if(mCh1.packetCounter==6) {
+                    mCh1.addToGraphBuffer(mGraphAdapterCh1);
+                }
+            }
         }
 
         if (AppConstant.CHAR_EEG_CH2_SIGNAL.equals(characteristic.getUuid())) {
-            if (!eeg_ch2_data_on) {
-                eeg_ch2_data_on = true;
+            if (!mCh2.chEnabled) {
+                mCh2.chEnabled = true;
             }
-            byte[] dataEEGBytes = characteristic.getValue();
-            int byteLength = dataEEGBytes.length;
+            byte[] mNewEEGdataBytes = characteristic.getValue();
+            int byteLength = mNewEEGdataBytes.length;
             getDataRateBytes(byteLength);
-//            if(mEEGConnected) mGraphAdapterCh2.addDataPoints(dataEEGBytes,3,packetNumber);
-            if (mEEGConnected_2ch)
-                mGraphAdapterCh2.addDataPoints(dataEEGBytes, 3, packetNumber_2ch);
-        }
-
-        if (AppConstant.CHAR_EEG_CH3_SIGNAL.equals(characteristic.getUuid())) {
-            if (!eeg_ch3_data_on) {
-                eeg_ch3_data_on = true;
+            if (mEEGConnected_2ch) {
+                mCh2.handleNewData(mNewEEGdataBytes);
+                if(mCh2.packetCounter==6) {
+                    mCh2.addToGraphBuffer(mGraphAdapterCh2);
+                }
             }
-            byte[] dataEEGBytes = characteristic.getValue();
-            int byteLength = dataEEGBytes.length;
-            getDataRateBytes(byteLength);
-            if (mEEGConnected) mGraphAdapterCh3.addDataPoints(dataEEGBytes, 3, packetNumber);
         }
-
-        if (AppConstant.CHAR_EEG_CH4_SIGNAL.equals(characteristic.getUuid())) {
-            if (!eeg_ch4_data_on) {
-                eeg_ch4_data_on = true;
-            }
-            byte[] dataEEGBytes = characteristic.getValue();
-            int byteLength = dataEEGBytes.length;
-            getDataRateBytes(byteLength);
-            if (mEEGConnected) mGraphAdapterCh4.addDataPoints(dataEEGBytes, 3, packetNumber);
-        }
-        // TODO: 5/15/2017 2-Channel EEG:
-        if (eeg_ch1_data_on && eeg_ch2_data_on) {
+        if (mCh1.chEnabled && mCh2.chEnabled) {
             packetNumber_2ch++;
-//            Log.e(TAG,"Curr Pack Num: "+String.valueOf(packetNumber_2ch));
             mEEGConnected_2ch = true;
-            eeg_ch1_data_on = false;
-            eeg_ch2_data_on = false;
+            mCh1.chEnabled = false;
+            mCh2.chEnabled = false;
             for (int i = 0; i < 6; i++) {
-                if (mGraphAdapterCh1.lastDataValues != null && mGraphAdapterCh2.lastDataValues != null)
-                    writeToDisk24(mGraphAdapterCh1.lastDataValues[i], mGraphAdapterCh2.lastDataValues[i]);
+                if(mCh1.characteristicDataPacketBytes!=null && mCh2.characteristicDataPacketBytes!=null) {
+                    writeToDisk24(mCh1.characteristicDataPacketBytes, mCh2.characteristicDataPacketBytes);
+                }
             }
-            // TODO: 5/24/2017 ADJUST FOR 2-CH
-//            if (packetNumber_2ch % 5 == 0) {
-//                double max_ch1 = findGraphMax(mGraphAdapterCh1.series);
-//                double min_ch1 = findGraphMin(mGraphAdapterCh1.series);
-//                double max_ch2 = findGraphMax(mGraphAdapterCh2.series);
-//                double min_ch2 = findGraphMin(mGraphAdapterCh2.series);
-//                double max = (max_ch1 > max_ch2) ? max_ch1 : max_ch2;
-//                double min = (min_ch1 < min_ch2) ? min_ch1 : min_ch2;
-//                mPlotAdapter.adjustPlot(max, min);
-//            }
             if(packetNumber_2ch%10==0) { //Every x * 6 data points
                 ClassifyTask classifyTask = new ClassifyTask();
                 Log.e(TAG,"["+String.valueOf(mNumberOfClassifierCalls+1)+"] CALLING CLASSIFIER FUNCTION!");
                 classifyTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
-//        mSecondsBetweenStimulus = Integer.valueOf(mEditDelayText.getText().toString());
-        /*if (mSecondsBetweenStimulus !=0 && mGraphAdapterCh1.lastTimeValues != null) {
-            if (Math.floor(mGraphAdapterCh1.lastTimeValues[5]) == (mSecondsBetweenStimulus * mAlertBeepCounter)) {
-                mAlertBeepCounter++;
-                int temp = mAlertBeepCounter-1;
-//                switch (temp) {
-//                    case 0:
-//                        mSSVEPClass = 0;
-//                        break;
-//                    case 1:
-//                        mSSVEPClass = 1;
-//                        break;
-//                    case 2:
-//                        mSSVEPClass = 0;
-//                        break;
-//                    case 3:
-//                        mSSVEPClass = 2;
-//                        break;
-//                    case 4:
-//                        mSSVEPClass = 0;
-//                        break;
-//                    case 5:
-//                        mSSVEPClass = 3;
-//                        break;
-//                    case 6:
-//                        mSSVEPClass = 0;
-//                        break;
-//                    case 7:
-//                        mSSVEPClass = 4;
-//                        break;
-//                    case 8:
-//                        mSSVEPClass = 0;
-//                        break;
-//                    default:
-//                        break;
-//                }
-                if(temp==0) {
-                    mSSVEPClass = 0;
-                } else if(temp==1) {
-                    mSSVEPClass = 1;
-                } else if(temp==2) {
-                    mSSVEPClass = 2;
-                } else if(temp==3) {
-                    mSSVEPClass = 3;
-                } else if (temp==4) {
-                    mSSVEPClass = 4;
-                } else {
-                    mSSVEPClass = 0;
-                }
-                //Play Sound:
-                Log.e(TAG,"Notify: Switching Signal!!!");
-                mMediaBeep.start();
-            }
-        }*/
 
         runOnUiThread(new Runnable() {
             @Override
@@ -833,33 +611,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mSSVEPClassTextView.setText("C:[" + mSSVEPClass + "]");
             }
         });
-
-        if(eeg_ch4_data_on && eeg_ch3_data_on && eeg_ch2_data_on && eeg_ch1_data_on) {
-            packetNumber++;
-            mEEGConnected = true;
-            eeg_ch1_data_on = false;
-            eeg_ch2_data_on = false;
-            eeg_ch3_data_on = false;
-            eeg_ch4_data_on = false;
-            for (int i = 0; i < 6; i++) {
-                writeToDisk24(mGraphAdapterCh1.lastDataValues[i],mGraphAdapterCh2.lastDataValues[i],
-                        mGraphAdapterCh3.lastDataValues[i],mGraphAdapterCh4.lastDataValues[i]);
-            }
-        }
-    }
-
-    private double findGraphMax(SimpleXYSeries s) {
-        if (s.size() > 0) {
-            double max = (double) s.getY(0);
-            for (int i = 1; i < s.size(); i++) {
-                double a = (double) s.getY(i);
-                if (a > max) {
-                    max = a;
-                }
-            }
-            return max;
-        } else
-            return 0.0;
     }
 
     private int mNumberOfClassifierCalls = 0;
@@ -867,9 +618,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private class ClassifyTask extends AsyncTask<Void, Void, Double> {
         @Override
         protected Double doInBackground(Void... voids) {
-            double[] getInstance1 = mGraphAdapterCh1.unfilteredSignal;
-            double[] getInstance2 = mGraphAdapterCh2.unfilteredSignal;
-//            double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
+            double[] getInstance1 = mGraphAdapterCh1.classificationBuffer;
+            double[] getInstance2 = mGraphAdapterCh2.classificationBuffer;
+            double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
+
             double Y[] = jClassifySSVEP(getInstance1,getInstance2,1.5);
             double yclass = Y[1];
             mNumberOfClassifierCalls++;
@@ -879,8 +631,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
         @Override
         protected void onPostExecute(Double predictedClass) {
-            mClassifiedSSVEPClass = predictedClass;
-            final String s = "SSVEP\n: [" + String.valueOf(predictedClass) + "]";
+            double mClassifiedSSVEPClass = predictedClass;
+            final String s = "SSVEP cPSDA\n: [" + String.valueOf(predictedClass) + "]";
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -889,21 +641,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             });
             executeWheelchairCommand((int)mClassifiedSSVEPClass);
             super.onPostExecute(predictedClass);
-        }
-    }
-
-    private double findGraphMin(SimpleXYSeries s) {
-        if (s.size() > 0) {
-            double min = (double) s.getY(0);
-            for (int i = 1; i < s.size(); i++) {
-                double a = (double) s.getY(i);
-                if (a < min) {
-                    min = a;
-                }
-            }
-            return min;
-        } else {
-            return 0.0;
         }
     }
 
@@ -923,8 +660,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 bytes[0] = (byte) 0x0F;
                 break;
             case 4:
-                bytes[0] = (byte) 0xFF;
                 // TODO: 6/27/2017 Disconnect instead of reverse?
+                bytes[0] = (byte) 0xFF;
                 break;
             default:
                 break;
@@ -934,62 +671,19 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
-    private void processClassifiedData(final double Y, final int classifier) {
-        //Add to end;
-        yfitarray[4] = Y;
-        //Analyze:
-        Log.e(TAG, "C" + String.valueOf(classifier) + " YfitArray: " + Arrays.toString(yfitarray));
-        final boolean checkLastThreeMatches = lastThreeMatches(yfitarray);
-        if (checkLastThreeMatches) {
-            //Get value:
-            Log.e(TAG, "Found fit: " + String.valueOf(yfitarray[4]));
-            // TODO: 4/27/2017 CONDITION :: CONTROL WHEELCHAIR
-            if (mWheelchairControl) {
-                executeWheelchairCommand((int) yfitarray[4]);
+    private void writeToDisk24(byte[] ch1Bytes, byte[] ch2Bytes) {
+        for (int i = 0; i < ch1Bytes.length / 3; i++) {
+            try {
+                exportFileWithClass(DataChannel.bytesToDouble(ch1Bytes[3 * i], ch1Bytes[3 * i + 1], ch1Bytes[3 * i + 2]),
+                        DataChannel.bytesToDouble(ch2Bytes[3 * i], ch2Bytes[3 * i + 1], ch2Bytes[3 * i + 2]));
+            } catch (IOException e) {
+                Log.e("IOException", e.toString());
             }
         }
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.e(TAG, "EOGClassifier, Y: " + String.valueOf(Y));
-//                if (checkLastThreeMatches)
-//                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
-//                double sum = yfitarray[0] + yfitarray[1] + yfitarray[2] + yfitarray[3] + yfitarray[4];
-//                if (sum == 0) {
-//                    mYfitTextView.setText("YFIT" + String.valueOf(classifier) + ":\n" + String.valueOf(Y));
-//                }
-//            }
-//        });
-    }
-
-    private void writeToDisk24(final double ch1, final double ch2, final double ch3, final double ch4) {
-        try {
-            exportFileWithClass(ch1, ch2, ch3, ch4);
-        } catch (IOException e) {
-            Log.e("IOException", e.toString());
-        }
-    }
-
-    private void writeToDisk24(final double ch1, final double ch2) {
-        try {
-            exportFileWithClass(ch1, ch2);
-        } catch (IOException e) {
-            Log.e("IOException", e.toString());
-        }
-    }
-
-    private boolean lastThreeMatches(double[] yfitarray) {
-        boolean b0 = false;
-        boolean b1 = false;
-        if (yfitarray[4] != 0) {
-            b0 = (yfitarray[4] == yfitarray[3]);
-            b1 = (yfitarray[3] == yfitarray[2]);
-        }
-        return b0 && b1;
     }
 
     private void getDataRateBytes(int bytes) {
-        mCurrentTime = System.currentTimeMillis();
+        long mCurrentTime = System.currentTimeMillis();
         points += bytes;
         if (mCurrentTime > (mLastTime + 5000)) {
             dataRate = (points / 5);
@@ -999,7 +693,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mDataRate.setText(String.valueOf(dataRate) + " Bytes/s");
+                    String s = String.valueOf(dataRate) + " Bytes/s";
+                    mDataRate.setText(s);
                 }
             });
         }
@@ -1008,7 +703,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     @Override
     public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
         uiRssiUpdate(rssi);
-        String lastRssi = String.valueOf(rssi) + "db";
+//        String lastRssi = String.valueOf(rssi) + "db";
     }
 
     @Override
@@ -1056,10 +751,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     public void run() {
                         mDataRate.setTextColor(Color.RED);
                         mDataRate.setTypeface(null, Typeface.BOLD);
-                        mDataRate.setText("0 Hz");
+                        mDataRate.setText(HZ);
                     }
                 });
-                //TODO: ATTEMPT TO RECONNECT:
                 updateConnectionState(getString(R.string.disconnected));
                 stopMonitoringRssiValue();
                 invalidateOptionsMenu();
@@ -1181,4 +875,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public native double[] jClassifySSVEP(double[] a, double[] b, double c);
 
     public native double[] jPSDExtraction(double[] a, double[] b);
+
+    public native double[] jLoadfPSD();
 }

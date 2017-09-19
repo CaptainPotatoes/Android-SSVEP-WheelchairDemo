@@ -18,6 +18,7 @@ extern "C" {
 JNIEXPORT jdoubleArray JNICALL
 Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jClassifySSVEP(
         JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2, jdouble threshold) {
+
     jdouble *X1 = env->GetDoubleArrayElements(ch1, NULL);
     jdouble *X2 = env->GetDoubleArrayElements(ch2, NULL);
     double Y[2];
@@ -42,6 +43,20 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jPSDEx
     double Y[499];
     extractPowerSpectrum(X1, X2, Y);
     env->SetDoubleArrayRegion(m_result, 0, 499, Y);
+    return m_result;
+}
+}
+
+extern "C" {
+JNIEXPORT jdoubleArray JNICALL
+Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jLoadfPSD(
+        JNIEnv *env, jobject jobject1) {
+    jdoubleArray m_result = env->NewDoubleArray(499);
+    double fPSD[499];
+    for (int i = 0; i < 499; i++) {
+        fPSD[i] = (double)i * 250.0 / 998.0;
+    }
+    env->SetDoubleArrayRegion(m_result, 0, 499, fPSD);
     return m_result;
 }
 }
