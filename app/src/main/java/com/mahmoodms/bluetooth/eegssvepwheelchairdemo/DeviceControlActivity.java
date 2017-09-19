@@ -89,6 +89,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Switch mDomainSwitch;
     private long mLastTime;
     private long mClassTime; //DON'T DELETE!!!
+    private int mPSDDataPointsToShow = 200;
     private double[] fPSD; //DON'T DELETE!!!
 
     private boolean mFrequencyDomain = false;
@@ -141,8 +142,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         mDomainSwitch = (Switch) findViewById(R.id.domainSwitch);
         mBatteryLevel = (TextView) findViewById(R.id.batteryText);
         mDataRate = (TextView) findViewById(R.id.dataRate);
-//        mAllChannelsReadyTextView = (TextView) findViewById(R.id.allChannelsEnabledText);
-//        mAllChannelsReadyTextView.setText("  Waiting For EOG Device.");
         mDataRate.setText("...");
         mYfitTextView = (TextView) findViewById(R.id.textViewYfit);
         //Initialize Bluetooth
@@ -153,7 +152,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         // Initialize our XYPlot reference:
         mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, Color.BLUE, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, Color.RED, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdaptercPSDA = new GraphAdapter(1000, "EEG Power Spectrum", false, Color.BLACK, 1000);
+        mGraphAdaptercPSDA = new GraphAdapter(mPSDDataPointsToShow, "EEG Power Spectrum", false, Color.BLACK, 0);
         //PLOT CH1 By default
         mGraphAdapterCh1.plotData = true;
         mGraphAdaptercPSDA.plotData = true;
@@ -163,7 +162,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         mTimeDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.eegTimeDomainXYPlot), false, 1000);
         mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1.series, mGraphAdapterCh1.lineAndPointFormatter);
         mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2.series, mGraphAdapterCh2.lineAndPointFormatter);
-        mFreqDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.frequencyAnalysisXYPlot), false, 1000);
+        mFreqDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.frequencyAnalysisXYPlot), false, "Frequency (Hz)", 125, 8, "Power Density (W/Hz)");
         mFreqDomainPlotAdapter.xyPlot.addSeries(mGraphAdaptercPSDA.series, mGraphAdaptercPSDA.lineAndPointFormatter);
 
         redrawer = new Redrawer(
@@ -621,7 +620,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             double[] getInstance1 = mGraphAdapterCh1.classificationBuffer;
             double[] getInstance2 = mGraphAdapterCh2.classificationBuffer;
             double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
-
+            if (mFrequencyDomain) {
+                if (pPSD!=null && fPSD!=null) {
+                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD); //only up to 200
+                }
+            }
             double Y[] = jClassifySSVEP(getInstance1,getInstance2,1.5);
             double yclass = Y[1];
             mNumberOfClassifierCalls++;

@@ -19,6 +19,43 @@ class XYPlotAdapter {
 //    private final static String TAG = XYPlotAdapter.class.getSimpleName();
     XYPlot xyPlot = null;
 
+    XYPlotAdapter(View findViewByID, boolean plotImplicitXVals, String domainLabel, int domainWidth, int domainSteps, String rangeLabel) {
+        this.xyPlot = (XYPlot) findViewByID;
+        if(plotImplicitXVals) {
+            this.xyPlot.setDomainBoundaries(0, domainWidth, BoundaryMode.FIXED);
+            this.xyPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+            this.xyPlot.setDomainStepValue(domainWidth/5);
+        } else {
+            this.xyPlot.setDomainBoundaries(0, domainWidth, BoundaryMode.AUTO);
+            this.xyPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+            this.xyPlot.setDomainStepValue(domainWidth/domainSteps);
+        }
+        //Default Config:
+        this.xyPlot.setRangeStepMode(XYStepMode.INCREMENT_BY_VAL);
+        this.xyPlot.setDomainLabel(domainLabel);
+        this.xyPlot.getDomainLabelWidget().pack();
+        this.xyPlot.setRangeLabel(rangeLabel);
+        this.xyPlot.getRangeLabelWidget().pack();
+        this.xyPlot.setRangeValueFormat(new DecimalFormat("#.###"));
+        this.xyPlot.setDomainValueFormat(new DecimalFormat("#"));
+        this.xyPlot.getDomainLabelWidget().getLabelPaint().setColor(Color.BLACK);
+        this.xyPlot.getDomainLabelWidget().getLabelPaint().setTextSize(20);
+        this.xyPlot.getRangeLabelWidget().getLabelPaint().setColor(Color.BLACK);
+        this.xyPlot.getRangeLabelWidget().getLabelPaint().setTextSize(20);
+        this.xyPlot.getGraphWidget().getDomainTickLabelPaint().setColor(Color.BLACK);
+        this.xyPlot.getGraphWidget().getRangeTickLabelPaint().setColor(Color.BLACK);
+        this.xyPlot.getGraphWidget().getDomainTickLabelPaint().setTextSize(23); //was 36
+        this.xyPlot.getGraphWidget().getRangeTickLabelPaint().setTextSize(23);
+        this.xyPlot.getGraphWidget().getDomainGridLinePaint().setColor(Color.WHITE);
+        this.xyPlot.getGraphWidget().getRangeGridLinePaint().setColor(Color.WHITE);
+        this.xyPlot.getLegendWidget().getTextPaint().setColor(Color.BLACK);
+        this.xyPlot.getLegendWidget().getTextPaint().setTextSize(20);
+        this.xyPlot.getTitleWidget().getLabelPaint().setTextSize(20);
+        this.xyPlot.getTitleWidget().getLabelPaint().setColor(Color.BLACK);
+        this.xyPlot.setRangeBoundaries(-0.004, 0.004, BoundaryMode.AUTO);
+        this.xyPlot.setRangeStep(XYStepMode.SUBDIVIDE, 5.0);
+    }
+
     XYPlotAdapter(View findViewByID, boolean plotImplicitXVals, int historySize) {
         this.xyPlot = (XYPlot) findViewByID;
         int historySeconds = historySize/250;
