@@ -4,6 +4,7 @@ import java.util.UUID;
 
 /**
  * Created by mahmoodms on 6/30/2016.
+ * Constants
  */
 public final class AppConstant {
     // To prevent someone from accidentally instantiating the AppConstant class,

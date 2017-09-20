@@ -4,8 +4,10 @@ import android.bluetooth.BluetoothDevice;
 
 /**
  * Created by mahmoodms on 5/31/2016.
+ * Class for holding scanned device Bluetooth LE data.
  */
-public class ScannedDevice {
+
+class ScannedDevice {
     private static final String UNKNOWN = "Unknown";
     /**
      * BluetoothDevice
@@ -24,7 +26,7 @@ public class ScannedDevice {
      */
     private String deviceDiplayAddress;
 
-    public ScannedDevice(BluetoothDevice device, int rssi) {
+    ScannedDevice(BluetoothDevice device, int rssi) {
         if(device == null) {
             throw new IllegalArgumentException("BluetoothDevice == Null");
         }
@@ -37,31 +39,31 @@ public class ScannedDevice {
         deviceDiplayAddress = device.getAddress();
     }
 
-    public BluetoothDevice getDevice() {
+    BluetoothDevice getDevice() {
         return bluetoothDevice;
     }
 
-    public int getRssi() {
+    int getRssi() {
         return rssiValue;
     }
 
-    public void setRssi(int rssi) {
+    void setRssi(int rssi) {
         rssiValue = rssi;
     }
 
-    public String getDisplayName() {
+    String getDisplayName() {
         return deviceDisplayName;
     }
 
-    public void setDisplayName(String displayName) {
-        deviceDisplayName = displayName;
-    }
+//    public void setDisplayName(String displayName) {
+//        deviceDisplayName = displayName;
+//    }
 
-    public String getDeviceMac() {
+    String getDeviceMac() {
         return deviceDiplayAddress;
     }
 
-    public void setDeviceMac(String deviceAddress) {
-        deviceDiplayAddress = deviceAddress;
-    }
+//    public void setDeviceMac(String deviceAddress) {
+//        deviceDiplayAddress = deviceAddress;
+//    }
 }

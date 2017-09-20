@@ -88,11 +88,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Button mExportButton;
     private Switch mDomainSwitch;
     private long mLastTime;
-    private long mClassTime; //DON'T DELETE!!!
-    private int mPSDDataPointsToShow = 200;
-    private double[] fPSD; //DON'T DELETE!!!
+    private int mPSDDataPointsToShow = 0;
+    private double[] fPSD;
 
-    private boolean mFrequencyDomain = false;
+    private boolean mFrequencyDomain = true;
     private int points = 0;
     private Menu menu;
 
@@ -111,6 +110,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     //Play Sound:
     MediaPlayer mMediaBeep;
+
+    //File Save Stuff:
+    private boolean fileSaveInitialized = false;
+    private CSVWriter csvWriter;
+    private File file;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -195,7 +199,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             }
         });
         mLastTime = System.currentTimeMillis();
-        mClassTime = System.currentTimeMillis();
         mSSVEPClassTextView = (TextView) findViewById(R.id.eegClassTextView);
 //        upButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -257,10 +260,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public String getTimeStamp() {
         return new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss", Locale.US).format(new Date());
     }
-
-    private boolean fileSaveInitialized = false;
-    private CSVWriter csvWriter;
-    private File file;
 
     /**
      * @param terminate - if True, terminates CSVWriter Instance
@@ -546,10 +545,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         }
     }
 
-    private int packetNumber_2ch = -1;
-    //Count of How Many Alerts Given To Subject
-//    private int mAlertBeepCounter = 1;
     // Classification
+    private int packetNumber_2ch = -1;
+    private int mNumberOfClassifierCalls = 0;
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -557,7 +555,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             mCh1 = new DataChannel(false, mMSBFirst);
             mCh2 = new DataChannel(false, mMSBFirst);
         }
-
         //TODO: ADD BATTERY MEASURE CAPABILITY IN FIRMWARE: (ble_ADC); Copy from onCharacteristicRead
         if (AppConstant.CHAR_EEG_CH1_SIGNAL.equals(characteristic.getUuid())) {
             byte[] mNewEEGdataBytes = characteristic.getValue();
@@ -612,17 +609,19 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         });
     }
 
-    private int mNumberOfClassifierCalls = 0;
-
     private class ClassifyTask extends AsyncTask<Void, Void, Double> {
         @Override
         protected Double doInBackground(Void... voids) {
             double[] getInstance1 = mGraphAdapterCh1.classificationBuffer;
             double[] getInstance2 = mGraphAdapterCh2.classificationBuffer;
-            double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
             if (mFrequencyDomain) {
-                if (pPSD!=null && fPSD!=null) {
-                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD); //only up to 200
+                double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
+                if (pPSD!=null && fPSD!=null && mPSDDataPointsToShow>0) {
+                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD, 34, 176); //only up to 200
+                } else {
+                    mPSDDataPointsToShow = 176-34;
+                    mGraphAdaptercPSDA.setSeriesHistoryDataPoints(mPSDDataPointsToShow);
+                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD, 34, 176); //only up to 200
                 }
             }
             double Y[] = jClassifySSVEP(getInstance1,getInstance2,1.5);
@@ -669,7 +668,7 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             default:
                 break;
         }
-        if (mLedWheelchairControlService != null) {
+        if (mLedWheelchairControlService != null && mWheelchairControl) {
             mBluetoothLe.writeCharacteristic(mBluetoothGattArray[mWheelchairGattIndex], mLedWheelchairControlService.getCharacteristic(AppConstant.CHAR_WHEELCHAIR_CONTROL), bytes);
         }
     }

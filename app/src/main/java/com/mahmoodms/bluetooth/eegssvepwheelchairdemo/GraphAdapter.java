@@ -49,6 +49,10 @@ class GraphAdapter {
         }
     }
 
+    public void setSeriesHistoryDataPoints(int seriesHistoryDataPoints) {
+        this.seriesHistoryDataPoints = seriesHistoryDataPoints;
+    }
+
     void addDataPointsGeneric(double[] xdata, double[] ydata) {
         int end;
         if (this.seriesHistoryDataPoints < xdata.length) {
@@ -59,6 +63,14 @@ class GraphAdapter {
         if (this.plotData) {
             for (int i = 0; i < end; i++) {
                 plot(xdata[i], ydata[i]);
+            }
+        }
+    }
+
+    void addDataPointsGeneric(double[] xdata, double[] ydata, int istart, int iend) {
+        if(this.plotData) {
+            for (int i = istart; i < iend; i++) {
+                plot(xdata[i],ydata[i]);
             }
         }
     }

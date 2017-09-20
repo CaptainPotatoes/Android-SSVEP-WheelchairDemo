@@ -15,12 +15,12 @@ import java.util.List;
  * Created by mahmoodms on 5/31/2016.
  */
 
-public class ScannedDeviceAdapter extends ArrayAdapter<ScannedDevice> {
+class ScannedDeviceAdapter extends ArrayAdapter<ScannedDevice> {
     private List<ScannedDevice> list;
     private LayoutInflater inflater;
     private int resId;
     //Constructor
-    public ScannedDeviceAdapter(Context context, int resId, List<ScannedDevice> objects) {
+    ScannedDeviceAdapter(Context context, int resId, List<ScannedDevice> objects) {
         super(context,resId,objects);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.resId = resId;
@@ -61,7 +61,7 @@ public class ScannedDeviceAdapter extends ArrayAdapter<ScannedDevice> {
         }
     }
 
-    public void update(BluetoothDevice newDevice, int rssi, ScanRecord scanRecord) {
+    void update(BluetoothDevice newDevice, int rssi, ScanRecord scanRecord) {
         if ((newDevice==null)||(newDevice.getAddress()==null)) return;
         boolean contains = false;
         for (ScannedDevice device: list) {
@@ -83,7 +83,7 @@ public class ScannedDeviceAdapter extends ArrayAdapter<ScannedDevice> {
         }
     }
 
-    public void remove(int index) {
+    void remove(int index) {
         list.remove(index);
     }
 }

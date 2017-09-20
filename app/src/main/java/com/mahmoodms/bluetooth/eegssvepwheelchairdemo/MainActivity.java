@@ -33,6 +33,8 @@ import java.util.List;
 
 /**
  * Created by mahmoodms on 6/30/2016.
+ * Main Activity Allows for scanning and selection of Bluetooth LE devices for data acquisition,
+ * interfacing and classification.
  */
 
 
@@ -41,7 +43,6 @@ public class MainActivity extends Activity {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
     private boolean mScanning;
     private Handler mHandler;
-//    private ListView scanningDeviceListView;
     private BluetoothAdapter mBluetoothAdapter;
     private static final int MULTIPLE_PERMISSIONS_REQUEST = 139;
     private ScannedDeviceAdapter scannedDeviceAdapter;
