@@ -195,7 +195,6 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mFrequencyDomain = isChecked;
-                // TODO: 9/19/2017 FIX THIS
             }
         });
         mLastTime = System.currentTimeMillis();
@@ -589,10 +588,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
             mEEGConnected_2ch = true;
             mCh1.chEnabled = false;
             mCh2.chEnabled = false;
-            for (int i = 0; i < 6; i++) {
-                if(mCh1.characteristicDataPacketBytes!=null && mCh2.characteristicDataPacketBytes!=null) {
-                    writeToDisk24(mCh1.characteristicDataPacketBytes, mCh2.characteristicDataPacketBytes);
-                }
+            if(mCh1.characteristicDataPacketBytes!=null && mCh2.characteristicDataPacketBytes!=null) {
+                writeToDisk24(mCh1.characteristicDataPacketBytes, mCh2.characteristicDataPacketBytes);
             }
             if(packetNumber_2ch%10==0) { //Every x * 6 data points
                 ClassifyTask classifyTask = new ClassifyTask();

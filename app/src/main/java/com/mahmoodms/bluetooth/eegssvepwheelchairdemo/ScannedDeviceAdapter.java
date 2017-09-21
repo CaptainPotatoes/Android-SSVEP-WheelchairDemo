@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by mahmoodms on 5/31/2016.
+ *
  */
 
 class ScannedDeviceAdapter extends ArrayAdapter<ScannedDevice> {
