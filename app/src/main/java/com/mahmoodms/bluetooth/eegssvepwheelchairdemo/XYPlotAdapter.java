@@ -19,17 +19,20 @@ class XYPlotAdapter {
 //    private final static String TAG = XYPlotAdapter.class.getSimpleName();
     XYPlot xyPlot = null;
 
-    XYPlotAdapter(View findViewByID, boolean plotImplicitXVals, String domainLabel, int domainWidth, int domainSteps, String rangeLabel) {
+
+
+    /**
+     * This function implies that plotImplicitXVals is false. Therefore domain parameters need to be specified:
+     * @param findViewByID R.id in /res/
+     * @param domainLabel x-axis label
+     * @param rangeLabel y-axis label
+     * @param domainIncrement x-axis increment
+     */
+    XYPlotAdapter(View findViewByID, String domainLabel, String rangeLabel,  double domainIncrement) {
         this.xyPlot = (XYPlot) findViewByID;
-        if(plotImplicitXVals) {
-            this.xyPlot.setDomainBoundaries(0, domainWidth, BoundaryMode.FIXED);
-            this.xyPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-            this.xyPlot.setDomainStepValue(domainWidth/5);
-        } else {
-            this.xyPlot.setDomainBoundaries(0, domainWidth, BoundaryMode.AUTO);
-            this.xyPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-            this.xyPlot.setDomainStepValue(domainWidth/domainSteps);
-        }
+        this.xyPlot.setDomainBoundaries(0, 1, BoundaryMode.AUTO); //Default
+        this.xyPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+        this.xyPlot.setDomainStepValue(domainIncrement);
         //Default Config:
         this.xyPlot.setRangeStepMode(XYStepMode.INCREMENT_BY_VAL);
         this.xyPlot.setDomainLabel(domainLabel);
