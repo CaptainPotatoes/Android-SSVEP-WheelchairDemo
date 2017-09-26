@@ -43,9 +43,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Created by mahmoodms on 5/31/2016.
@@ -72,6 +74,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private boolean mConnected;
     //Class instance variable
     private BluetoothLe mBluetoothLe;
+    // Number of Relevant Data Characteristics!
+    private ArrayList<UUID> mSignalCharacteristicUUIDs;
+    private UUID mSignalCharacteristicUUIDArray[];
+    private DataChannel mAllDataChannels[];
+    // ;
     //Connecting to Multiple Devices
     private String[] deviceMacAddresses = null;
     private BluetoothGatt[] mBluetoothGattArray = null;
@@ -459,9 +466,24 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        mSignalCharacteristicUUIDs = new ArrayList<>();
         Log.i(TAG, "onServicesDiscovered");
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            for (BluetoothGattService service : gatt.getServices()) {
+            for (BluetoothGattService service: gatt.getServices()) {
+                if ((service == null) || (service.getUuid() == null)) continue;
+                for (BluetoothGattCharacteristic characteristic: service.getCharacteristics()) {
+                    for (UUID uuid:AppConstant.ALL_CHAR_EXG_SIGNALS) {
+                        if(uuid.equals(characteristic.getUuid())) {
+                            mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(uuid), true);
+                            mSignalCharacteristicUUIDs.add(uuid);
+                        }
+                    }
+                    // TODO: 9/26/2017 Need to make array of ecg, emg, eog, eeg, blah.
+                }
+            }
+            mSignalCharacteristicUUIDArray = (UUID[]) mSignalCharacteristicUUIDs.toArray();
+            mAllDataChannels = new DataChannel[mSignalCharacteristicUUIDArray.length];
+            /*for (BluetoothGattService service : gatt.getServices()) {
                 if ((service == null) || (service.getUuid() == null)) {
                     continue;
                 }
@@ -485,13 +507,21 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
                 if (AppConstant.SERVICE_EEG_SIGNAL.equals(service.getUuid())) {
                     makeFilterSwitchVisible(true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH1_SIGNAL), true);
-                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH2_SIGNAL), true);
+                    if (service.getCharacteristic(AppConstant.CHAR_EEG_CH1_SIGNAL) != null) {
+                        mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH1_SIGNAL), true);
+                        mSignalCharacteristicUUIDs.add(AppConstant.CHAR_EEG_CH1_SIGNAL);
+                    }
+                    if (service.getCharacteristic(AppConstant.CHAR_EEG_CH2_SIGNAL) != null) {
+                        mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH2_SIGNAL), true);
+                        mSignalCharacteristicUUIDs.add(AppConstant.CHAR_EEG_CH2_SIGNAL);
+                    }
                     if (service.getCharacteristic(AppConstant.CHAR_EEG_CH3_SIGNAL) != null) {
                         mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH3_SIGNAL), true);
+                        mSignalCharacteristicUUIDs.add(AppConstant.CHAR_EEG_CH3_SIGNAL);
                     }
                     if (service.getCharacteristic(AppConstant.CHAR_EEG_CH4_SIGNAL) != null) {
                         mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_EEG_CH4_SIGNAL), true);
+                        mSignalCharacteristicUUIDs.add(AppConstant.CHAR_EEG_CH4_SIGNAL);
                     }
                 }
 
@@ -510,7 +540,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 //                    mBluetoothLe.readCharacteristic(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL));
 //                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL), true);
 //                }
-            }
+
+                mSignalCharacteristicUUIDArray = (UUID[]) mSignalCharacteristicUUIDs.toArray();
+                mAllDataChannels = new DataChannel[mSignalCharacteristicUUIDArray.length];
+            }*/
         }
     }
 
@@ -550,6 +583,11 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        for (int i = 0; i < mAllDataChannels.length; i++) {
+            if(mSignalCharacteristicUUIDArray[i].equals(characteristic.getUuid())) {
+                // TODO: 9/26/2017 : make modifications to mAllDataChannels[i] in here instead of mCh1/2/3...
+            }
+        }
         if((mCh1==null || mCh2==null)) {
             mCh1 = new DataChannel(false, mMSBFirst);
             mCh2 = new DataChannel(false, mMSBFirst);

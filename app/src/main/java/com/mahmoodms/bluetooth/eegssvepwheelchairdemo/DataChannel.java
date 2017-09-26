@@ -2,6 +2,8 @@ package com.mahmoodms.bluetooth.eegssvepwheelchairdemo;
 
 import com.google.common.primitives.Bytes;
 
+import java.util.UUID;
+
 /**
  * Created by mmahmood31 on 9/19/2017.
  * For Handling BLE incoming data packets.

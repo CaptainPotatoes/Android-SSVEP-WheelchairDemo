@@ -15,6 +15,7 @@ public final class AppConstant {
     //Constants
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
     /**
      * FOR EMG SIGNAL:
      */
@@ -44,7 +45,6 @@ public final class AppConstant {
      * For EEG:
      */
     public static final UUID SERVICE_EEG_SIGNAL = UUID.fromString("228beef0-35fd-875f-39fe-b2a394d28057");
-    public static final UUID SERVICE_EEG_GENERIC = UUID.fromString("0000eef0-0000-1000-8000-00805f9b34fb");
     //Characteristic:
     public static final UUID CHAR_EEG_CH1_SIGNAL = UUID.fromString("0000eef1-0000-1000-8000-00805f9b34fb");
     public static final UUID CHAR_EEG_CH2_SIGNAL = UUID.fromString("0000eef2-0000-1000-8000-00805f9b34fb");
@@ -107,4 +107,8 @@ public final class AppConstant {
     public static final UUID CHAR_WHEELCHAIR_BUTTON = UUID.fromString("00009924-1212-efde-1523-785feabcd123");
     public static final UUID CHAR_WHEELCHAIR_CONTROL = UUID.fromString("00009925-1212-efde-1523-785feabcd123");
 
+
+    //ALL SIGNAL CHARACTERISTICS:
+    public static final UUID ALL_CHAR_EXG_SIGNALS[] = {CHAR_EMG_SIGNAL, CHAR_EEG_CH1_SIGNAL, CHAR_EEG_CH2_SIGNAL,
+            CHAR_EEG_CH3_SIGNAL, CHAR_EEG_CH4_SIGNAL };
 }
