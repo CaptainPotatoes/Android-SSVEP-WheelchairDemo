@@ -358,6 +358,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                 mMSBFirst = false;
             } else if ("EMG 3CH 250Hz".equals(mBluetoothDeviceArray[i].getName())) {
                 mMSBFirst = true;
+            } else if (mBluetoothDeviceArray[i].getName().toLowerCase().contains("nRF52".toLowerCase())) {
+                mMSBFirst = true;
             }
         }
     }
