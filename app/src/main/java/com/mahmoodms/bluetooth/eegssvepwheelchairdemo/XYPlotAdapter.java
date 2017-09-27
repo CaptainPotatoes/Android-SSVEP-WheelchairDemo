@@ -19,8 +19,6 @@ class XYPlotAdapter {
 //    private final static String TAG = XYPlotAdapter.class.getSimpleName();
     XYPlot xyPlot = null;
 
-
-
     /**
      * This function implies that plotImplicitXVals is false. Therefore domain parameters need to be specified:
      * @param findViewByID R.id in /res/
@@ -95,5 +93,9 @@ class XYPlotAdapter {
         this.xyPlot.getTitleWidget().getLabelPaint().setColor(Color.BLACK);
         this.xyPlot.setRangeBoundaries(-0.004, 0.004, BoundaryMode.AUTO);
         this.xyPlot.setRangeStep(XYStepMode.SUBDIVIDE, 5.0);
+    }
+
+    public void setXyPlotDomainIncrement(double domainIncrement) {
+        this.xyPlot.setDomainStepValue(domainIncrement);
     }
 }

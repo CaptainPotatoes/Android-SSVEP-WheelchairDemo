@@ -57,7 +57,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     // Graphing Variables:
     private GraphAdapter mGraphAdapterCh1;
     private GraphAdapter mGraphAdapterCh2;
-    private GraphAdapter mGraphAdaptercPSDA;
+//    private GraphAdapter mGraphAdaptercPSDA;
+    private GraphAdapter mGraphAdapterCh1PSDA;
+    private GraphAdapter mGraphAdapterCh2PSDA;
     public XYPlotAdapter mTimeDomainPlotAdapter;
     public XYPlotAdapter mFreqDomainPlotAdapter;
     public static Redrawer redrawer;
@@ -89,7 +91,9 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private Switch mDomainSwitch;
     private long mLastTime;
     private int mPSDDataPointsToShow = 0;
-    private double[] fPSD;
+
+//    private double[] fPSD;
+    private double[] fPSD2ch;
 
     private boolean mFrequencyDomain = true;
     private int points = 0;
@@ -156,18 +160,25 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         // Initialize our XYPlot reference:
         mGraphAdapterCh1 = new GraphAdapter(1000, "EEG Data Ch 1", false, Color.BLUE, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
         mGraphAdapterCh2 = new GraphAdapter(1000, "EEG Data Ch 2", false, Color.RED, 1000); //Color.parseColor("#19B52C") also, RED, BLUE, etc.
-        mGraphAdaptercPSDA = new GraphAdapter(mPSDDataPointsToShow, "EEG Power Spectrum", false, Color.BLACK, 0);
+//        mGraphAdaptercPSDA = new GraphAdapter(mPSDDataPointsToShow, "EEG Power Spectrum (Ch1)", false, Color.BLACK, 0);
+        mGraphAdapterCh1PSDA = new GraphAdapter(mPSDDataPointsToShow, "EEG Power Spectrum (Ch1)", false, Color.BLUE, 0);
+        mGraphAdapterCh2PSDA = new GraphAdapter(mPSDDataPointsToShow, "EEG Power Spectrum (Ch2)", false, Color.RED, 0);
         //PLOT CH1 By default
         mGraphAdapterCh1.plotData = true;
-        mGraphAdaptercPSDA.plotData = true;
+//        mGraphAdaptercPSDA.plotData = false;
+        mGraphAdapterCh1PSDA.plotData = true;
+        mGraphAdapterCh2PSDA.plotData = true;
         mGraphAdapterCh1.setPointWidth((float) 2);
         mGraphAdapterCh2.setPointWidth((float) 2);
-        mGraphAdaptercPSDA.setPointWidth((float) 2);
+//        mGraphAdaptercPSDA.setPointWidth((float) 2);
+        mGraphAdapterCh1PSDA.setPointWidth((float) 2);
+        mGraphAdapterCh2PSDA.setPointWidth((float) 2);
         mTimeDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.eegTimeDomainXYPlot), false, 1000);
         mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1.series, mGraphAdapterCh1.lineAndPointFormatter);
         mTimeDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2.series, mGraphAdapterCh2.lineAndPointFormatter);
         mFreqDomainPlotAdapter = new XYPlotAdapter(findViewById(R.id.frequencyAnalysisXYPlot), "Frequency (Hz)", "Power Density (W/Hz)", 2.00);
-        mFreqDomainPlotAdapter.xyPlot.addSeries(mGraphAdaptercPSDA.series, mGraphAdaptercPSDA.lineAndPointFormatter);
+        mFreqDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh1PSDA.series, mGraphAdapterCh1PSDA.lineAndPointFormatter);
+        mFreqDomainPlotAdapter.xyPlot.addSeries(mGraphAdapterCh2PSDA.series, mGraphAdapterCh2PSDA.lineAndPointFormatter);
 
         redrawer = new Redrawer(
                 Arrays.asList(new Plot[]{mTimeDomainPlotAdapter.xyPlot, mFreqDomainPlotAdapter.xyPlot}), 60, false);
@@ -239,7 +250,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
         ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mGraphAdaptercPSDA.setPlotData(b);
+                mGraphAdapterCh1PSDA.setPlotData(b);
+                mGraphAdapterCh2PSDA.setPlotData(b);
             }
         });
         Button resetButton = (Button) findViewById(R.id.resetActivityButton);
@@ -312,7 +324,8 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     public void onResume() {
         makeFilterSwitchVisible(true);
         jmainInitialization(false);
-        fPSD = jLoadfPSD();
+//        fPSD = jLoadfPSD();
+        fPSD2ch = jLoadfPSD2ch();
         String fileTimeStampConcat = "EEGSensorData_" + getTimeStamp();
         Log.d("onResume-timeStamp", fileTimeStampConcat);
         if (!fileSaveInitialized) {
@@ -508,10 +521,10 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
                     }
                 }
 
-//                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) { //Read the device battery percentage
-//                    mBluetoothLe.readCharacteristic(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL));
-//                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL), true);
-//                }
+                if (AppConstant.SERVICE_BATTERY_LEVEL.equals(service.getUuid())) { //Read the device battery percentage
+                    mBluetoothLe.readCharacteristic(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL));
+                    mBluetoothLe.setCharacteristicNotification(gatt, service.getCharacteristic(AppConstant.CHAR_BATTERY_LEVEL), true);
+                }
             }
         }
     }
@@ -611,18 +624,33 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
     private class ClassifyTask extends AsyncTask<Void, Void, Double> {
         @Override
         protected Double doInBackground(Void... voids) {
+            final int fPSDStartIndex = 16;
+            final int fPSDEndIndex = 80;
             double[] getInstance1 = mGraphAdapterCh1.classificationBuffer;
             double[] getInstance2 = mGraphAdapterCh2.classificationBuffer;
             if (mFrequencyDomain) {
-                double[] pPSD = jPSDExtraction(getInstance1,getInstance2);
-                if (pPSD!=null && fPSD!=null && mPSDDataPointsToShow>0) {
-                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD, 34, 176); //only up to 200
-                } else {
-                    mPSDDataPointsToShow = 176-34;
-                    mGraphAdaptercPSDA.setSeriesHistoryDataPoints(mPSDDataPointsToShow);
-                    mGraphAdaptercPSDA.addDataPointsGeneric(fPSD, pPSD, 34, 176); //only up to 200
+                double[] getInstancePSD1 = new double[500];
+                double[] getInstancePSD2 = new double[500];
+                System.arraycopy(mGraphAdapterCh1.classificationBuffer, 500, getInstancePSD1, 0, 500);
+                System.arraycopy(mGraphAdapterCh2.classificationBuffer, 500, getInstancePSD2, 0, 500);
+//                double[] pPSD = jcPSDExtraction(getInstancePSD1, getInstancePSD2); //includes convolution.
+                double[] pPSD2ch = jPSDExtraction2ch(getInstancePSD1, getInstancePSD2);
+                double[] pPSDCh1 = new double[250];
+                double[] pPSDCh2 = new double[250];
+                System.arraycopy(pPSD2ch, 0, pPSDCh1, 0, 250);
+                System.arraycopy(pPSD2ch, 250, pPSDCh2, 0, 250);
+
+                if(mPSDDataPointsToShow==0) {
+                    mPSDDataPointsToShow = fPSDEndIndex - fPSDStartIndex;
+                    mGraphAdapterCh1PSDA.setSeriesHistoryDataPoints(mPSDDataPointsToShow);
+                    mGraphAdapterCh2PSDA.setSeriesHistoryDataPoints(mPSDDataPointsToShow);
+                    if(mPSDDataPointsToShow > 64) mFreqDomainPlotAdapter.setXyPlotDomainIncrement(6.0);
+                    else mFreqDomainPlotAdapter.setXyPlotDomainIncrement(2.0);
                 }
+                mGraphAdapterCh1PSDA.addDataPointsGeneric(fPSD2ch, pPSDCh1, fPSDStartIndex, fPSDEndIndex);
+                mGraphAdapterCh2PSDA.addDataPointsGeneric(fPSD2ch, pPSDCh2, fPSDStartIndex, fPSDEndIndex);
             }
+
             double Y[] = jClassifySSVEP(getInstance1,getInstance2,1.5);
             double yclass = Y[1];
             mNumberOfClassifierCalls++;
@@ -875,7 +903,12 @@ public class DeviceControlActivity extends Activity implements BluetoothLe.Bluet
 
     public native double[] jClassifySSVEP(double[] a, double[] b, double c);
 
-    public native double[] jPSDExtraction(double[] a, double[] b);
+//    public native double[] jcPSDExtraction(double[] a, double[] b);
 
-    public native double[] jLoadfPSD();
+    public native double[] jPSDExtraction2ch(double[] a, double[] b);
+
+//    public native double[] jLoadfPSD();
+
+    public native double[] jLoadfPSD2ch();
+
 }
