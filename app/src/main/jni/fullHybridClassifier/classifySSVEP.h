@@ -4,8 +4,8 @@
 // government, commercial, or other organizational use.
 // File: classifySSVEP.h
 //
-// MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 17-Jun-2017 14:03:52
+// MATLAB Coder version            : 3.3
+// C/C++ source code generated on  : 28-Sep-2017 12:01:11
 //
 #ifndef CLASSIFYSSVEP_H
 #define CLASSIFYSSVEP_H
@@ -20,8 +20,8 @@
 #include "classifySSVEP_types.h"
 
 // Function Declarations
-extern void classifySSVEP(const double X1[1000], const double X2[1000], double
-  thresholdFraction, double *Y, double *CLASS0);
+extern void classifySSVEP(const double X1[500], const double X2[500], double
+  thresholdFraction, double Y[2], double PSD[499]);
 extern void classifySSVEP_initialize();
 extern void classifySSVEP_terminate();
 

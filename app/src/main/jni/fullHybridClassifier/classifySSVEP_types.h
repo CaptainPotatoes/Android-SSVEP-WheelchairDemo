@@ -4,8 +4,8 @@
 // government, commercial, or other organizational use.
 // File: classifySSVEP_types.h
 //
-// MATLAB Coder version            : 3.1
-// C/C++ source code generated on  : 17-Jun-2017 14:03:52
+// MATLAB Coder version            : 3.3
+// C/C++ source code generated on  : 28-Sep-2017 12:01:11
 //
 #ifndef CLASSIFYSSVEP_TYPES_H
 #define CLASSIFYSSVEP_TYPES_H

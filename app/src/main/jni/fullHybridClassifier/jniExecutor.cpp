@@ -4,7 +4,6 @@
 
 #include "rt_nonfinite.h"
 #include "classifySSVEP.h"
-#include "extractPowerSpectrum.h"
 #include "extractPowerSpectrum2ch.h"
 /*Additional Includes*/
 #include <jni.h>
@@ -22,12 +21,12 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jClass
 
     jdouble *X1 = env->GetDoubleArrayElements(ch1, NULL);
     jdouble *X2 = env->GetDoubleArrayElements(ch2, NULL);
-    double Y[2];
+    double Y[501]; // First two values = Y; last 499 = cPSD
     if (X1 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
     if (X2 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
-    jdoubleArray m_result = env->NewDoubleArray(2);
-    classifySSVEP(X1,X2,threshold,&Y[0],&Y[1]);
-    env->SetDoubleArrayRegion(m_result, 0, 2, Y);
+    jdoubleArray m_result = env->NewDoubleArray(501);
+    classifySSVEP(X1, X2, threshold, &Y[0], &Y[2]);
+    env->SetDoubleArrayRegion(m_result, 0, 501, Y);
     return m_result;
 }
 }
@@ -50,22 +49,6 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jPSDEx
 
 extern "C" {
 JNIEXPORT jdoubleArray JNICALL
-Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jcPSDExtraction(
-        JNIEnv *env, jobject jobject1, jdoubleArray ch1, jdoubleArray ch2) {
-    jdouble *X1 = env->GetDoubleArrayElements(ch1, NULL);
-    jdouble *X2 = env->GetDoubleArrayElements(ch2, NULL);
-    if (X1 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
-    if (X2 == NULL) LOGE("ERROR - C_ARRAY IS NULL");
-    jdoubleArray m_result = env->NewDoubleArray(499);
-    double Y[499];
-    extractPowerSpectrum(X1, X2, Y);
-    env->SetDoubleArrayRegion(m_result, 0, 499, Y);
-    return m_result;
-}
-}
-
-extern "C" {
-JNIEXPORT jdoubleArray JNICALL
 Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jLoadfPSD(
         JNIEnv *env, jobject jobject1) {
     jdoubleArray m_result = env->NewDoubleArray(499);
@@ -80,6 +63,12 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jLoadf
 
 extern "C" {
 JNIEXPORT jdoubleArray JNICALL
+/**
+ *
+ * @param env
+ * @param jobject1
+ * @return array of frequencies (Hz) corresponding to a raw input signal.
+ */
 Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jLoadfPSD2ch(
         JNIEnv *env, jobject jobject1) {
     jdoubleArray m_result = env->NewDoubleArray(250);
@@ -98,7 +87,6 @@ Java_com_mahmoodms_bluetooth_eegssvepwheelchairdemo_DeviceControlActivity_jmainI
         JNIEnv *env, jobject obj, jboolean terminate) {
     if (!(bool) terminate) {
         classifySSVEP_initialize();
-        extractPowerSpectrum_initialize();
         extractPowerSpectrum2ch_initialize();
         return 0;
     } else {
