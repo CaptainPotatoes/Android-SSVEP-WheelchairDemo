@@ -29,42 +29,40 @@ class DataChannel {
     /**
      * If 'dataBuffer' is not null, concatenate new data using Guava lib
      * else: initialize dataBuffer with new data.
+     *
      * @param newDataPacket new data packet received via BLE>
      */
     void handleNewData(byte[] newDataPacket) {
         this.characteristicDataPacketBytes = newDataPacket;
-        if(this.dataBuffer!=null) {
+        if (this.dataBuffer != null) {
             this.dataBuffer = Bytes.concat(this.dataBuffer, newDataPacket);
         } else {
             this.dataBuffer = newDataPacket;
         }
-        this.totalDataPointsReceived += newDataPacket.length/3;
+        this.totalDataPointsReceived += newDataPacket.length / 3;
         this.packetCounter++;
     }
 
     void addToGraphBuffer(GraphAdapter graphAdapter) {
-        for (int i = 0; i < this.dataBuffer.length/3; i++) {
-            graphAdapter.addDataPoint(bytesToDouble(this.dataBuffer[3*i], this.dataBuffer[3*i+1], this.dataBuffer[3*i+2]), this.totalDataPointsReceived-this.dataBuffer.length/3 + i);
+        for (int i = 0; i < this.dataBuffer.length / 3; i++) {
+            graphAdapter.addDataPoint(bytesToDouble(this.dataBuffer[3 * i], this.dataBuffer[3 * i + 1], this.dataBuffer[3 * i + 2]), this.totalDataPointsReceived - this.dataBuffer.length / 3 + i);
         }
         this.dataBuffer = null;
         this.packetCounter = 0;
     }
 
     static double bytesToDouble(byte a1, byte a2, byte a3) {
-        int a;
+        int unsigned;
         if (MSBFirst) {
-            a = unsignedToSigned(unsignedBytesToInt(a3, a2, a1), 24);
+            unsigned = unsignedBytesToInt(a3, a2, a1);
         } else {
-            a = unsignedToSigned(unsignedBytesToInt(a1, a2, a3), 24);
+            unsigned = unsignedBytesToInt(a1, a2, a3);
         }
-        return ((double) a / 8388607.0) * 2.25;
+        return ((double) unsignedToSigned24bit(unsigned) / 8388607.0) * 2.25;
     }
 
-    private static int unsignedToSigned(int unsigned, int size) {
-        if ((unsigned & (1 << size - 1)) != 0) {
-            unsigned = -1 * ((1 << size - 1) - (unsigned & ((1 << size - 1) - 1)));
-        }
-        return unsigned;
+    private static int unsignedToSigned24bit(int unsigned) {
+        if ((unsigned & 0x7FFFFF) != 0) return -1 * (0x7FFFFF - (unsigned & (0x7FFFFF - 1))); else return unsigned;
     }
 
     private static int unsignedBytesToInt(byte b0, byte b1, byte b2) {
@@ -74,4 +72,9 @@ class DataChannel {
     private static int unsignedByteToInt(byte b) {
         return b & 0xFF;
     }
+
+//    private static int unsignedToSigned(int unsigned, int size) {
+//        if ((unsigned & (1 << size - 1)) != 0) unsigned = -1 * ((1 << size - 1) - (unsigned & ((1 << size - 1) - 1)));
+//        return unsigned;
+//    }
 }

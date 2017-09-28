@@ -95,7 +95,7 @@ class XYPlotAdapter {
         this.xyPlot.setRangeStep(XYStepMode.SUBDIVIDE, 5.0);
     }
 
-    public void setXyPlotDomainIncrement(double domainIncrement) {
+    void setXyPlotDomainIncrement(double domainIncrement) {
         this.xyPlot.setDomainStepValue(domainIncrement);
     }
 }

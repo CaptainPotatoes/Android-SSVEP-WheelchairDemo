@@ -1436,15 +1436,6 @@ void extractPowerSpectrum2ch_initialize()
 }
 
 //
-// Arguments    : void
-// Return Type  : void
-//
-void extractPowerSpectrum2ch_terminate()
-{
-  // (no terminate code required)
-}
-
-//
 // File trailer for extractPowerSpectrum2ch.cpp
 //
 // [EOF]

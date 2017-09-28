@@ -37,8 +37,6 @@ import java.util.List;
  * interfacing and classification.
  */
 
-
-
 public class MainActivity extends Activity {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
     private boolean mScanning;
@@ -66,7 +64,7 @@ public class MainActivity extends Activity {
         //Set Orientation in Landscape
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         //Set up action bar:
-        if (getActionBar()!=null) getActionBar().setDisplayHomeAsUpEnabled(false);
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(false);
         final ActionBar actionBar = getActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#800020")));
         //Set orientation of device based on screen type/size:
@@ -86,8 +84,8 @@ public class MainActivity extends Activity {
         //Initialize Bluetooth manager
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
-        if(mBluetoothAdapter == null) {
-            Toast.makeText(this,R.string.error_bluetooth_not_supported,Toast.LENGTH_SHORT).show();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -102,42 +100,42 @@ public class MainActivity extends Activity {
         scanningDeviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            ScannedDevice item = scannedDeviceAdapter.getItem(position);
-            if (item!=null) {
-                if(!mDeviceAddressesMAC.contains(item.getDeviceMac())) {
-                    mDeviceNames.add(item.getDisplayName());
-                    mDeviceAddressesMAC.add(item.getDeviceMac());
-                    mDevicesSelectedCount++;
-                    scannedDeviceAdapter.remove(position);
-                    scannedDeviceAdapter.notifyDataSetChanged();
-                    selectedDeviceAdapter.add(item);
-                    selectedDeviceAdapter.notifyDataSetChanged();
-                    Toast.makeText(MainActivity.this, "Device Selected: "+item.getDisplayName()+"\n"+item.getDeviceMac(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Device Already in List!", Toast.LENGTH_SHORT).show();
+                ScannedDevice item = scannedDeviceAdapter.getItem(position);
+                if (item != null) {
+                    if (!mDeviceAddressesMAC.contains(item.getDeviceMac())) {
+                        mDeviceNames.add(item.getDisplayName());
+                        mDeviceAddressesMAC.add(item.getDeviceMac());
+                        mDevicesSelectedCount++;
+                        scannedDeviceAdapter.remove(position);
+                        scannedDeviceAdapter.notifyDataSetChanged();
+                        selectedDeviceAdapter.add(item);
+                        selectedDeviceAdapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "Device Selected: " + item.getDisplayName() + "\n" + item.getDeviceMac(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Device Already in List!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
             }
         });
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mDevicesSelectedCount>0) {
-                    if(mScanning) {
+                if (mDevicesSelectedCount > 0) {
+                    if (mScanning) {
                         if (mBluetoothAdapter.isEnabled())
                             mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
                         mScanning = false;
                     }
                     //Send intent
-                    if(mDeviceAddressesMAC != null) {
+                    if (mDeviceAddressesMAC != null) {
                         String[] selectedDeviceArray = mDeviceAddressesMAC.toArray(new String[0]);
                         String[] selectedDeviceNames = mDeviceNames.toArray(new String[0]);
                         String[] selectedStimulus = new String[1];
                         selectedStimulus[0] = mEditDelayText.getText().toString();
                         final Intent intent = new Intent(MainActivity.this, DeviceControlActivity.class);
-                        intent.putExtra(INTENT_DEVICES_KEY,selectedDeviceArray);
-                        intent.putExtra(INTENT_DEVICES_NAMES,selectedDeviceNames);
-                        intent.putExtra(INTENT_TRAINING_STIMULUS,selectedStimulus);
+                        intent.putExtra(INTENT_DEVICES_KEY, selectedDeviceArray);
+                        intent.putExtra(INTENT_DEVICES_NAMES, selectedDeviceNames);
+                        intent.putExtra(INTENT_TRAINING_STIMULUS, selectedStimulus);
                         startActivity(intent);
                     } else {
                         Toast.makeText(MainActivity.this, "No Devices Selected!", Toast.LENGTH_SHORT).show();
@@ -153,21 +151,21 @@ public class MainActivity extends Activity {
         int permissionCheck3 = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         int permissionCheck4 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         List<String> listPermissionsNeeded = new ArrayList<>();
-        if (permissionCheck1!=PackageManager.PERMISSION_GRANTED) {
+        if (permissionCheck1 != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
-        if (permissionCheck2!=PackageManager.PERMISSION_GRANTED) {
+        if (permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
-        if (permissionCheck3!=PackageManager.PERMISSION_GRANTED) {
+        if (permissionCheck3 != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
         }
-        if(permissionCheck4!=PackageManager.PERMISSION_GRANTED) {
+        if (permissionCheck4 != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
         }
-        Log.e(TAG,"Permissions List Size: "+String.valueOf(listPermissionsNeeded.size()));
-        if(!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),MULTIPLE_PERMISSIONS_REQUEST);
+        Log.e(TAG, "Permissions List Size: " + String.valueOf(listPermissionsNeeded.size()));
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS_REQUEST);
             return false;
         }
         return true;
@@ -236,7 +234,7 @@ public class MainActivity extends Activity {
          * Ensures Bluetooth is enabled on the device - if not enabled - fire intent to display a
          * dialog to ask permissioo enable
          */
-        if(checkPermissions()) {
+        if (checkPermissions()) {
             if (!mBluetoothAdapter.isEnabled()) {
                 if (!mBluetoothAdapter.isEnabled()) {
                     Intent enableBt = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -253,7 +251,7 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(!mDeviceAddressesMAC.contains(result.getDevice().getAddress())) {
+                    if (!mDeviceAddressesMAC.contains(result.getDevice().getAddress())) {
                         scannedDeviceAdapter.update(result.getDevice(), result.getRssi(), result.getScanRecord());
                         scannedDeviceAdapter.notifyDataSetChanged();
                     }
@@ -280,7 +278,7 @@ public class MainActivity extends Activity {
     }
 
     private void scanLeDevice(final boolean enable) {
-        if(enable) {
+        if (enable) {
             //stops scanning after ~seconds
             mHandler.postDelayed(new Runnable() {
                 @Override
@@ -292,8 +290,8 @@ public class MainActivity extends Activity {
                 }
             }, SCAN_PERIOD);
             mScanning = true;
-            Log.i(TAG,"isNull?1"+String.valueOf(mScanCallback==null));
-            Log.i(TAG,"isNull?2"+String.valueOf(mBluetoothAdapter==null));
+            Log.i(TAG, "isNull?1" + String.valueOf(mScanCallback == null));
+            Log.i(TAG, "isNull?2" + String.valueOf(mBluetoothAdapter == null));
             if (mBluetoothAdapter.isEnabled())
                 mBluetoothAdapter.getBluetoothLeScanner().startScan(mScanCallback);
         } else {

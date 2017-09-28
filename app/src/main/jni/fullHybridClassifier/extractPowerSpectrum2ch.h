@@ -23,7 +23,6 @@
 extern void extractPowerSpectrum2ch(const double X1[500], const double X2[500],
   double PSD[500]);
 extern void extractPowerSpectrum2ch_initialize();
-extern void extractPowerSpectrum2ch_terminate();
 
 #endif
 
